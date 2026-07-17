@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Gerencial — CIMA Ventures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1420;
+    --panel:#121F30;
+    --panel-2:#0F1A28;
+    --line: rgba(255,255,255,0.08);
+    --navy:#0D1F37;
+    --green:#1A3A29;
+    --sage:#79BE8A;
+    --gold:#C9A84C;
+    --red:#E0715A;
+    --text:#EDF2EE;
+    --text-soft:#8FA096;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px 90px;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  .topbar{
+    padding:28px 24px;border-bottom:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  }
+  .topbar-inner{max-width:1080px;margin:0 auto;width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-dot{width:10px;height:10px;border-radius:50%;background:var(--sage);}
+  .brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;letter-spacing:.02em;}
+  .brand-sub{color:var(--text-soft);font-size:12px;}
+  .status{font-size:11px;color:var(--sage);border:1px solid rgba(121,190,138,0.35);padding:5px 10px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;font-weight:600;}
+
+  h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(26px,4vw,34px);margin:36px 0 6px;font-weight:700;}
+  .subtitle{color:var(--text-soft);font-size:14.5px;margin-bottom:36px;max-width:640px;}
+
+  .section{margin-top:52px;}
+  .section-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:12px;color:var(--sage);font-weight:600;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:21px;margin:0 0 6px;font-weight:600;}
+  .section-desc{color:var(--text-soft);font-size:13.5px;max-width:620px;margin:0 0 22px;}
+
+  /* KPI CARDS */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 18px;}
+  .kpi-label{font-size:11.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+  .kpi-value{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:700;color:var(--text);}
+  .kpi-value.sage{color:var(--sage);}
+  .kpi-value.gold{color:var(--gold);}
+  .kpi-value.red{color:var(--red);}
+  .kpi-foot{font-size:11.5px;color:var(--text-soft);margin-top:6px;}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:12px;overflow:hidden;border:1px solid var(--line);font-size:13.5px;}
+  th{background:var(--panel-2);color:var(--text-soft);text-align:left;padding:11px 14px;font-weight:600;font-size:11px;letter-spacing:.04em;text-transform:uppercase;border-bottom:1px solid var(--line);}
+  td{padding:11px 14px;border-top:1px solid var(--line);font-family:'JetBrains Mono',monospace;}
+  td.label{font-family:'Inter',sans-serif;}
+  th.num,td.num{text-align:right;}
+  tr.warn td{background:rgba(224,113,90,0.08);}
+  tr.good td{background:rgba(121,190,138,0.06);}
+  .pill{display:inline-block;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;letter-spacing:.04em;
+    padding:2px 8px;border-radius:20px;text-transform:uppercase;margin-left:8px;}
+  .pill.red{background:rgba(224,113,90,0.18);color:var(--red);}
+  .pill.sage{background:rgba(121,190,138,0.18);color:var(--sage);}
+
+  .callout{
+    margin-top:18px;border-radius:12px;padding:16px 18px;font-size:13.5px;line-height:1.6;
+    border-left:3px solid var(--red);background:rgba(224,113,90,0.06);color:#F0D8D1;
+  }
+  .callout.good{border-left-color:var(--sage);background:rgba(121,190,138,0.06);color:#D7ECDC;}
+  .callout b{color:var(--text);}
+
+  /* SCALE BAR */
+  .scale-bar-wrap{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 20px;}
+  .scale-bar{position:relative;height:34px;background:var(--panel-2);border-radius:8px;overflow:hidden;margin:16px 0 10px;}
+  .scale-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg, var(--green), var(--sage));border-radius:8px 0 0 8px;}
+  .scale-marker{position:absolute;top:0;bottom:0;width:2px;background:var(--gold);}
+  .scale-labels{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-soft);font-family:'JetBrains Mono',monospace;}
+  .scale-legend{display:flex;gap:20px;margin-top:14px;font-size:12px;color:var(--text-soft);flex-wrap:wrap;}
+  .legend-dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:middle;}
+
+  .foot{margin-top:60px;padding-top:22px;border-top:1px solid var(--line);font-size:11.5px;color:var(--text-soft);text-align:center;}
+
+  /* SIMULADOR */
+  .sim-controls-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+  .sim-control{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .sim-control label{display:block;font-size:11px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:10px;}
+  .sim-stepper{display:flex;align-items:center;gap:14px;}
+  .sim-btn{width:30px;height:30px;border-radius:50%;border:1px solid var(--sage);background:none;color:var(--sage);
+    font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .sim-btn:hover{background:rgba(121,190,138,0.12);}
+  .sim-value{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--text);min-width:70px;text-align:center;}
+  .sim-toggle{display:flex;gap:6px;}
+  .sim-toggle-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--text-soft);
+    font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;}
+  .sim-toggle-btn.active{background:var(--sage);color:var(--green);border-color:var(--sage);}
+
+  .dist-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;}
+  .dist-item{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 10px;text-align:center;}
+  .dist-item-label{font-size:11px;color:var(--text-soft);margin-bottom:8px;}
+  .dist-stepper{display:flex;align-items:center;justify-content:center;gap:8px;}
+  .dist-btn{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);background:var(--panel-2);color:var(--text);
+    font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .dist-btn:hover{border-color:var(--sage);}
+  .dist-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;min-width:20px;}
+  .dist-total{margin-top:12px;font-size:12.5px;color:var(--text-soft);text-align:right;}
+  .dist-total.err{color:var(--red);font-weight:600;}
+
+  @media (max-width:820px){
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    table{font-size:12px;}
+    th,td{padding:8px 8px;}
+    .dist-grid{grid-template-columns:repeat(3,1fr);}
+    .sim-controls-row{flex-direction:column;align-items:stretch;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="brand-text">CIMA VENTURES</div>
+          <div class="brand-sub">Panel gerencial · Proyecto Costa Mar</div>
+        </div>
+      </div>
+      <div class="status">Documento interno</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h1>Panel de control — equipo de asesores</h1>
+    <p class="subtitle">Márgenes, punto de equilibrio, riesgo de caja y capacidad de escala. Esto es lo que tú necesitas ver — no se comparte con el equipo.</p>
+
+    <!-- SIMULADOR PRINCIPAL -->
+    <div class="section" style="margin-top:36px;">
+      <div class="section-eyebrow">Simulador</div>
+      <h2>Mueve los controles y mira cómo cambia todo</h2>
+      <p class="section-desc">Número de asesores, caja chica disponible y fase — todo lo de abajo se recalcula solo.</p>
+
+      <div class="sim-controls-row">
+        <div class="sim-control">
+          <label>Número de asesores</label>
+          <div class="sim-stepper">
+            <button class="sim-btn" data-target="numAsesores" data-delta="-1">−</button>
+            <div class="sim-value" id="numAsesoresVal">5</div>
+            <button class="sim-btn" data-target="numAsesores" data-delta="1">+</button>
+          </div>
+        </div>
+        <div class="sim-control">
+          <label>Caja chica disponible (S/)</label>
+          <div class="sim-stepper">
+            <button class="sim-btn" data-target="cajaChica" data-delta="-1000">−</button>
+            <div class="sim-value" id="cajaChicaVal">10,000</div>
+            <button class="sim-btn" data-target="cajaChica" data-delta="1000">+</button>
+          </div>
+        </div>
+        <div class="sim-control">
+          <label>Fase del equipo</label>
+          <div class="sim-toggle">
+            <button class="sim-toggle-btn active" data-fase="1">Fase 1</button>
+            <button class="sim-toggle-btn" data-fase="2">Fase 2</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis" style="margin-top:20px;">
+        <div class="kpi">
+          <div class="kpi-label">Riesgo máx / asesor sin ventas</div>
+          <div class="kpi-value" id="kpiRiesgoUnitario">S/800</div>
+          <div class="kpi-foot" id="kpiRiesgoFoot">Fase 1 (fijo S/600 + movilidad)</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Riesgo total si nadie vende</div>
+          <div class="kpi-value red" id="kpiRiesgoTotal">S/4,000</div>
+          <div class="kpi-foot" id="kpiRiesgoTotalFoot">con 5 asesores este mes</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Capacidad máxima teórica</div>
+          <div class="kpi-value gold" id="kpiCapacidad">12</div>
+          <div class="kpi-foot">asesores, en el peor escenario posible</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Colchón usado</div>
+          <div class="kpi-value sage" id="kpiColchon">40%</div>
+          <div class="kpi-foot">de tu caja chica, en el peor caso</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIMULADOR: UN ASESOR -->
+    <div class="section">
+      <div class="section-eyebrow">Simulador</div>
+      <h2>¿Qué pasa con un solo asesor?</h2>
+      <p class="section-desc">Mueve las ventas del mes de un asesor y mira su margen real, en la fase que elegiste arriba.</p>
+
+      <div class="sim-controls-row">
+        <div class="sim-control" style="flex:1;">
+          <label>Ventas de este asesor en el mes</label>
+          <div class="sim-stepper">
+            <button class="sim-btn" data-target="ventasUno" data-delta="-1">−</button>
+            <div class="sim-value" id="ventasUnoVal">1</div>
+            <button class="sim-btn" data-target="ventasUno" data-delta="1">+</button>
+          </div>
+        </div>
+      </div>
+
+      <table style="margin-top:18px;">
+        <thead><tr><th>Fijo</th><th class="num">Comisión</th><th class="num">Movilidad</th><th class="num">Total pagado</th><th class="num">Facturado</th><th class="num">Margen</th></tr></thead>
+        <tbody>
+          <tr id="unoRow">
+            <td class="label" id="unoFijo">600</td>
+            <td class="num" id="unoComision">1,000</td>
+            <td class="num" id="unoMovilidad">250</td>
+            <td class="num" id="unoTotal">1,850</td>
+            <td class="num" id="unoFacturado">2,000</td>
+            <td class="num" id="unoMargen">+150</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SIMULADOR: TODO EL EQUIPO -->
+    <div class="section">
+      <div class="section-eyebrow">Simulador</div>
+      <h2>¿Qué pasa con todo el equipo?</h2>
+      <p class="section-desc">Reparte tus asesores según cuántas ventas hace cada grupo este mes, y mira el margen total del equipo.</p>
+
+      <div class="dist-grid" id="distGrid"></div>
+      <div class="dist-total" id="distTotal"></div>
+
+      <table style="margin-top:18px;">
+        <thead><tr><th>Concepto</th><th class="num">Monto</th></tr></thead>
+        <tbody>
+          <tr><td class="label">Total pagado a asesores</td><td class="num" id="equipoPagado">—</td></tr>
+          <tr><td class="label">Total facturado a la inmobiliaria</td><td class="num" id="equipoFacturado">—</td></tr>
+          <tr><td class="label" style="font-weight:700;">Margen del mes</td><td class="num" id="equipoMargen" style="font-weight:700;">—</td></tr>
+        </tbody>
+      </table>
+      <div class="callout" id="equipoCallout" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- HALLAZGO CLAVE -->
+    <div class="section">
+      <div class="section-eyebrow">Hallazgo clave</div>
+      <h2>El punto de equilibrio no es el mismo en Fase 1 y Fase 2</h2>
+      <p class="section-desc">Al incluir el costo real de movilidad semanal, el mínimo de ventas necesario para no perder plata con un asesor cambia entre etapas.</p>
+
+      <table>
+        <thead>
+          <tr><th>Ventas/mes</th><th class="num">Fijo</th><th class="num">Comisión</th><th class="num">Movilidad</th><th class="num">Total pagado</th><th class="num">Facturado</th><th class="num">Margen</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="label" colspan="7" style="font-family:'Inter',sans-serif;font-weight:600;color:var(--text-soft);background:var(--panel-2);">FASE 1 — Comisión plana S/1,000</td></tr>
+          <tr class="warn"><td class="label">0 ventas</td><td class="num">600</td><td class="num">0</td><td class="num">200</td><td class="num">800</td><td class="num">0</td><td class="num">–800</td></tr>
+          <tr class="good"><td class="label">1 venta</td><td class="num">600</td><td class="num">1,000</td><td class="num">250</td><td class="num">1,850</td><td class="num">2,000</td><td class="num">+150</td></tr>
+          <tr class="good"><td class="label">2 ventas</td><td class="num">600</td><td class="num">2,000</td><td class="num">300</td><td class="num">2,900</td><td class="num">4,000</td><td class="num">+1,100</td></tr>
+          <tr class="good"><td class="label">3 ventas</td><td class="num">600</td><td class="num">3,000</td><td class="num">350</td><td class="num">3,950</td><td class="num">6,000</td><td class="num">+2,050</td></tr>
+
+          <tr><td class="label" colspan="7" style="font-family:'Inter',sans-serif;font-weight:600;color:var(--text-soft);background:var(--panel-2);">FASE 2 — Comisión escalonada, fijo S/700</td></tr>
+          <tr class="warn"><td class="label">0 ventas</td><td class="num">700</td><td class="num">0</td><td class="num">200</td><td class="num">900</td><td class="num">0</td><td class="num">–900</td></tr>
+          <tr class="good"><td class="label">1 venta <span class="pill sage">mínimo sostenible</span></td><td class="num">700</td><td class="num">1,000</td><td class="num">250</td><td class="num">1,950</td><td class="num">2,000</td><td class="num">+50</td></tr>
+          <tr class="good"><td class="label">2 ventas</td><td class="num">700</td><td class="num">2,200</td><td class="num">300</td><td class="num">3,200</td><td class="num">4,000</td><td class="num">+800</td></tr>
+          <tr class="good"><td class="label">3 ventas</td><td class="num">700</td><td class="num">3,900</td><td class="num">350</td><td class="num">4,950</td><td class="num">6,000</td><td class="num">+1,050</td></tr>
+          <tr class="good"><td class="label">4 ventas</td><td class="num">700</td><td class="num">5,200</td><td class="num">400</td><td class="num">6,300</td><td class="num">8,000</td><td class="num">+1,700</td></tr>
+          <tr class="good"><td class="label">5 ventas</td><td class="num">700</td><td class="num">7,000</td><td class="num">400</td><td class="num">8,100</td><td class="num">10,000</td><td class="num">+1,900</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout good">
+        <b>Corregido:</b> se bajó el fijo de Fase 2 de S/800 a S/700 para que el mínimo de 1 venta/mes ya no genere pérdida — ahora deja <b>+S/50 de margen</b>, un colchón pequeño pero positivo. Antes, con fijo S/800, 1 venta al mes te costaba –S/50 (necesitabas 2 para ser rentable). Este ajuste además sube el margen en todos los niveles superiores (2 a 5 ventas), no solo en el mínimo.
+      </div>
+    </div>
+
+    <!-- ESCENARIOS DE EQUIPO -->
+    <div class="section">
+      <div class="section-eyebrow">Escenarios de equipo (5 asesores, Fase 1)</div>
+      <h2>Punto de equilibrio del equipo completo</h2>
+      <p class="section-desc">Con comisión plana de Fase 1. El equipo necesita que la mayoría cumpla al menos 1 venta para no perder plata en conjunto.</p>
+
+      <table>
+        <thead>
+          <tr><th>Escenario</th><th>Mezcla</th><th class="num">Pagado total</th><th class="num">Facturado</th><th class="num">Margen del mes</th></tr>
+        </thead>
+        <tbody>
+          <tr class="warn"><td class="label">Pesimista</td><td class="label" style="font-family:'Inter',sans-serif;">2 venden 1 c/u, 3 no venden</td><td class="num">6,100</td><td class="num">4,000</td><td class="num">–2,100</td></tr>
+          <tr class="good"><td class="label">Base</td><td class="label" style="font-family:'Inter',sans-serif;">Los 5 venden 1 c/u</td><td class="num">9,250</td><td class="num">10,000</td><td class="num">+750</td></tr>
+          <tr class="good"><td class="label">Optimista</td><td class="label" style="font-family:'Inter',sans-serif;">3 venden 2 c/u, 2 venden 1 c/u</td><td class="num">13,000</td><td class="num">16,000</td><td class="num">+3,000</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout good">
+        Con caja chica de S/10,000, incluso el escenario pesimista (–S/2,100) es completamente absorbible. El equipo real de equilibrio: <b>mínimo 3 de 5 asesores vendiendo</b> al menos 1 lote/mes.
+      </div>
+    </div>
+
+    <!-- ESCALABILIDAD -->
+    <div class="section">
+      <div class="section-eyebrow">Escalabilidad</div>
+      <h2>Cuánto colchón tienes para crecer el equipo</h2>
+      <p class="section-desc">Fórmula: Caja chica ÷ Riesgo máximo por asesor sin ventas.</p>
+
+      <div class="scale-bar-wrap">
+        <div class="scale-labels">
+          <span>0 asesores</span>
+          <span>12–13 (techo con Fase 1)</span>
+        </div>
+        <div class="scale-bar">
+          <div class="scale-fill" style="width:40%;"></div>
+          <div class="scale-marker" style="left:40%;"></div>
+        </div>
+        <div class="scale-labels">
+          <span class="mono">S/0</span>
+          <span class="mono">S/10,000 (caja chica)</span>
+        </div>
+        <div class="scale-legend">
+          <div><span class="legend-dot" style="background:var(--sage);"></span>Equipo actual: 5 asesores (S/4,000 de exposición máxima)</div>
+          <div><span class="legend-dot" style="background:var(--gold);"></span>Colchón disponible: hasta 7–8 asesores más</div>
+        </div>
+      </div>
+
+      <div class="callout good" style="margin-top:16px;">
+        Con 5 asesores usas ~40% de tu colchón de riesgo en el peor caso posible. Hay espacio real para crecer el equipo si la calidad de reclutamiento se mantiene — la restricción hoy no es de caja, es de qué tan rápido puedes formar y supervisar gente nueva.
+      </div>
+    </div>
+
+    <!-- BONO DE EQUIPO -->
+    <div class="section">
+      <div class="section-eyebrow">Bono de equipo (Meta 1 / Meta 2 / Meta 3)</div>
+      <h2>¿El bono se paga solo, o te cuesta margen?</h2>
+      <p class="section-desc">Margen del equipo calculado con el mejor reparto posible de ventas entre los 5 asesores (Fase 2, movilidad incluida).</p>
+
+      <table>
+        <thead>
+          <tr><th>Meta</th><th>Ventas del equipo</th><th class="num">Margen antes del bono (mejor reparto)</th><th class="num">Costo del bono</th><th class="num">Margen neto</th></tr>
+        </thead>
+        <tbody>
+          <tr class="good"><td class="label">Meta 1</td><td class="label" style="font-family:'Inter',sans-serif;">8 ventas</td><td class="num">2,500</td><td class="num">500</td><td class="num">2,000</td></tr>
+          <tr class="good"><td class="label">Meta 2</td><td class="label" style="font-family:'Inter',sans-serif;">10 ventas</td><td class="num">4,000</td><td class="num">1,000</td><td class="num">3,000</td></tr>
+          <tr class="good"><td class="label">Meta 3</td><td class="label" style="font-family:'Inter',sans-serif;">14 ventas</td><td class="num">5,800</td><td class="num">1,500</td><td class="num">4,300</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout good">
+        Meta 1 se subió de 6 a 8 ventas — con 6, el mejor reparto posible entre los 5 asesores dejaba margen de solo S/500 antes del bono, es decir, <b>el bono se comía toda la ganancia (margen neto S/0)</b>. Con 8, ya queda colchón real. Meta 2 y Meta 3 siempre tuvieron margen de sobra — el bono ahí se paga solo y sigue quedando ganancia de sobra.
+      </div>
+      <div class="callout good">
+        <b>Regla de elegibilidad agregada:</b> solo cobra el bono de equipo quien tenga al menos 1 venta propia ese mes. Esto además mejora la tabla de arriba — si algún asesor terminó el mes en 0 ventas, no cobra el bono, así que el costo real (S/500 / S/1,000 / S/1,500) puede terminar siendo menor a lo mostrado, nunca mayor.
+      </div>
+      <div class="callout">
+        Estos números asumen el <b>mejor reparto posible</b> de ventas entre asesores. Si las ventas se concentran en pocos asesores mientras otros quedan en cero, el margen real antes del bono puede ser menor al mostrado — vale la pena revisar la distribución real del equipo cada mes, no asumir que siempre será el caso óptimo.
+      </div>
+    </div>
+
+    <!-- PENDIENTES ADMINISTRATIVOS -->
+    <div class="section">
+      <div class="section-eyebrow">Pendientes administrativos</div>
+      <h2>Antes de operar a plena escala</h2>
+      <table>
+        <thead><tr><th>Pendiente</th><th>Estado</th></tr></thead>
+        <tbody>
+          <tr><td class="label" style="font-family:'Inter',sans-serif;">Confirmar con contador si tu RUC es "agente de retención" (8% sobre RxH)</td><td class="label" style="font-family:'Inter',sans-serif;color:var(--gold);">Pendiente</td></tr>
+          <tr><td class="label" style="font-family:'Inter',sans-serif;">Contrato de locación de servicios (texto legal)</td><td class="label" style="font-family:'Inter',sans-serif;color:var(--gold);">Pendiente — al final</td></tr>
+          <tr><td class="label" style="font-family:'Inter',sans-serif;">Monto exacto de movilidad semanal (placeholder S/50+S/50)</td><td class="label" style="font-family:'Inter',sans-serif;color:var(--gold);">Por confirmar</td></tr>
+          <tr><td class="label" style="font-family:'Inter',sans-serif;">% de cofinanciamiento de merch con Hugo Gómez</td><td class="label" style="font-family:'Inter',sans-serif;color:var(--text-soft);">En pausa</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="foot">CIMA Ventures — Documento interno de gestión · No compartir con el equipo de asesores</div>
+  </div>
+
+  <script>
+    const state = {
+      numAsesores: 5,
+      cajaChica: 10000,
+      fase: 1,
+      ventasUno: 1,
+      dist: [1, 2, 1, 1, 0, 0] // conteo de asesores en cada balde: 0,1,2,3,4,5+
+    };
+
+    function fmt(n){ return 'S/' + Math.round(n).toLocaleString('es-PE'); }
+
+    function movilidad(n){ return 200 + 50 * Math.min(n, 4); }
+
+    function fijo(fase){ return fase === 1 ? 600 : 700; }
+
+    function comision(n, fase){
+      if(n <= 0) return 0;
+      if(fase === 1) return 1000 * n; // comisión plana en Fase 1
+      // Fase 2: escalonado con aceleradores en 3 y 5
+      if(n >= 5) return 1400 * n;
+      if(n >= 3) return 1300 * n;
+      if(n === 2) return 1000 + 1200;
+      return 1000; // n === 1
+    }
+
+    function margen(n, fase){
+      const facturado = 2000 * n;
+      const total = fijo(fase) + comision(n, fase) + movilidad(n);
+      return facturado - total;
+    }
+
+    function riesgoUnitario(fase){ return fijo(fase) + 200; } // fijo + movilidad base (0 ventas)
+
+    /* CONTROLES PRINCIPALES */
+    document.querySelectorAll('.sim-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        const delta = parseInt(btn.dataset.delta, 10);
+        if(target === 'numAsesores'){
+          state.numAsesores = Math.max(1, Math.min(50, state.numAsesores + delta));
+        } else if(target === 'cajaChica'){
+          state.cajaChica = Math.max(0, state.cajaChica + delta);
+        } else if(target === 'ventasUno'){
+          state.ventasUno = Math.max(0, Math.min(10, state.ventasUno + delta));
+        }
+        renderAll();
+      });
+    });
+
+    document.querySelectorAll('.sim-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.fase = parseInt(btn.dataset.fase, 10);
+        document.querySelectorAll('.sim-toggle-btn').forEach(b => b.classList.toggle('active', b === btn));
+        renderAll();
+      });
+    });
+
+    /* DISTRIBUCIÓN DEL EQUIPO */
+    const BALDES = ['0 ventas', '1 venta', '2 ventas', '3 ventas', '4 ventas', '5+ ventas'];
+    function renderDistGrid(){
+      const grid = document.getElementById('distGrid');
+      grid.innerHTML = BALDES.map((label, i) => `
+        <div class="dist-item">
+          <div class="dist-item-label">${label}</div>
+          <div class="dist-stepper">
+            <button class="dist-btn" data-idx="${i}" data-delta="-1">−</button>
+            <div class="dist-val" id="distVal${i}">${state.dist[i]}</div>
+            <button class="dist-btn" data-idx="${i}" data-delta="1">+</button>
+          </div>
+        </div>
+      `).join('');
+      grid.querySelectorAll('.dist-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx, 10);
+          const delta = parseInt(btn.dataset.delta, 10);
+          state.dist[idx] = Math.max(0, state.dist[idx] + delta);
+          renderAll();
+        });
+      });
+    }
+
+    function renderAll(){
+      // KPIs principales
+      document.getElementById('numAsesoresVal').textContent = state.numAsesores;
+      document.getElementById('cajaChicaVal').textContent = state.cajaChica.toLocaleString('es-PE');
+
+      const ru = riesgoUnitario(state.fase);
+      document.getElementById('kpiRiesgoUnitario').textContent = fmt(ru);
+      document.getElementById('kpiRiesgoFoot').textContent = 'Fase ' + state.fase + ' (fijo ' + fmt(fijo(state.fase)) + ' + movilidad)';
+
+      const riesgoTotal = ru * state.numAsesores;
+      document.getElementById('kpiRiesgoTotal').textContent = fmt(riesgoTotal);
+      document.getElementById('kpiRiesgoTotalFoot').textContent = 'con ' + state.numAsesores + ' asesor' + (state.numAsesores===1?'':'es') + ' este mes';
+
+      const capacidad = state.cajaChica > 0 ? Math.floor(state.cajaChica / ru) : 0;
+      document.getElementById('kpiCapacidad').textContent = capacidad;
+
+      const colchon = state.cajaChica > 0 ? Math.min(999, Math.round((riesgoTotal / state.cajaChica) * 100)) : 0;
+      document.getElementById('kpiColchon').textContent = colchon + '%';
+
+      // Simulador de un asesor
+      document.getElementById('ventasUnoVal').textContent = state.ventasUno;
+      const n = state.ventasUno;
+      document.getElementById('unoFijo').textContent = fmt(fijo(state.fase));
+      document.getElementById('unoComision').textContent = fmt(comision(n, state.fase));
+      document.getElementById('unoMovilidad').textContent = fmt(movilidad(n));
+      const totalPagadoUno = fijo(state.fase) + comision(n, state.fase) + movilidad(n);
+      document.getElementById('unoTotal').textContent = fmt(totalPagadoUno);
+      document.getElementById('unoFacturado').textContent = fmt(2000 * n);
+      const margenUno = margen(n, state.fase);
+      const margenUnoEl = document.getElementById('unoMargen');
+      margenUnoEl.textContent = (margenUno >= 0 ? '+' : '') + fmt(margenUno);
+      document.getElementById('unoRow').className = margenUno < 0 ? 'warn' : 'good';
+
+      // Distribución del equipo
+      renderDistGrid();
+      const asignados = state.dist.reduce((a,b) => a+b, 0);
+      const distTotalEl = document.getElementById('distTotal');
+      distTotalEl.textContent = 'Asignados: ' + asignados + ' / ' + state.numAsesores + ' asesores';
+      distTotalEl.className = 'dist-total' + (asignados !== state.numAsesores ? ' err' : '');
+
+      let totalPagadoEquipo = 0, totalFacturadoEquipo = 0;
+      const ventasPorBalde = [0, 1, 2, 3, 4, 5];
+      state.dist.forEach((count, i) => {
+        const ventas = ventasPorBalde[i];
+        totalPagadoEquipo += count * (fijo(state.fase) + comision(ventas, state.fase) + movilidad(ventas));
+        totalFacturadoEquipo += count * 2000 * ventas;
+      });
+      const margenEquipo = totalFacturadoEquipo - totalPagadoEquipo;
+
+      document.getElementById('equipoPagado').textContent = fmt(totalPagadoEquipo);
+      document.getElementById('equipoFacturado').textContent = fmt(totalFacturadoEquipo);
+      const margenEquipoEl = document.getElementById('equipoMargen');
+      margenEquipoEl.textContent = (margenEquipo >= 0 ? '+' : '') + fmt(margenEquipo);
+      margenEquipoEl.style.color = margenEquipo >= 0 ? 'var(--sage)' : 'var(--red)';
+
+      const callout = document.getElementById('equipoCallout');
+      if(asignados !== state.numAsesores){
+        callout.className = 'callout';
+        callout.innerHTML = '<b>Ojo:</b> repartiste ' + asignados + ' de ' + state.numAsesores + ' asesores en la distribución — ajusta los baldes para que sumen el total del equipo.';
+      } else if(margenEquipo < 0){
+        callout.className = 'callout';
+        callout.innerHTML = '<b>Este mes perderías ' + fmt(Math.abs(margenEquipo)) + '.</b> Tu caja chica de ' + fmt(state.cajaChica) + ' lo absorbe sin problema, pero no es un mes rentable con esta distribución.';
+      } else {
+        callout.className = 'callout good';
+        callout.innerHTML = '<b>Este mes te deja ' + fmt(margenEquipo) + ' de margen</b> con esta distribución de ventas entre tus ' + state.numAsesores + ' asesores.';
+      }
+    }
+
+    renderAll();
+  </script>
+
+</body>
+</html>
