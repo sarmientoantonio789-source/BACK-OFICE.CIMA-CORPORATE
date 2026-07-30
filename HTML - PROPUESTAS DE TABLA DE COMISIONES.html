@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Comisiones — Equipo Comercial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0F2438;
+    --navy-dark:#081521;
+    --gold:#C9A227;
+    --gold-soft:#E4C868;
+    --cream:#F6F3EC;
+    --paper:#FFFDF9;
+    --ink:#1C2024;
+    --ink-soft:#5C6570;
+    --line: rgba(28,32,36,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 90px;}
+
+  .hero{
+    background:linear-gradient(155deg, var(--navy-dark) 0%, var(--navy) 100%);
+    color:var(--paper);padding:60px 24px 66px;position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;right:-80px;top:-80px;width:280px;height:280px;
+    border-radius:50%;background:radial-gradient(circle, rgba(201,162,39,0.25) 0%, transparent 70%);
+  }
+  .hero-inner{max-width:920px;margin:0 auto;position:relative;z-index:1;}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-soft);font-weight:600;margin-bottom:16px;}
+  h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,5.2vw,44px);line-height:1.08;margin:0 0 16px;font-weight:700;letter-spacing:-0.01em;}
+  .hero p{font-size:16px;line-height:1.65;color:rgba(255,253,249,0.82);max-width:560px;margin:0;}
+
+  .section{padding-top:56px;}
+  .section-head{margin-bottom:24px;}
+  .section-num{font-family:'Space Grotesk',sans-serif;font-size:13px;color:#8a7420;font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:26px;margin:0 0 8px;font-weight:600;color:var(--navy);}
+  .section-head p{margin:0;color:var(--ink-soft);font-size:15px;max-width:620px;}
+
+  /* TABLA 1 */
+  .cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 20px;text-align:center;}
+  .card-label{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);font-weight:600;margin-bottom:10px;}
+  .card-value{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+  .card-desc{font-size:13px;color:var(--ink-soft);}
+  .banner{
+    margin-top:20px;background:var(--navy);color:var(--paper);border-radius:14px;
+    padding:18px 22px;display:flex;align-items:flex-start;gap:14px;
+  }
+  .banner-tag{
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;letter-spacing:.06em;
+    background:var(--gold);color:var(--navy-dark);padding:4px 10px;border-radius:20px;text-transform:uppercase;flex-shrink:0;margin-top:2px;
+  }
+  .banner p{margin:0;font-size:13.5px;line-height:1.6;color:rgba(255,253,249,0.88);}
+
+  /* STAIRCASE */
+  .tap-hint{font-size:13.5px;color:var(--ink-soft);margin:0 0 16px;}
+  .staircase{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:end;margin-bottom:8px;}
+  .step{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 12px 16px;position:relative;transition:transform .18s ease, box-shadow .18s ease;}
+  .step.clickable{cursor:pointer;}
+  .step.clickable:hover{transform:translateY(-3px);}
+  .step.accel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold), 0 12px 28px -12px rgba(201,162,39,0.5);
+    background:linear-gradient(180deg,#FFFDF9 0%, #FBF6E6 100%);}
+  .step.clicked{box-shadow:0 0 0 2px var(--gold), 0 16px 32px -14px rgba(201,162,39,0.55) !important;}
+  .step-badge{position:absolute;top:-11px;left:12px;background:var(--navy);color:var(--gold-soft);
+    font-size:9.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 7px;border-radius:20px;}
+  .pulse-badge{animation:badgePulse 1.6s ease-in-out infinite;}
+  @keyframes badgePulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.72;transform:scale(1.06);}}
+  .step-n{font-family:'Space Grotesk',sans-serif;font-size:11.5px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px;}
+  .step-amt{font-family:'Space Grotesk',sans-serif;font-size:23px;font-weight:700;color:var(--navy);line-height:1;margin-bottom:4px;display:inline-block;transition:transform .2s ease;}
+  .step-amt.win{animation:winFlash .7s ease;}
+  @keyframes winFlash{0%{color:var(--navy);}30%{color:var(--gold);transform:scale(1.18);}100%{color:var(--navy);transform:scale(1);}}
+  .step-label{font-size:11.5px;color:var(--ink-soft);line-height:1.4;}
+
+  .gain-badge{margin-top:18px;text-align:center;font-family:'Space Grotesk',sans-serif;font-weight:700;
+    background:rgba(201,162,39,0.12);border-radius:12px;padding:16px;
+    opacity:0;transform:translateY(8px) scale(.97);transition:opacity .35s ease, transform .35s ease;pointer-events:none;}
+  .gain-badge.show{opacity:1;transform:translateY(0) scale(1);}
+  .gain-badge span{font-size:24px;color:#8a7420;display:block;}
+  .gain-badge small{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:500;color:var(--ink-soft);display:block;margin-top:4px;}
+
+  .reset-btn{display:block;margin:14px auto 0;background:none;border:1px solid var(--line);color:var(--ink-soft);
+    font-family:'Inter',sans-serif;font-size:12.5px;padding:8px 16px;border-radius:20px;cursor:pointer;
+    opacity:0;pointer-events:none;transition:opacity .25s ease;}
+  .reset-btn.show{opacity:1;pointer-events:auto;}
+  .reset-btn:hover{background:var(--paper);}
+
+  .breakdown{margin-top:18px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;min-height:20px;}
+  .breakdown-hint{font-size:13.5px;color:var(--ink-soft);text-align:center;padding:6px 0;}
+  .breakdown-content{display:none;}
+  .breakdown-content.show{display:block;}
+  .breakdown-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--navy);margin-bottom:12px;}
+  .breakdown-line{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;color:var(--ink);border-bottom:1px dashed var(--line);}
+  .breakdown-line:last-of-type{border-bottom:none;}
+  .breakdown-total{display:flex;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1.5px solid var(--gold);
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:#8a7420;}
+
+  .closing{margin-top:70px;background:linear-gradient(155deg, var(--navy) 0%, var(--navy-dark) 100%);
+    border-radius:20px;padding:44px 32px;text-align:center;color:var(--paper);}
+  .closing-eyebrow{color:var(--gold-soft);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;}
+  .closing h3{font-family:'Space Grotesk',sans-serif;font-size:24px;margin:0 0 12px;font-weight:700;}
+  .closing p{margin:0;color:rgba(255,253,249,0.85);font-size:15px;line-height:1.6;max-width:520px;margin:0 auto;}
+
+  /* REGLA DE PAGO */
+  .pay-rule{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+  .pay-rule-col{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .pay-rule-col p{margin:8px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .pay-rule-col p b{color:var(--ink);}
+  .pay-rule-tag{display:inline-block;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;
+    letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:20px;}
+  .pay-rule-tag.same-day{background:rgba(15,36,56,0.1);color:var(--navy);}
+  .pay-rule-tag.month-end{background:rgba(201,162,39,0.2);color:#8a7420;}
+
+  /* SIMULADOR */
+  .sim-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .sim-control{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 16px;text-align:center;}
+  .sim-control-label{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;line-height:1.4;min-height:34px;}
+  .sim-stepper{display:flex;align-items:center;justify-content:center;gap:16px;}
+  .sim-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--navy);background:var(--paper);
+    color:var(--navy);font-size:18px;font-weight:700;cursor:pointer;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:background .15s ease, transform .15s ease;}
+  .sim-btn:hover{background:var(--navy);color:var(--paper);}
+  .sim-btn:active{transform:scale(0.92);}
+  .sim-value{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--navy);min-width:36px;}
+
+  /* PANEL FINAL */
+  .final-panel{background:linear-gradient(155deg, var(--navy) 0%, var(--navy-dark) 100%);border-radius:18px;padding:26px 26px 20px;color:var(--paper);}
+  .final-sub{font-size:11px;text-transform:uppercase;letter-spacing:.05em;font-weight:700;margin:16px 0 6px;}
+  .final-sub:first-child{margin-top:0;}
+  .final-sub.same-day{color:rgba(255,253,249,0.55);}
+  .final-sub.month-end{color:var(--gold-soft);}
+  .final-line{display:flex;justify-content:space-between;font-size:14.5px;padding:9px 0;
+    border-bottom:1px solid rgba(255,253,249,0.14);color:rgba(255,253,249,0.9);}
+  .final-line span:first-child{color:rgba(255,253,249,0.72);}
+  .final-line span:last-child{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+  .final-total{display:flex;justify-content:space-between;margin-top:16px;padding-top:16px;
+    border-top:1.5px solid var(--gold);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:23px;color:var(--gold-soft);}
+
+  .foot{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);text-align:center;}
+
+  /* SIMULADOR */
+  .sim-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .sim-control{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 16px;text-align:center;}
+  .sim-control-label{font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;line-height:1.4;min-height:38px;}
+  .sim-control-label small{font-size:11px;opacity:.8;}
+  .sim-stepper{display:flex;align-items:center;justify-content:center;gap:16px;}
+  .sim-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--navy);background:var(--paper);
+    color:var(--navy);font-size:18px;font-weight:700;cursor:pointer;line-height:1;
+    display:flex;align-items:center;justify-content:center;transition:background .15s ease, transform .15s ease;}
+  .sim-btn:hover{background:var(--navy);color:var(--paper);}
+  .sim-btn:active{transform:scale(0.92);}
+  .sim-value{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;color:var(--navy);min-width:36px;}
+
+  .final-panel{background:linear-gradient(155deg, var(--navy) 0%, var(--navy-dark) 100%);border-radius:18px;padding:26px 26px 20px;color:var(--paper);}
+  .final-line{display:flex;justify-content:space-between;font-size:14.5px;padding:10px 0;
+    border-bottom:1px solid rgba(255,253,249,0.14);color:rgba(255,253,249,0.9);}
+  .final-line span:first-child{color:rgba(255,253,249,0.72);}
+  .final-line span:last-child{font-family:'Space Grotesk',sans-serif;font-weight:600;}
+  .final-total{display:flex;justify-content:space-between;margin-top:14px;padding-top:16px;
+    border-top:1.5px solid var(--gold);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:23px;color:var(--gold-soft);}
+
+  @media (max-width:720px){
+    .cards3{grid-template-columns:1fr;}
+    .staircase{grid-template-columns:repeat(2,1fr);}
+    .banner{flex-direction:column;}
+    .pay-rule{grid-template-columns:1fr;}
+    .sim-controls{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">Equipo Comercial · Proyecto de Lotización</div>
+      <h1>Plan de comisiones</h1>
+      <p>Sin sueldo fijo — 100% comisión por venta. Mientras más vendes, más vale cada venta que ya hiciste.</p>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- TABLA 1 -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">Opción de respaldo</span>
+        <h2>Tabla 1 — según la inicial del cliente</h2>
+        <p>Úsala cuando el cliente no puede cubrir la inicial completa. Comisión fija por venta, sin escalonamiento.</p>
+      </div>
+
+      <div class="cards3">
+        <div class="card">
+          <div class="card-label">Inicial S/3,000</div>
+          <div class="card-value">S/500</div>
+          <div class="card-desc">comisión fija</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Inicial S/5,000</div>
+          <div class="card-value">S/1,000</div>
+          <div class="card-desc">comisión fija</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Inicial S/10,000</div>
+          <div class="card-value">S/1,500</div>
+          <div class="card-desc">comisión fija</div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <span class="banner-tag">Nota</span>
+        <p>Esta tabla puede cambiar o cerrarse en cualquier momento — es una condición temporal. Úsala como opción de respaldo para no perder una venta, no como la meta principal.</p>
+      </div>
+    </div>
+
+    <!-- TABLA 2 -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">Tabla principal</span>
+        <h2>Tabla 2 — inicial S/15,000</h2>
+        <p>Comisión escalonada por número de venta en el mes. Al llegar a un nivel, tus ventas anteriores también suben de valor.</p>
+      </div>
+
+      <p class="tap-hint">👉 Toca el cuadro de <b>Venta 3</b> o <b>Venta 5</b> para ver qué pasa con tus ventas anteriores.</p>
+
+      <div class="staircase" id="staircase">
+        <div class="step" id="step1">
+          <div class="step-n">Venta 1</div>
+          <div class="step-amt" id="amt1">S/1,200</div>
+          <div class="step-label">comisión base</div>
+        </div>
+        <div class="step" id="step2">
+          <div class="step-n">Venta 2</div>
+          <div class="step-amt" id="amt2">S/1,500</div>
+          <div class="step-label">sube el ritmo</div>
+        </div>
+        <div class="step accel clickable" id="step3">
+          <div class="step-badge pulse-badge">Toca aquí</div>
+          <div class="step-n">Venta 3</div>
+          <div class="step-amt" id="amt3">S/1,700</div>
+          <div class="step-label">tus 3 ventas valen S/1,700 c/u</div>
+        </div>
+        <div class="step" id="step4">
+          <div class="step-n">Venta 4</div>
+          <div class="step-amt" id="amt4">S/1,700</div>
+          <div class="step-label">se mantiene el nivel</div>
+        </div>
+        <div class="step accel clickable" id="step5">
+          <div class="step-badge pulse-badge">Toca aquí</div>
+          <div class="step-n">Venta 5</div>
+          <div class="step-amt" id="amt5">S/2,000</div>
+          <div class="step-label">tus 5 ventas valen S/2,000 c/u</div>
+        </div>
+      </div>
+
+      <div class="gain-badge" id="gainBadge">
+        <span id="gainAmt">+S/700</span>
+        <small id="gainDesc">extra solo por llegar a la 3ra venta</small>
+      </div>
+
+      <button class="reset-btn" id="resetBtn">↺ Reiniciar vista</button>
+
+      <div class="breakdown">
+        <div class="breakdown-hint" id="breakdownHint">Toca "Venta 3" o "Venta 5" arriba para ver el total acumulado de comisiones de ese mes.</div>
+        <div class="breakdown-content" id="breakdownContent">
+          <div class="breakdown-title" id="breakdownTitle">Con 3 ventas en el mes</div>
+          <div id="breakdownLines"></div>
+          <div class="breakdown-total"><span>Total generado en comisiones</span><span id="breakdownTotal">S/5,100</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BONO DE EQUIPO -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">Bono de equipo</span>
+        <h2>Ganamos juntos también</h2>
+        <p>Esto es aparte de tu comisión individual. Si entre todo el equipo suman suficientes ventas en el mes, todos reciben un bono extra.</p>
+      </div>
+
+      <div class="cards3">
+        <div class="card" style="border-top:4px solid #B08D57;">
+          <div class="card-label">Meta 1</div>
+          <div class="card-value">+S/100</div>
+          <div class="card-desc">al llegar a 5 ventas del equipo</div>
+        </div>
+        <div class="card" style="border-top:4px solid #9BA6AD;">
+          <div class="card-label">Meta 2</div>
+          <div class="card-value">+S/200</div>
+          <div class="card-desc">al llegar a 8 ventas del equipo</div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--gold);">
+          <div class="card-label">Meta 3</div>
+          <div class="card-value">+S/300</div>
+          <div class="card-desc">al llegar a 11 ventas del equipo</div>
+        </div>
+      </div>
+
+      <div class="banner">
+        <span class="banner-tag">Tu semillita</span>
+        <p>Para cobrar el bono de equipo necesitas <b>al menos 1 venta propia ese mes</b> — no importa cuánto, lo que cuenta es poner tu parte. Se paga junto con tu liquidación de fin de mes, por el nivel más alto que el equipo haya alcanzado.</p>
+      </div>
+
+      <div class="banner" style="background:var(--paper);color:var(--ink);border:1px solid var(--line);margin-top:12px;">
+        <span class="banner-tag" style="background:var(--ink-soft);color:var(--paper);">Importante</span>
+        <p style="color:var(--ink-soft);">Estas metas están calculadas para el tamaño actual del equipo. <b style="color:var(--ink);">A medida que se sumen más asesores, las metas de equipo subirán proporcionalmente</b> — mientras más seamos, más alta será la meta colectiva. Los montos del bono por persona se mantienen.</p>
+      </div>
+    </div>
+
+    <!-- SIMULADOR -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">Tu simulador</span>
+        <h2>¿Cuánto ganarías tú este mes?</h2>
+        <p>Mueve los controles según tu situación y mira cómo se arma tu cheque del mes, pieza por pieza.</p>
+      </div>
+
+      <div class="pay-rule">
+        <div class="pay-rule-col">
+          <div class="pay-rule-tag same-day">Mismo día</div>
+          <p>El precio base de cada venta se te paga <b>el mismo día que vendes</b> — vendiste, cobraste.</p>
+        </div>
+        <div class="pay-rule-col">
+          <div class="pay-rule-tag month-end">Cierre de mes</div>
+          <p>El <b>extra</b> por alcanzar un nivel (revalorización) y el bono de equipo se pagan con tu liquidación de fin de mes — recién ahí se sabe hasta dónde llegaste.</p>
+        </div>
+      </div>
+
+      <div class="sim-controls">
+        <div class="sim-control">
+          <div class="sim-control-label">Tus ventas este mes</div>
+          <div class="sim-stepper">
+            <button class="sim-btn" data-target="myVentas" data-delta="-1">−</button>
+            <div class="sim-value" id="myVentasVal">0</div>
+            <button class="sim-btn" data-target="myVentas" data-delta="1">+</button>
+          </div>
+        </div>
+        <div class="sim-control">
+          <div class="sim-control-label">Ventas totales del equipo (incluidas las tuyas)</div>
+          <div class="sim-stepper">
+            <button class="sim-btn" data-target="teamVentas" data-delta="-1">−</button>
+            <div class="sim-value" id="teamVentasVal">0</div>
+            <button class="sim-btn" data-target="teamVentas" data-delta="1">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESGLOSE FINAL -->
+    <div class="section">
+      <div class="section-head">
+        <span class="section-num">Resultado</span>
+        <h2>Tu desglose completo del mes</h2>
+        <p>Esto se arma solo, según lo que elegiste arriba.</p>
+      </div>
+
+      <div class="final-panel">
+        <div class="final-sub same-day">Cobrado el mismo día de cada venta</div>
+        <div class="final-line"><span>Comisión base (<span id="fVentasLabel">0</span> ventas)</span><span id="fSameDay">S/0</span></div>
+
+        <div class="final-sub month-end">Pagado al cierre de mes</div>
+        <div class="final-line"><span>Extra por revalorización de nivel</span><span id="fExtra">S/0</span></div>
+        <div class="final-line"><span>Bono de equipo <span id="fMetaLabel"></span></span><span id="fBono">S/0</span></div>
+
+        <div class="final-total"><span>TOTAL DEL MES</span><span id="fTotal">S/0</span></div>
+      </div>
+    </div>
+
+    <div class="closing">
+      <div class="closing-eyebrow">Equipo Comercial</div>
+      <h3>Mientras más vendes, más vale cada venta</h3>
+      <p>Sin techo de sueldo fijo — tu ingreso depende de tu esfuerzo, y cada nivel que alcanzas te paga más por lo que ya hiciste.</p>
+    </div>
+
+    <div class="foot">Equipo Comercial — Proyecto de Lotización · Documento de trabajo, sujeto a ajuste</div>
+  </div>
+
+  <script>
+    const baseVals  = {1:1200, 2:1500, 3:1700, 4:1700, 5:2000};
+    const level3Vals = {1:1700, 2:1700, 3:1700, 4:1700, 5:2000};
+    const level5Vals = {1:2000, 2:2000, 3:2000, 4:2000, 5:2000};
+
+    let current = {...baseVals};
+    let level = 0;
+
+    function fmt(n){ return 'S/' + n.toLocaleString('es-PE'); }
+
+    function animateStep(id, from, to){
+      if(from === to) return;
+      const el = document.getElementById('amt' + id);
+      const stepEl = document.getElementById('step' + id);
+      const duration = 550;
+      const start = performance.now();
+      el.classList.add('win');
+      stepEl.classList.add('clicked');
+      function tick(now){
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = Math.round(from + (to - from) * eased);
+        el.textContent = fmt(val);
+        if(p < 1){ requestAnimationFrame(tick); }
+        else {
+          el.textContent = fmt(to);
+          setTimeout(()=> el.classList.remove('win'), 200);
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function applyLevel(newLevel){
+      const target = newLevel === 5 ? level5Vals : newLevel === 3 ? level3Vals : baseVals;
+      for(let i=1;i<=5;i++){
+        animateStep(i, current[i], target[i]);
+      }
+      current = {...target};
+      level = newLevel;
+
+      const badge = document.getElementById('gainBadge');
+      const resetBtn = document.getElementById('resetBtn');
+      const gainAmt = document.getElementById('gainAmt');
+      const gainDesc = document.getElementById('gainDesc');
+      const breakdownHint = document.getElementById('breakdownHint');
+      const breakdownContent = document.getElementById('breakdownContent');
+      const breakdownTitle = document.getElementById('breakdownTitle');
+      const breakdownLines = document.getElementById('breakdownLines');
+      const breakdownTotal = document.getElementById('breakdownTotal');
+
+      if(newLevel === 3 || newLevel === 5){
+        breakdownHint.style.display = 'none';
+        breakdownContent.classList.add('show');
+        breakdownTitle.textContent = 'Con ' + newLevel + ' ventas en el mes';
+        let linesHtml = '';
+        let total = 0;
+        for(let i=1;i<=newLevel;i++){
+          linesHtml += '<div class="breakdown-line"><span>Venta ' + i + '</span><span>' + fmt(target[i]) + '</span></div>';
+          total += target[i];
+        }
+        breakdownLines.innerHTML = linesHtml;
+        breakdownTotal.textContent = fmt(total);
+      } else {
+        breakdownHint.style.display = 'block';
+        breakdownContent.classList.remove('show');
+      }
+
+      if(newLevel === 3){
+        gainAmt.textContent = '+S/700';
+        gainDesc.textContent = 'extra solo por llegar a la 3ra venta — tus 2 ventas anteriores subieron de precio';
+        badge.classList.add('show');
+        resetBtn.classList.add('show');
+      } else if(newLevel === 5){
+        gainAmt.textContent = '+S/1,900';
+        gainDesc.textContent = 'extra solo por llegar a la 5ta venta — tus 4 ventas anteriores subieron de precio otra vez';
+        badge.classList.add('show');
+        resetBtn.classList.add('show');
+      } else {
+        badge.classList.remove('show');
+        resetBtn.classList.remove('show');
+        document.querySelectorAll('.step.clicked').forEach(s => s.classList.remove('clicked'));
+      }
+    }
+
+    document.getElementById('step3').addEventListener('click', () => applyLevel(level === 3 ? 0 : 3));
+    document.getElementById('step5').addEventListener('click', () => applyLevel(level === 5 ? 0 : 5));
+    document.getElementById('resetBtn').addEventListener('click', () => applyLevel(0));
+
+    /* ---- SIMULADOR PERSONAL ---- */
+    const simState = { myVentas: 0, teamVentas: 0 };
+    const simLimits = { myVentas: [0, 10], teamVentas: [0, 40] };
+
+    function baseRate(i){
+      if(i === 1) return 1200;
+      if(i === 2) return 1500;
+      if(i === 3 || i === 4) return 1700;
+      return 2000;
+    }
+
+    function computeCommission(n){
+      if(n <= 0) return {sameDay:0, extra:0, total:0};
+      let sameDay = 0;
+      for(let i=1;i<=n;i++){ sameDay += baseRate(i); }
+      let finalRate = n >= 5 ? 2000 : (n >= 3 ? 1700 : null);
+      let total = finalRate ? finalRate * n : sameDay;
+      return {sameDay, extra: total - sameDay, total};
+    }
+
+    function computeBono(teamVentas, myVentas){
+      if(myVentas < 1){
+        return {amt:0, label:'(no calificas — necesitas al menos 1 venta propia)'};
+      }
+      if(teamVentas >= 11) return {amt:300, label:'(Meta 3 alcanzada)'};
+      if(teamVentas >= 8) return {amt:200, label:'(Meta 2 alcanzada)'};
+      if(teamVentas >= 5) return {amt:100, label:'(Meta 1 alcanzada)'};
+      return {amt:0, label:'(sin meta alcanzada aún)'};
+    }
+
+    function renderSim(){
+      const comm = computeCommission(simState.myVentas);
+      const bono = computeBono(simState.teamVentas, simState.myVentas);
+      const totalMes = comm.sameDay + comm.extra + bono.amt;
+
+      document.getElementById('fVentasLabel').textContent = simState.myVentas;
+      document.getElementById('fSameDay').textContent = fmt(comm.sameDay);
+      document.getElementById('fExtra').textContent = (comm.extra > 0 ? '+' : '') + fmt(comm.extra);
+      document.getElementById('fBono').textContent = (bono.amt > 0 ? '+' : '') + fmt(bono.amt);
+      document.getElementById('fMetaLabel').textContent = bono.label;
+      document.getElementById('fTotal').textContent = fmt(totalMes);
+
+      document.getElementById('myVentasVal').textContent = simState.myVentas;
+      document.getElementById('teamVentasVal').textContent = simState.teamVentas;
+    }
+
+    document.querySelectorAll('.sim-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.target;
+        const delta = parseInt(btn.dataset.delta, 10);
+        const [min, max] = simLimits[target];
+        let next = simState[target] + delta;
+        next = Math.max(min, Math.min(max, next));
+        if(target === 'teamVentas'){
+          next = Math.max(next, simState.myVentas);
+        }
+        simState[target] = next;
+        if(target === 'myVentas' && simState.teamVentas < next){
+          simState.teamVentas = next;
+        }
+        renderSim();
+      });
+    });
+
+    renderSim();
+  </script>
+
+</body>
+</html>
