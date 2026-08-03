@@ -1,0 +1,3134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal Exclusivo — CIMA Ventures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Archivo:ital,wght@0,400;0,600;0,700;0,800;1,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0D1F37;
+    --green:#1A3A29;
+    --sage:#79BE8A;
+    --gold:#C9A84C;
+    --cream:#F6F2E9;
+    --paper:#FFFDF8;
+    --ink:#1B221C;
+    --ink-soft:#5B6660;
+    --line: rgba(27,34,28,0.12);
+    --danger:#C1594A;
+    --warn:#B8860B;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  .note{font-size:12.5px;color:var(--ink-soft);}
+  a{color:inherit;text-decoration:none;}
+
+  /* LOGIN GATE */
+  .login-gate{
+    position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(155deg, var(--navy) 0%, var(--green) 100%);padding:24px;
+  }
+  .login-card{background:var(--paper);border-radius:20px;padding:40px 34px;max-width:380px;width:100%;box-shadow:0 30px 60px -20px rgba(0,0,0,0.4);}
+  .login-brand{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+  .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--sage);flex-shrink:0;}
+  .login-brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--navy);letter-spacing:.02em;}
+  .login-tag{font-size:12px;color:var(--ink-soft);margin-bottom:22px;}
+  .login-title{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--navy);margin:0 0 22px;}
+  .login-field{margin-bottom:16px;}
+  .login-field label{display:block;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;margin-bottom:7px;}
+  .login-field input{
+    width:100%;padding:12px 13px;border-radius:9px;border:1.5px solid var(--line);font-family:'Inter',sans-serif;
+    font-size:14.5px;background:var(--cream);color:var(--ink);
+  }
+  .login-field input:focus{outline:none;border-color:var(--sage);}
+  .login-btn{
+    width:100%;padding:13px;border:none;border-radius:9px;background:var(--green);color:var(--paper);
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14.5px;cursor:pointer;margin-top:6px;
+    transition:background .15s ease;
+  }
+  .login-btn:hover{background:var(--navy);}
+  .login-foot{margin-top:16px;font-size:12px;color:var(--ink-soft);text-align:center;}
+
+  /* APP SHELL */
+  .app-shell{display:none;min-height:100vh;}
+  .app-shell.show{display:flex;}
+
+  .sidebar{
+    width:230px;flex-shrink:0;background:var(--navy);color:var(--paper);
+    display:flex;flex-direction:column;padding:22px 16px;position:sticky;top:0;height:100vh;
+  }
+  .sidebar-brand{display:flex;align-items:center;gap:9px;padding:0 8px 22px;border-bottom:1px solid rgba(255,253,248,0.12);margin-bottom:18px;}
+  .sidebar-brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;letter-spacing:.02em;}
+  .sidebar-brand-sub{font-size:10.5px;color:rgba(255,253,248,0.5);}
+  .nav-item{
+    display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;cursor:pointer;
+    font-size:13.5px;font-weight:600;color:rgba(255,253,248,0.72);margin-bottom:4px;transition:background .15s ease, color .15s ease;
+  }
+  .nav-item:hover{background:rgba(255,253,248,0.06);color:var(--paper);}
+  .nav-item.active{background:var(--green);color:var(--paper);}
+  .nav-item.active .nav-icon{color:var(--sage);}
+  .nav-icon{
+    width:26px;height:26px;border-radius:7px;background:rgba(255,253,248,0.08);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;
+  }
+  .sidebar-foot{margin-top:auto;padding:14px 8px 4px;font-size:10.5px;color:rgba(255,253,248,0.4);border-top:1px solid rgba(255,253,248,0.1);}
+  .logout-btn{width:100%;background:none;border:1px solid rgba(255,253,248,0.25);color:rgba(255,253,248,0.75);
+    border-radius:8px;padding:8px 10px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:background .15s ease;}
+  .logout-btn:hover{background:rgba(255,253,248,0.08);color:var(--paper);}
+
+  .main{flex:1;min-width:0;}
+  .mobile-topbar{display:none;background:var(--navy);color:var(--paper);padding:14px 18px;align-items:center;justify-content:space-between;}
+  .mobile-menu-btn{background:none;border:1px solid rgba(255,253,248,0.3);color:var(--paper);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;}
+
+  .view{display:none;padding:40px 40px 80px;max-width:900px;}
+  .view.active{display:block;}
+
+  /* MODO PANTALLA COMPLETA PARA EL CRM */
+  .app-shell.crm-fullscreen > .sidebar{display:none;}
+  .app-shell.crm-fullscreen .mobile-topbar{display:none;}
+  .app-shell.crm-fullscreen #view-crm{padding:0;max-width:none;}
+  .app-shell.crm-fullscreen #view-crm .view-head{display:none;}
+  .app-shell.crm-fullscreen #crmRoot{min-height:100vh;border-radius:0;}
+  .crm-back-btn{
+    display:flex;align-items:center;gap:8px;width:100%;margin-bottom:14px;padding:9px 10px;
+    border-radius:8px;border:1px solid rgba(255,253,248,0.15);background:none;color:rgba(255,253,248,0.75);
+    font-family:'Inter',sans-serif;font-size:12.5px;cursor:pointer;text-align:left;
+  }
+  .crm-back-btn:hover{background:rgba(255,253,248,0.06);color:#fff;}
+  .view-head{margin-bottom:26px;}
+  .view-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:12px;color:#3f7d55;font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:24px;margin:0 0 8px;font-weight:600;color:var(--navy);}
+  .view-head p{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:600px;}
+  .block{margin-bottom:40px;}
+
+  /* CRM KPIS */
+  .crm-kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  .crm-kpi{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 14px;text-align:center;}
+  .crm-kpi.highlight{background:var(--green);border-color:var(--green);}
+  .crm-kpi.highlight .crm-kpi-value{color:var(--sage);}
+  .crm-kpi.highlight .crm-kpi-label{color:rgba(255,253,248,0.75);}
+  .crm-kpi-value{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+  .crm-kpi-label{font-size:11.5px;color:var(--ink-soft);line-height:1.35;}
+  .crm-note{margin-top:12px;font-size:12px;color:var(--ink-soft);text-align:center;}
+
+  /* GESTIÓN — EN CONSTRUCCIÓN */
+  .gestion-building{
+    background:var(--paper);border:1px solid var(--line);border-radius:18px;
+    padding:60px 30px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:14px;
+  }
+  .gestion-gear{font-size:52px;animation:gestionSpin 3s linear infinite;}
+  @keyframes gestionSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .gestion-building-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;color:var(--navy);}
+  .gestion-building-sub{font-size:14px;color:var(--ink-soft);max-width:380px;line-height:1.5;}
+
+  /* GESTIÓN — SUBTABS */
+  .subtabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:1px solid var(--line);padding-bottom:0;}
+  .subtab-btn{padding:10px 18px;border:none;background:none;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;
+    color:var(--ink-soft);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .subtab-btn:hover{color:var(--ink);}
+  .subtab-btn.active{color:var(--green);border-bottom-color:var(--sage);}
+  .subtab-panel{display:none;}
+  .subtab-panel.active{display:block;}
+
+  .plan-progress-track{height:14px;background:var(--paper);border:1px solid var(--line);border-radius:20px;overflow:hidden;}
+  .plan-progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--sage));border-radius:20px;transition:width .4s ease;}
+
+  .plan-search{
+    width:100%;padding:12px 16px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);
+    font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);margin-bottom:14px;
+  }
+  .plan-search:focus{outline:none;border-color:var(--sage);}
+
+  .check-row{
+    display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;margin-bottom:8px;cursor:pointer;transition:border-color .15s ease, opacity .15s ease;
+  }
+  .check-row:hover{border-color:var(--sage);}
+  .check-row.done{opacity:0.55;}
+  .check-row input[type="checkbox"]{display:none;}
+  .check-box{
+    width:24px;height:24px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .check-row input:checked + .check-box{background:var(--sage);border-color:var(--sage);color:var(--green);}
+  .check-info{flex:1;min-width:120px;}
+  .check-nombre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--navy);}
+  .check-meta{font-size:12px;color:var(--ink-soft);margin-top:2px;display:flex;align-items:center;gap:6px;}
+  .check-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .check-dot.verde{background:#3f7d55;}
+  .check-dot.naranja{background:#B8860B;}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px;}
+  .form-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+  .btn-grupo-add{width:100%;padding:11px;border:none;border-radius:9px;background:var(--green);color:var(--paper);
+    font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;}
+  .btn-grupo-add:hover{background:var(--navy);}
+  .form-msg{margin-top:10px;font-size:12.5px;text-align:center;min-height:16px;}
+  .form-msg.ok{color:#3f7d55;}
+  .form-msg.err{color:#C1594A;}
+
+  .grupo-card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px;
+    display:flex;align-items:center;gap:14px;margin-bottom:10px;flex-wrap:wrap;}
+  .semaforo-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .semaforo-dot.verde{background:#3f7d55;box-shadow:0 0 0 3px rgba(63,125,85,0.18);}
+  .semaforo-dot.naranja{background:#B8860B;box-shadow:0 0 0 3px rgba(184,134,11,0.18);}
+  .semaforo-dot.rojo{background:#C1594A;box-shadow:0 0 0 3px rgba(193,89,74,0.18);}
+  .grupo-info{flex:1;min-width:150px;}
+  .grupo-nombre{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--navy);}
+  .grupo-meta{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .grupo-link{font-size:11.5px;color:#3f7d55;text-decoration:none;}
+  .btn-publicar{padding:8px 14px;border-radius:8px;border:none;background:var(--sage);color:var(--green);
+    font-family:'Inter',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;white-space:nowrap;}
+  .btn-publicar:hover{background:var(--green);color:var(--paper);}
+  .btn-publicar:disabled{background:var(--line);color:var(--ink-soft);cursor:not-allowed;}
+  .grupo-bloqueado-tag{font-size:11.5px;color:#C1594A;font-weight:600;white-space:nowrap;}
+
+  .pub-row{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px;
+    display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap;}
+  .pub-info{flex:1;min-width:150px;font-size:13px;}
+  .pub-info b{color:var(--navy);}
+  .pub-meta{font-size:11.5px;color:var(--ink-soft);}
+  .pub-msg-input{display:flex;align-items:center;gap:6px;}
+  .pub-msg-input input{width:64px;padding:6px 8px;border-radius:7px;border:1px solid var(--line);font-size:12.5px;text-align:center;}
+  .pub-msg-input span{font-size:11.5px;color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .form-grid-2{grid-template-columns:1fr;}
+    .grupo-card{flex-direction:column;align-items:flex-start;}
+  }
+
+  /* PROGRESO */
+  .progress-panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 24px 22px;}
+  .progress-static-row{margin-bottom:18px;}
+  .progress-static-value{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--navy);}
+  .progress-bar-track{position:relative;height:16px;background:var(--cream);border-radius:20px;overflow:visible;margin-bottom:8px;}
+  .progress-bar-fill{position:absolute;left:0;top:0;bottom:0;border-radius:20px;transition:width .4s ease;}
+  .progress-bar-fill.mine{background:linear-gradient(90deg,var(--green),var(--sage));}
+  .progress-bar-fill.team{background:linear-gradient(90deg,var(--navy),var(--sage));}
+  .progress-bar-fill.pulsing{animation:barPulse 1.8s ease-in-out infinite;}
+  @keyframes barPulse{
+    0%, 100%{filter:brightness(1);box-shadow:0 0 0 0 rgba(121,190,138,0.5);}
+    50%{filter:brightness(1.18);box-shadow:0 0 14px 3px rgba(121,190,138,0.55);}
+  }
+  .progress-bar-track.team-track{overflow:visible;margin-bottom:34px;}
+  .progress-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-soft);font-family:'Space Grotesk',sans-serif;}
+  .progress-msg{margin-top:14px;font-size:13.5px;color:var(--ink-soft);text-align:center;}
+  .meta-marker{position:absolute;top:100%;transform:translateX(-50%);margin-top:6px;text-align:center;font-size:10.5px;color:var(--ink-soft);font-weight:600;line-height:1.3;}
+  .meta-marker::before{content:"";position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:2px;height:16px;background:var(--gold);}
+
+  /* TOOLS GRID */
+  .tools-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  .tool-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 20px;
+    display:flex;flex-direction:column;gap:10px;color:var(--ink);transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .tool-card:hover{transform:translateY(-2px);box-shadow:0 14px 30px -18px rgba(13,31,55,0.35);}
+  .tool-icon{width:36px;height:36px;border-radius:9px;background:var(--green);color:var(--sage);
+    display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;}
+  .tool-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15.5px;color:var(--navy);}
+  .tool-desc{font-size:13px;color:var(--ink-soft);line-height:1.5;}
+  .tool-cta{font-size:12.5px;font-weight:600;color:#3f7d55;margin-top:auto;}
+
+  /* BIG EXTERNAL TOOL CARD (CRM / Academy) */
+  .external-card{
+    background:linear-gradient(155deg, var(--navy) 0%, var(--green) 100%);border-radius:18px;color:var(--paper);
+    padding:36px 32px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  }
+  .external-icon{width:56px;height:56px;border-radius:14px;background:var(--gold);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;font-family:'Space Grotesk',sans-serif;font-weight:700;}
+  .external-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;margin-bottom:6px;}
+  .external-desc{font-size:13.5px;color:rgba(255,253,248,0.78);max-width:420px;line-height:1.5;margin-bottom:14px;}
+  .external-btn{
+    display:inline-block;background:var(--sage);color:var(--green);font-family:'Space Grotesk',sans-serif;font-weight:700;
+    font-size:13.5px;padding:10px 20px;border-radius:9px;
+  }
+
+  /* CONVENIOS */
+  .agency-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .agency-card{
+    background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:20px 18px;cursor:pointer;
+    transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  }
+  .agency-card:hover{transform:translateY(-2px);}
+  .agency-card.selected{border-color:var(--sage);box-shadow:0 14px 30px -18px rgba(121,190,138,0.5);background:#F1FAF3;}
+  .agency-badge{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);min-height:16px;margin-bottom:10px;}
+  .agency-badge.best{color:#8a6f2e;}
+  .agency-badge.active{color:#3f7d55;}
+  .agency-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--navy);margin-bottom:10px;}
+  .agency-terms{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink-soft);}
+  .agency-terms b{color:var(--green);}
+  .agency-hint{margin-top:14px;font-size:12.5px;color:var(--ink-soft);}
+  .agency-hint a{color:#3f7d55;font-weight:600;}
+
+  /* CALCULATOR */
+  .calc-panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 24px;}
+  .calc-using{font-size:12px;color:#3f7d55;font-weight:600;margin-bottom:16px;}
+  .calc-inputs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:22px;}
+  .calc-field label{display:block;font-size:12px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-bottom:8px;}
+  .calc-field input{
+    width:100%;padding:11px 12px;border-radius:9px;border:1.5px solid var(--line);font-family:'Inter',sans-serif;
+    font-size:15px;color:var(--ink);background:var(--cream);
+  }
+  .calc-field input:focus{outline:none;border-color:var(--sage);}
+  .calc-results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+  .calc-result{background:var(--cream);border-radius:12px;padding:16px;text-align:center;}
+  .calc-result-label{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+  .calc-result-value{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--navy);}
+  .calc-result.highlight{background:var(--green);}
+  .calc-result.highlight .calc-result-label{color:rgba(255,253,248,0.7);}
+  .calc-result.highlight .calc-result-value{color:var(--sage);}
+  .calc-note{margin-top:16px;font-size:12px;color:var(--ink-soft);text-align:center;}
+
+  /* BUDGET MATCHER */
+  .match-panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 24px;}
+  .match-inputs{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:22px;}
+  .match-results{display:flex;flex-direction:column;gap:10px;}
+  .match-row{
+    display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;
+    border-radius:12px;background:var(--cream);border:1px solid var(--line);flex-wrap:wrap;
+  }
+  .match-agency{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14.5px;color:var(--navy);min-width:110px;}
+  .match-detail{font-size:12.5px;color:var(--ink-soft);flex:1;min-width:180px;}
+  .match-status{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:5px 11px;border-radius:20px;white-space:nowrap;}
+  .match-status.ok{background:rgba(121,190,138,0.22);color:#3f7d55;}
+  .match-status.warn{background:rgba(184,134,11,0.18);color:var(--warn);}
+  .match-status.no{background:rgba(193,89,74,0.15);color:var(--danger);}
+
+  /* MI CARRERA */
+  .career-panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:24px 24px 20px;}
+  .career-year{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;color:#3f7d55;letter-spacing:.04em;text-transform:uppercase;margin-bottom:14px;}
+  .career-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px dashed var(--line);}
+  .career-row:last-of-type{border-bottom:none;}
+  .career-month{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--navy);}
+  .career-detail{font-size:13.5px;color:var(--ink-soft);}
+  .career-row.highlight{background:#F1FAF3;margin:8px -12px 0;padding:14px 12px;border-radius:10px;border-bottom:none;}
+  .career-row.highlight .career-month, .career-row.highlight .career-detail{color:var(--green);font-weight:700;}
+  .career-note{margin-top:14px;font-size:12px;color:var(--ink-soft);text-align:center;}
+
+  /* RUTA DE CRECIMIENTO */
+  .growth-path{position:relative;padding:20px 0 10px;}
+  .growth-line{position:absolute;top:38px;left:5%;right:5%;height:3px;background:var(--line);border-radius:3px;z-index:0;}
+  .growth-line-fill{position:absolute;top:38px;left:5%;height:3px;width:0%;background:linear-gradient(90deg,var(--green),var(--sage));border-radius:3px;z-index:1;transition:width 1.2s ease;}
+  .growth-stages{position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  .stage{text-align:center;}
+  .stage-node{width:76px;height:76px;border-radius:50%;background:var(--paper);border:3px solid var(--line);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:22px;color:var(--ink-soft);}
+  .stage.active .stage-node{border-color:var(--sage);color:var(--green);background:#F1FAF3;}
+  .stage-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14.5px;color:var(--navy);margin-bottom:6px;}
+  .stage-desc{font-size:12.5px;color:var(--ink-soft);line-height:1.5;max-width:190px;margin:0 auto;}
+
+  /* RECOGNITION */
+  .recognition{background:linear-gradient(155deg, var(--green) 0%, var(--navy) 100%);border-radius:18px;padding:30px 26px;color:var(--paper);display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+  .recognition-badge{width:56px;height:56px;border-radius:14px;background:var(--gold);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+  .recognition-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+  .recognition-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:19px;margin-bottom:4px;}
+  .recognition-desc{font-size:13.5px;color:rgba(255,253,248,0.75);}
+
+  @media (max-width:860px){
+    .sidebar{position:fixed;left:-240px;top:0;z-index:150;transition:left .25s ease;box-shadow:20px 0 40px rgba(0,0,0,0.2);}
+    .sidebar.open{left:0;}
+    .mobile-topbar{display:flex;}
+    .view{padding:28px 20px 70px;}
+    .tools-grid{grid-template-columns:1fr;}
+    .calc-inputs, .match-inputs{grid-template-columns:1fr;}
+    .calc-results{grid-template-columns:1fr;}
+    .growth-stages{grid-template-columns:1fr;}
+    .growth-line, .growth-line-fill{display:none;}
+    .recognition, .external-card{flex-direction:column;text-align:center;}
+    .agency-grid{grid-template-columns:1fr;}
+    .match-row{flex-direction:column;align-items:flex-start;}
+    .crm-kpis{grid-template-columns:repeat(2,1fr);}
+  }
+
+
+  /* ══════════════════ CRM INTEGRADO (estilos con alcance #crmRoot) ══════════════════ */
+  #crmRoot{ position:relative; min-height:600px; }
+  #crm-boot-overlay{ position:absolute; inset:0; z-index:50; background:#0B1420; color:#EDF2EE; display:flex; align-items:center; justify-content:center; font-family:'Inter',sans-serif; font-size:14px; text-align:center; padding:24px; border-radius:14px; }
+
+#crmRoot{
+  --bg:#0B1420;--surface:#121F30;--surface2:#0F1A28;--surface3:#1A2A3D;--border:rgba(255,255,255,0.09);
+  --ink:#EDF2EE;--ink2:#8FA096;--ink3:#4d5c56;
+  --accent:#79BE8A;--accent-bg:rgba(121,190,138,.13);--accent-border:rgba(121,190,138,.3);
+  --green:#79BE8A;--green-bg:rgba(121,190,138,.13);--green-border:rgba(121,190,138,.3);
+  --yellow:#C9A84C;--yellow-bg:rgba(201,168,76,.13);
+  --red:#E0715A;--red-bg:rgba(224,113,90,.13);--red-border:rgba(224,113,90,.3);
+  --blue:#5B8DBE;--blue-bg:rgba(91,141,190,.13);
+  --pink:#C9A84C;--pink-bg:rgba(201,168,76,.13);--pink-border:rgba(201,168,76,.3);--orange:#C9A84C;--orange-bg:rgba(201,168,76,.13);--orange-border:rgba(201,168,76,.3);
+  --radius:10px;--sidebar:240px;
+}
+#crmRoot *{box-sizing:border-box;margin:0;padding:0;}
+#crmRoot{background:var(--bg);color:var(--ink);font-family:"Inter",sans-serif;min-height:100vh;font-size:14px;}
+#crmRoot a{color:inherit;text-decoration:none;}
+#crmRoot .app{display:grid;grid-template-columns:var(--sidebar) 1fr;min-height:100vh;}
+@media(max-width:900px){
+#crmRoot .app{grid-template-columns:1fr;}
+}
+#crmRoot .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:18px 12px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto;}
+#crmRoot .sidebar-logo{padding:6px 8px 14px;border-bottom:1px solid var(--border);margin-bottom:6px;}
+#crmRoot .logo-main{font-family:"Archivo";font-style:italic;font-weight:800;font-size:20px;letter-spacing:-.5px;color:var(--ink);}
+#crmRoot .logo-main span{color:var(--accent);}
+#crmRoot .logo-sub{font-size:10px;color:var(--ink3);letter-spacing:1.2px;text-transform:uppercase;margin-top:2px;}
+#crmRoot .nav-section{margin-top:10px;}
+#crmRoot .nav-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);padding:0 8px;margin-bottom:4px;}
+#crmRoot .nav-btn{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink2);border:none;background:none;width:100%;text-align:left;transition:all .15s;position:relative;}
+#crmRoot .nav-btn:hover{background:var(--surface2);color:var(--ink);}
+#crmRoot .nav-btn.active{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border);}
+#crmRoot .nav-btn .icon{font-size:15px;width:18px;text-align:center;}
+#crmRoot .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:1px 6px;border-radius:10px;}
+#crmRoot .main{overflow:auto;}
+#crmRoot .page{display:none;padding:24px;}
+#crmRoot .page.active{display:block;}
+@media(max-width:768px){
+#crmRoot .page{padding:14px;}
+}
+#crmRoot .page-header{margin-bottom:22px;}
+#crmRoot .page-header h1{font-family:"Archivo";font-weight:800;font-size:22px;letter-spacing:-.5px;}
+#crmRoot .page-header .sub{font-size:12px;color:var(--ink2);margin-top:3px;}
+#crmRoot .header-row{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+#crmRoot .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
+#crmRoot .card-title{font-family:"Archivo";font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink2);margin-bottom:14px;}
+#crmRoot .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:20px;}
+#crmRoot .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;}
+#crmRoot .kpi-num{font-family:"Archivo";font-weight:800;font-size:28px;line-height:1;}
+#crmRoot .kpi-lbl{font-size:11px;color:var(--ink2);margin-top:5px;}
+#crmRoot .kpi-delta{font-size:10px;font-weight:700;margin-top:4px;}
+#crmRoot .kpi-delta.up{color:var(--green);}
+#crmRoot .kpi-delta.down{color:var(--red);}
+#crmRoot .funnel-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+#crmRoot .funnel-stage{font-size:11px;font-weight:700;width:130px;flex-shrink:0;color:var(--ink2);}
+#crmRoot .funnel-bar-wrap{flex:1;background:var(--surface3);border-radius:4px;height:24px;overflow:hidden;position:relative;}
+#crmRoot .funnel-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:#fff;transition:width .5s;}
+#crmRoot .funnel-count{font-size:11px;font-weight:700;width:40px;text-align:right;flex-shrink:0;}
+#crmRoot .tbl-wrap{overflow-x:auto;}
+#crmRoot table{width:100%;border-collapse:collapse;font-size:12px;}
+#crmRoot th{background:var(--surface2);color:var(--ink2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
+#crmRoot td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+#crmRoot tr:hover td{background:var(--surface2);}
+#crmRoot tr:last-child td{border-bottom:none;}
+#crmRoot .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;white-space:nowrap;}
+#crmRoot .badge-nuevo{background:var(--blue-bg);color:#93c5fd;border:1px solid rgba(59,130,246,.3);}
+#crmRoot .badge-contactado{background:var(--accent-bg);color:#c4b5fd;border:1px solid var(--accent-border);}
+#crmRoot .badge-agendado{background:var(--yellow-bg);color:#fde68a;border:1px solid rgba(245,158,11,.3);}
+#crmRoot .badge-visitado{background:var(--green-bg);color:#6ee7b7;border:1px solid var(--green-border);}
+#crmRoot .badge-negociando{background:var(--pink-bg);color:#f9a8d4;border:1px solid rgba(225,29,99,.3);}
+#crmRoot .badge-cerrado{background:var(--green-bg);color:#6ee7b7;border:1px solid var(--green-border);}
+#crmRoot .badge-perdido{background:var(--red-bg);color:#fca5a5;border:1px solid var(--red-border);}
+#crmRoot .badge-canal{background:var(--surface3);color:var(--ink2);border:1px solid var(--border);}
+#crmRoot .countdown{font-family:"Archivo";font-weight:800;font-size:12px;padding:3px 8px;border-radius:6px;}
+#crmRoot .countdown.urgent{background:var(--red-bg);color:#fca5a5;}
+#crmRoot .countdown.warn{background:var(--yellow-bg);color:#fde68a;}
+#crmRoot .countdown.ok{background:var(--green-bg);color:#6ee7b7;}
+#crmRoot .countdown.past{background:var(--surface3);color:var(--ink3);}
+#crmRoot .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .15s;font-family:"Inter";}
+#crmRoot .btn-primary{background:var(--accent);color:#fff;}
+#crmRoot .btn-primary:hover{opacity:.88;}
+#crmRoot .btn-secondary{background:var(--surface2);color:var(--ink);border:1px solid var(--border);}
+#crmRoot .btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+#crmRoot .btn-danger{background:transparent;color:var(--red);border:1px solid var(--red-border);padding:5px 10px;font-size:11px;}
+#crmRoot .btn-danger:hover{background:var(--red-bg);}
+#crmRoot .btn-buscador{background:rgba(249,115,22,.13);color:#f97316;border:1px solid rgba(249,115,22,.3);}
+#crmRoot .btn-buscador:hover{background:rgba(249,115,22,.22);}
+#crmRoot .btn-sm{padding:5px 10px;font-size:11px;}
+#crmRoot .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+#crmRoot .btn-icon{padding:6px 10px;font-size:13px;}
+#crmRoot .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:600px){
+#crmRoot .form-grid{grid-template-columns:1fr;}
+}
+#crmRoot .field{display:flex;flex-direction:column;gap:5px;}
+#crmRoot .field.full{grid-column:1/-1;}
+#crmRoot .field.third{grid-column:span 1;}
+#crmRoot label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2);}
+#crmRoot input, #crmRoot textarea, #crmRoot select{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 11px;font-size:13px;color:var(--ink);font-family:"Inter";width:100%;outline:none;transition:border .15s;}
+#crmRoot input:focus, #crmRoot textarea:focus, #crmRoot select:focus{border-color:var(--accent);}
+#crmRoot input[type=datetime-local]{color-scheme:dark;}
+#crmRoot textarea{resize:vertical;min-height:70px;}
+#crmRoot select option{background:var(--surface2);}
+#crmRoot .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
+#crmRoot .modal-bg.open{display:flex;}
+#crmRoot .modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto;padding:24px;}
+#crmRoot .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+#crmRoot .modal-head h2{font-family:"Archivo";font-weight:800;font-size:17px;}
+#crmRoot .modal-close{background:var(--surface2);border:1px solid var(--border);border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--ink2);}
+#crmRoot .modal-close:hover{color:var(--ink);}
+#crmRoot .timeline{display:flex;flex-direction:column;gap:0;}
+#crmRoot .tl-item{display:flex;gap:12px;padding:10px 0;position:relative;}
+#crmRoot .tl-item:not(:last-child):before{content:"";position:absolute;left:15px;top:32px;bottom:-10px;width:1px;background:var(--border);}
+#crmRoot .tl-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:var(--surface2);border:1px solid var(--border);}
+#crmRoot .tl-body{flex:1;}
+#crmRoot .tl-title{font-size:12px;font-weight:700;}
+#crmRoot .tl-meta{font-size:10.5px;color:var(--ink2);margin-top:2px;}
+#crmRoot .tl-note{font-size:11.5px;color:var(--ink);margin-top:4px;background:var(--surface2);border-radius:6px;padding:6px 9px;border-left:2px solid var(--accent);}
+#crmRoot .alerts-strip{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+#crmRoot .alert-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;font-size:12px;font-weight:600;}
+#crmRoot .alert-item.crit{background:var(--red-bg);border:1px solid var(--red-border);color:#fca5a5;}
+#crmRoot .alert-item.warn{background:var(--yellow-bg);border:1px solid rgba(245,158,11,.3);color:#fde68a;}
+#crmRoot .alert-item.info{background:var(--accent-bg);border:1px solid var(--accent-border);color:#c4b5fd;}
+#crmRoot .alert-dismiss{margin-left:auto;background:none;border:none;cursor:pointer;font-size:14px;opacity:.5;color:inherit;}
+#crmRoot .alert-dismiss:hover{opacity:1;}
+#crmRoot .agenda-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+#crmRoot .agenda-day-head{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--ink3);text-align:center;padding:4px 0;}
+#crmRoot .agenda-day{background:var(--surface);border:1px solid var(--border);border-radius:7px;min-height:90px;padding:6px;position:relative;}
+#crmRoot .agenda-day.today{border-color:var(--accent);background:var(--accent-bg);}
+#crmRoot .agenda-day.has-visit{border-color:var(--yellow);}
+#crmRoot .day-num{font-size:9px;font-weight:800;color:var(--ink3);margin-bottom:4px;}
+#crmRoot .agenda-day.today .day-num{color:var(--accent);}
+#crmRoot .agenda-event{font-size:8.5px;font-weight:600;border-radius:3px;padding:2px 4px;margin-bottom:2px;line-height:1.3;}
+#crmRoot .ev-visit{background:var(--yellow-bg);color:#fde68a;border-left:2px solid var(--yellow);}
+#crmRoot .ev-follow{background:var(--accent-bg);color:#c4b5fd;border-left:2px solid var(--accent);}
+#crmRoot .ev-close{background:var(--green-bg);color:#6ee7b7;border-left:2px solid var(--green);}
+#crmRoot .tabs{display:flex;gap:4px;margin-bottom:18px;border-bottom:1px solid var(--border);padding-bottom:0;}
+#crmRoot .tab{padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink2);border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
+#crmRoot .tab:hover{color:var(--ink);}
+#crmRoot .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+#crmRoot .tab-content{display:none;}
+#crmRoot .tab-content.active{display:block;}
+#crmRoot .prog-wrap{background:var(--surface3);border-radius:4px;height:6px;overflow:hidden;}
+#crmRoot .prog-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s;}
+#crmRoot .toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:#fff;padding:11px 18px;border-radius:9px;font-size:13px;font-weight:600;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;z-index:500;}
+#crmRoot .toast.show{opacity:1;transform:translateY(0);}
+#crmRoot .empty{text-align:center;padding:50px 20px;color:var(--ink3);}
+#crmRoot .empty .icon{font-size:40px;margin-bottom:12px;}
+#crmRoot .empty p{font-size:13px;line-height:1.7;}
+#crmRoot .stat-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);}
+#crmRoot .stat-row:last-child{border-bottom:none;}
+#crmRoot .stat-row-lbl{font-size:12px;color:var(--ink2);}
+#crmRoot .stat-row-val{font-size:13px;font-weight:700;}
+#crmRoot .lead-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;cursor:pointer;transition:border-color .15s;}
+#crmRoot .lead-card:hover{border-color:var(--accent);}
+#crmRoot .lead-card-name{font-family:"Archivo";font-weight:800;font-size:14px;}
+#crmRoot .lead-card-meta{font-size:11px;color:var(--ink2);margin-top:3px;}
+#crmRoot .lead-card-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap;gap:6px;}
+#crmRoot .inmoplan-wrap{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+#crmRoot .inmoplan-bar{background:var(--surface2);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;}
+#crmRoot .inmoplan-title{font-family:"Archivo";font-style:italic;font-weight:800;font-size:15px;}
+#crmRoot .inmoplan-frame{width:100%;border:none;height:800px;background:var(--bg);}
+#crmRoot .switch{position:relative;width:38px;height:21px;flex-shrink:0;}
+#crmRoot .switch input{opacity:0;width:0;height:0;}
+#crmRoot .slider{position:absolute;inset:0;background:var(--border);border-radius:22px;cursor:pointer;transition:.2s;}
+#crmRoot .slider:before{content:"";position:absolute;width:15px;height:15px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;}
+#crmRoot input:checked+.slider{background:var(--accent);}
+#crmRoot input:checked+.slider:before{transform:translateX(17px);}
+#crmRoot .toggle-row{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;}
+@media(max-width:900px){
+#crmRoot .sidebar{display:none;}
+#crmRoot .sidebar.open{display:flex;position:fixed;left:0;top:0;height:100vh;z-index:100;width:var(--sidebar);}
+}
+#crmRoot .mobile-bar{display:none;}
+@media(max-width:900px){
+#crmRoot .mobile-bar{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
+}
+#crmRoot .hamburger{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;cursor:pointer;font-size:16px;color:var(--ink);}
+</style>
+</head>
+<body>
+
+  <!-- LOGIN GATE -->
+  <div class="login-gate" id="loginGate">
+    <div class="login-card">
+      <div class="login-brand">
+        <span class="brand-dot"></span>
+        <div class="login-brand-text">CIMA VENTURES</div>
+      </div>
+      <div class="login-tag">Portal exclusivo del asesor</div>
+      <h1 class="login-title">Ingresa a tu cuenta</h1>
+      <div class="login-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="loginEmail" placeholder="tu@correo.com">
+      </div>
+      <div class="login-field">
+        <label>Código de acceso</label>
+        <input type="password" id="loginCode" placeholder="••••••">
+      </div>
+      <button class="login-btn" id="loginBtn">Entrar</button>
+      <div class="login-msg" id="loginMsg" style="font-size:12.5px;color:#C1594A;text-align:center;min-height:16px;margin-top:8px;"></div>
+      <div class="login-foot">¿Olvidaste tu contraseña? Escríbele a tu coordinador.</div>
+    </div>
+  </div>
+
+  <!-- APP SHELL -->
+  <div class="app-shell" id="appShell">
+
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-dot"></span>
+        <div>
+          <div class="sidebar-brand-text">CIMA VENTURES</div>
+          <div class="sidebar-brand-sub">Portal del asesor</div>
+        </div>
+      </div>
+
+      <div class="nav-item active" data-view="inicio"><span class="nav-icon">I</span> Inicio</div>
+      <div class="nav-item" data-view="crm"><span class="nav-icon">C</span> Mi CRM</div>
+      <div class="nav-item" data-view="grupos"><span class="nav-icon">G</span> Gestión</div>
+      <div class="nav-item" data-view="herramientas"><span class="nav-icon">H</span> Herramientas de Campo</div>
+      <div class="nav-item" data-view="sear"><span class="nav-icon">S</span> Plan Educacional SEAR</div>
+
+      <div class="sidebar-foot">
+        <button class="logout-btn" id="portalLogoutBtn">Cerrar sesión</button>
+        <div style="margin-top:10px;">CIMA Ventures © Uso interno</div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="mobile-topbar">
+        <button class="mobile-menu-btn" id="menuBtn">☰ Menú</button>
+        <div class="sidebar-brand-text">CIMA VENTURES</div>
+      </div>
+
+      <!-- VIEW: INICIO -->
+      <div class="view active" id="view-inicio">
+        <div class="view-head">
+          <span class="view-eyebrow">Tu cartera</span>
+          <h2>Resumen general</h2>
+          <p>Todo lo que tienes en gestión ahorita, de un vistazo.</p>
+        </div>
+        <div class="block">
+          <div class="crm-kpis">
+            <div class="crm-kpi">
+              <div class="crm-kpi-value" id="sumKpiTotal">—</div>
+              <div class="crm-kpi-label">Prospectos totales</div>
+            </div>
+            <div class="crm-kpi">
+              <div class="crm-kpi-value" id="sumKpiNuevos">—</div>
+              <div class="crm-kpi-label">Nuevos esta semana</div>
+            </div>
+            <div class="crm-kpi">
+              <div class="crm-kpi-value" id="sumKpiSeguimiento">—</div>
+              <div class="crm-kpi-label">En seguimiento activo</div>
+            </div>
+            <div class="crm-kpi highlight">
+              <div class="crm-kpi-value" id="sumKpiCalificados">—</div>
+              <div class="crm-kpi-label">Calificados — listos para cierre</div>
+            </div>
+            <div class="crm-kpi">
+              <div class="crm-kpi-value" id="sumKpiVisitas">—</div>
+              <div class="crm-kpi-label">Visitas agendadas</div>
+            </div>
+          </div>
+          <div class="crm-note">Se arma solo con tus leads reales del CRM — apenas registres o avances un contacto, esto se actualiza.</div>
+        </div>
+
+        <div class="view-head">
+          <span class="view-eyebrow" id="weekLabel">Este mes</span>
+          <h2>Tu avance</h2>
+          <p id="todayLabel">Esto es lo que llevas hasta el momento.</p>
+        </div>
+        <div class="block">
+          <div class="progress-panel">
+            <div class="progress-static-row">
+              <div class="progress-static-value"><span id="myProgressVal">2</span> ventas este mes</div>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill mine pulsing" id="myProgressFill" style="width:40%;"></div>
+            </div>
+            <div class="progress-labels"><span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5+</span></div>
+            <div class="progress-msg" id="myProgressMsg">Vas por la segunda — buen ritmo.</div>
+          </div>
+        </div>
+
+        <div class="view-head">
+          <span class="view-eyebrow">Meta colectiva</span>
+          <h2>Avance del equipo</h2>
+          <p>Así vamos todos juntos hacia Meta 1, Meta 2 y Meta 3 este mes.</p>
+        </div>
+        <div class="block">
+          <div class="progress-panel">
+            <div class="progress-static-row">
+              <div class="progress-static-value"><span id="teamProgressVal">7</span> ventas del equipo</div>
+            </div>
+            <div class="progress-bar-track team-track">
+              <div class="progress-bar-fill team pulsing" id="teamProgressFill" style="width:43.75%;"></div>
+              <div class="meta-marker" style="left:50%;"><span>Meta 1<br>8</span></div>
+              <div class="meta-marker" style="left:62.5%;"><span>Meta 2<br>10</span></div>
+              <div class="meta-marker" style="left:87.5%;"><span>Meta 3<br>14</span></div>
+            </div>
+            <div class="progress-msg" id="teamProgressMsg" style="margin-top:22px;">Falta 1 venta del equipo para alcanzar Meta 1.</div>
+          </div>
+        </div>
+
+        <div class="view-head">
+          <span class="view-eyebrow">Reconocimiento</span>
+          <h2>Asesor del mes</h2>
+        </div>
+        <div class="block">
+          <div class="recognition">
+            <div class="recognition-badge">★</div>
+            <div>
+              <div class="recognition-title">Este espacio es tuyo</div>
+              <div class="recognition-name">Por definir cada mes</div>
+              <div class="recognition-desc">El asesor con mejor desempeño del mes aparece aquí — con su nombre, en el grupo y en redes de CIMA Ventures.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: CRM -->
+      <div class="view" id="view-crm">
+        <div class="view-head">
+          <span class="view-eyebrow">Tu lugar de trabajo</span>
+          <h2>Mi CRM</h2>
+          <p>Gestiona tus contactos, agenda seguimientos y da orden a tu cartera de clientes.</p>
+        </div>
+        <div id="crmRoot">
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar" id="crmSidebar">
+    <button class="crm-back-btn" onclick="goToView('inicio')">← Volver a CIMA Ventures</button>
+    <div class="sidebar-logo">
+      <div class="logo-main">CIMA<br><span>Ventures CRM</span></div>
+      <div class="logo-sub">Sistema Inmobiliario</div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <button class="nav-btn active" onclick="showPage('dashboard')"><span class="icon">📊</span>Dashboard</button>
+      <button class="nav-btn" onclick="showPage('agenda')"><span class="icon">📅</span>Agenda <span class="nav-badge" id="badge-agenda">0</span></button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Leads & CRM</div>
+      <button class="nav-btn" onclick="showPage('leads')"><span class="icon">👥</span>Mis Leads</button>
+      <button class="nav-btn" onclick="showPage('nuevo-lead')"><span class="icon">➕</span>Nuevo Lead</button>
+      <button class="nav-btn" onclick="showPage('postvisita')"><span class="icon">🏠</span>Post-Visita</button>
+      <button class="nav-btn" onclick="showPage('seguimiento')"><span class="icon">🔁</span>Seguimiento</button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Análisis</div>
+      <button class="nav-btn" onclick="showPage('funnel')"><span class="icon">📉</span>Funnel de Ventas</button>
+      <button class="nav-btn" onclick="showPage('canales')"><span class="icon">📡</span>Canales & ROI</button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Base de Buscadores</div>
+      <button class="nav-btn" onclick="showPage('buscadores')"><span class="icon">🔍</span>Clientes Buscadores <span class="nav-badge" id="badge-buscadores" style="background:var(--yellow);color:#000;display:none;">0</span></button>
+      <button class="nav-btn" onclick="showPage('nuevo-buscador')"><span class="icon">➕</span>Nuevo Buscador</button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Herramientas</div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <div class="main">
+    <div class="mobile-bar">
+      <button class="hamburger" onclick="toggleSidebar()">☰</button>
+      <div style="font-family:Archivo;font-weight:800;font-style:italic;font-size:16px;">Inmo<span style="color:var(--accent)">CRM</span></div>
+    </div>
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div class="header-row">
+          <div><h1>Dashboard</h1><div class="sub" id="dash-date"></div></div>
+          <button class="btn btn-primary" onclick="showPage('nuevo-lead')">➕ Nuevo Lead</button>
+        </div>
+      </div>
+
+      <!-- ALERTS -->
+      <div id="alerts-strip" class="alerts-strip"></div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid" id="kpi-grid">
+        <div class="kpi"><div class="kpi-num" id="kpi-total" style="color:var(--accent)">0</div><div class="kpi-lbl">Leads totales</div></div>
+        <div class="kpi"><div class="kpi-num" id="kpi-activos" style="color:var(--blue)">0</div><div class="kpi-lbl">Leads activos</div></div>
+        <div class="kpi"><div class="kpi-num" id="kpi-visitas-hoy" style="color:var(--yellow)">0</div><div class="kpi-lbl">Visitas hoy</div></div>
+        <div class="kpi"><div class="kpi-num" id="kpi-cierres" style="color:var(--green)">0</div><div class="kpi-lbl">Cierres del mes</div></div>
+        <div class="kpi"><div class="kpi-num" id="kpi-conversion" style="color:var(--pink)">0%</div><div class="kpi-lbl">Conversión global</div></div>
+        <div class="kpi"><div class="kpi-num" id="kpi-sin-contacto" style="color:var(--red)">0</div><div class="kpi-lbl">Sin contacto hoy</div></div>
+        <div class="kpi"><div class="kpi-num" id="kpi-buscadores" style="color:var(--orange)">0</div><div class="kpi-lbl">Buscadores activos</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <!-- VISITAS PRÓXIMAS -->
+        <div class="card">
+          <div class="card-title">📅 Próximas visitas</div>
+          <div id="dash-visitas-prox"><div style="font-size:12px;color:var(--ink3);">Sin visitas agendadas.</div></div>
+        </div>
+        <!-- LEADS RECIENTES -->
+        <div class="card">
+          <div class="card-title">🆕 Leads recientes</div>
+          <div id="dash-leads-recientes"><div style="font-size:12px;color:var(--ink3);">Sin leads aún.</div></div>
+        </div>
+      </div>
+
+      <!-- FUNNEL MINI -->
+      <div class="card" style="margin-top:0;">
+        <div class="card-title">📉 Funnel de ventas</div>
+        <div id="dash-funnel"></div>
+      </div>
+
+      <!-- LEADS EN RIESGO -->
+      <div class="card">
+        <div class="card-title">⚠️ Leads en riesgo (sin actividad &gt;5 días)</div>
+        <div id="dash-riesgo"><div style="font-size:12px;color:var(--ink3);">Todo al día ✓</div></div>
+      </div>
+    </div>
+
+    <!-- ══════════ AGENDA ══════════ -->
+    <div id="page-agenda" class="page">
+      <div class="page-header">
+        <div class="header-row">
+          <div><h1>Agenda</h1><div class="sub">Vista mensual, semanal y diaria de visitas y seguimientos</div></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-sm" id="agenda-prev" onclick="agendaNavMes(-1)">◀</button>
+            <span id="agenda-mes-label" style="font-weight:700;font-size:14px;padding:5px 10px;"></span>
+            <button class="btn btn-secondary btn-sm" id="agenda-next" onclick="agendaNavMes(1)">▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('agenda','mensual')">Mensual</button>
+        <button class="tab" onclick="switchTab('agenda','semanal')">Semanal</button>
+        <button class="tab" onclick="switchTab('agenda','diaria')">Hoy</button>
+      </div>
+
+      <div id="tab-agenda-mensual" class="tab-content active">
+        <div id="agenda-cal-head" class="agenda-grid" style="margin-bottom:4px;"></div>
+        <div id="agenda-cal" class="agenda-grid"></div>
+      </div>
+      <div id="tab-agenda-semanal" class="tab-content">
+        <div id="agenda-semanal-content"></div>
+      </div>
+      <div id="tab-agenda-diaria" class="tab-content">
+        <div id="agenda-diaria-content"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ MIS LEADS ══════════ -->
+    <div id="page-leads" class="page">
+      <div class="page-header">
+        <div class="header-row">
+          <div><h1>Mis Leads</h1><div class="sub">Registro y seguimiento de todos tus prospectos</div></div>
+          <button class="btn btn-primary" onclick="showPage('nuevo-lead')">➕ Nuevo Lead</button>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="card" style="padding:12px 16px;">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <input id="leads-search" type="text" placeholder="🔍 Buscar por nombre, número..." style="max-width:240px;" oninput="renderLeadsTable()">
+          <select id="leads-filter-etapa" onchange="renderLeadsTable()" style="max-width:160px;">
+            <option value="">Todas las etapas</option>
+            <option>Nuevo</option><option>Contactado</option><option>Agendado</option>
+            <option>Visitado</option><option>Negociando</option><option>Cerrado</option><option>Perdido</option>
+          </select>
+          <select id="leads-filter-canal" onchange="renderLeadsTable()" style="max-width:150px;">
+            <option value="">Todos los canales</option>
+            <option>Facebook</option><option>TikTok</option><option>Instagram</option>
+            <option>Referido</option><option>Portal web</option><option>Google Ads</option><option>WhatsApp directo</option><option>Otro</option>
+          </select>
+          <button class="btn btn-secondary btn-sm" onclick="resetFiltros()">✕ Limpiar</button>
+        </div>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="tbl-wrap">
+          <table id="leads-table">
+            <thead>
+              <tr>
+                <th>N°</th><th>Nombre</th><th>Número</th><th>Canal</th><th>Etapa</th>
+                <th>Propiedad</th><th>Visita agendada</th><th>Tiempo</th><th>Última actividad</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="leads-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ NUEVO LEAD ══════════ -->
+    <div id="page-nuevo-lead" class="page">
+      <div class="page-header">
+        <div class="header-row">
+          <div><h1 id="form-lead-title">Nuevo Lead</h1><div class="sub">Registra un nuevo prospecto en el CRM</div></div>
+          <button class="btn btn-secondary" onclick="showPage('leads')">← Volver</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Datos básicos</div>
+        <div class="form-grid">
+          <div class="field full"><label>Nombre completo *</label><input id="fl-nombre" type="text" placeholder="Juan Pérez"></div>
+          <div class="field"><label>Número de teléfono *</label><input id="fl-numero" type="tel" placeholder="+51 999 888 777"></div>
+          <div class="field"><label>Canal de origen</label>
+            <select id="fl-canal">
+              <option>Facebook</option><option>TikTok</option><option>Instagram</option>
+              <option>Referido</option><option>Portal web</option><option>Google Ads</option>
+              <option>WhatsApp directo</option><option>Otro</option>
+            </select>
+          </div>
+          <div class="field"><label>Propiedad de interés</label><input id="fl-propiedad" type="text" placeholder="Ej: Depto Los Olivos"></div>
+          <div class="field"><label>Presupuesto (USD)</label><input id="fl-presupuesto" type="text" placeholder="Ej: $80,000"></div>
+          <div class="field"><label>Etapa inicial</label>
+            <select id="fl-etapa">
+              <option>Nuevo</option><option>Contactado</option><option>Agendado</option>
+            </select>
+          </div>
+          <div class="field"><label>¿Contestó al primer contacto?</label>
+            <select id="fl-contesto"><option value="">— seleccionar —</option><option>Sí</option><option>No</option><option>Buzón de voz</option></select>
+          </div>
+          <div class="field"><label>Interés declarado</label>
+            <select id="fl-interes"><option value="">— seleccionar —</option><option>Alto</option><option>Medio</option><option>Bajo</option><option>Solo cotizando</option></select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Agendar visita</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Fecha y hora de visita</label>
+            <input id="fl-visita-dt" type="datetime-local">
+          </div>
+          <div class="field">
+            <label>Propiedad a visitar</label>
+            <input id="fl-visita-prop" type="text" placeholder="Inmueble específico">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📝 Notas iniciales</div>
+        <div class="field">
+          <textarea id="fl-notas" placeholder="¿Qué dijo? ¿Qué busca? Detalles importantes..." style="min-height:90px;"></textarea>
+        </div>
+      </div>
+
+      <div class="field" style="display:none;"><input id="fl-edit-id" value=""></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="guardarLead()">💾 Guardar lead</button>
+        <button class="btn btn-secondary" onclick="showPage('leads')">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- ══════════ POST-VISITA ══════════ -->
+    <div id="page-postvisita" class="page">
+      <div class="page-header">
+        <h1>Post-Visita</h1>
+        <div class="sub">Registra qué pasó después de cada visita</div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Lead</th><th>Propiedad visitada</th><th>Fecha visita</th><th>¿Sigue interesado?</th><th>Presupuesto</th><th>Modo de compra</th><th>¿Ofertó?</th><th>Estado</th><th>Acción</th></tr></thead>
+            <tbody id="postvisita-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ SEGUIMIENTO ══════════ -->
+    <div id="page-seguimiento" class="page">
+      <div class="page-header">
+        <h1>Seguimiento</h1>
+        <div class="sub">Historial de toques y próximas acciones por lead</div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Lead</th><th>Etapa</th><th>Último toque</th><th>Días sin actividad</th><th>Próxima acción</th><th>Toques totales</th><th>Acción</th></tr></thead>
+            <tbody id="seg-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════ BUSCADORES ══════════ -->
+    <div id="page-buscadores" class="page">
+      <div class="page-header">
+        <div class="header-row">
+          <div><h1>Clientes Buscadores</h1><div class="sub">Base de datos de clientes en búsqueda activa de propiedad</div></div>
+          <button class="btn btn-primary" style="background:var(--orange);" onclick="showPage('nuevo-buscador')">🔍 Nuevo Buscador</button>
+        </div>
+      </div>
+      <div class="card" style="padding:10px 14px;">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <input id="bf-search" type="text" placeholder="🔍 Nombre o número..." style="max-width:200px;" oninput="renderBuscadores()">
+          <select id="bf-estado" onchange="renderBuscadores()" style="max-width:130px;"><option value="">Todos</option><option>Activo</option><option>En espera</option><option>Ya compró</option><option>Frío</option></select>
+          <select id="bf-tipo" onchange="renderBuscadores()" style="max-width:140px;"><option value="">Todo tipo</option><option>Casa</option><option>Departamento</option><option>Lote</option><option>Local comercial</option><option>Terreno</option><option>Oficina</option></select>
+          <select id="bf-zona" onchange="renderBuscadores()" style="max-width:140px;"><option value="">Todas las zonas</option><option>Centro</option><option>Cono Sur</option><option>Cono Norte</option><option>San Antonio</option><option>Alto de la Alianza</option><option>Ciudad Nueva</option><option>Pocollay</option><option>Otro</option></select>
+          <button class="btn btn-secondary btn-sm" onclick="clearBF()">✕</button>
+        </div>
+      </div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Nombre</th><th>Número</th><th>Presupuesto</th><th>Modo compra</th><th>Zona</th><th>Tipo</th><th>Finalidad</th><th>Estado</th><th>Mostradas</th><th>Acciones</th></tr></thead>
+            <tbody id="busc-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ NUEVO BUSCADOR ══════════ -->
+    <div id="page-nuevo-buscador" class="page">
+      <div class="page-header">
+        <div class="header-row">
+          <div><h1 id="fb-title">Nuevo Buscador</h1><div class="sub">Perfil completo del cliente en búsqueda de propiedad</div></div>
+          <button class="btn btn-secondary" onclick="showPage('buscadores')">← Volver</button>
+        </div>
+      </div>
+      <div id="derivar-banner" style="display:none;background:var(--orange-bg);border:1px solid var(--orange-border);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--orange);">🔄 Datos pre-llenados desde lead. Completa el perfil de búsqueda.</div>
+      <div class="card">
+        <div class="card-title">Datos personales</div>
+        <div class="form-grid">
+          <div class="field full"><label>Nombre completo *</label><input id="fb-nombre" type="text" placeholder="Juan Pérez"></div>
+          <div class="field"><label>Número *</label><input id="fb-numero" type="tel" placeholder="+51 999 888 777"></div>
+          <div class="field"><label>¿Cómo llegó?</label>
+            <select id="fb-origen"><option>Facebook</option><option>TikTok</option><option>Instagram</option><option>Referido</option><option>Portal web</option><option>Google Ads</option><option>WhatsApp directo</option><option>Derivado de lead</option><option>Otro</option></select>
+          </div>
+          <div class="field"><label>Estado</label>
+            <select id="fb-estado-busc"><option>Activo</option><option>En espera</option><option>Frío</option></select>
+          </div>
+          <div class="field"><label>Urgencia de compra</label>
+            <select id="fb-urgencia"><option value="">—</option><option>Inmediata (menos de 1 mes)</option><option>Corto plazo (1–3 meses)</option><option>Mediano plazo (3–6 meses)</option><option>Sin urgencia definida</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">💰 Presupuesto y financiamiento</div>
+        <div class="form-grid">
+          <div class="field"><label>Presupuesto mínimo (USD)</label><input id="fb-pmin" type="text" placeholder="$50,000"></div>
+          <div class="field"><label>Presupuesto máximo (USD)</label><input id="fb-pmax" type="text" placeholder="$80,000"></div>
+          <div class="field"><label>¿El precio es conversable?</label>
+            <select id="fb-conversa"><option value="">—</option><option>Sí</option><option>No</option><option>Depende</option></select>
+          </div>
+          <div class="field"><label>Modo de compra</label>
+            <select id="fb-modo-busc" onchange="toggleHipotecario()">
+              <option value="">—</option><option>Contado</option><option>Hipotecario / Crédito</option><option>Contado + Hipotecario</option><option>Cuotas directas</option><option>Otro</option>
+            </select>
+          </div>
+        </div>
+        <div id="hip-extra" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">
+          <div class="card-title" style="margin-bottom:8px;">Detalle del crédito</div>
+          <div class="form-grid">
+            <div class="field"><label>Entidad financiera</label>
+              <select id="fb-entidad"><option value="">— seleccionar —</option><option>BCP</option><option>BBVA</option><option>Interbank</option><option>Scotiabank</option><option>Banco de la Nación</option><option>Mi Banco</option><option>Caja Tacna</option><option>Caja Arequipa</option><option>Caja Cusco</option><option>Fobipool</option><option>Banco de la Policía</option><option>Banco del Ejército / BANBIF Militar</option><option>Banbif</option><option>Otro</option></select>
+            </div>
+            <div class="field"><label>¿Pre-aprobación?</label>
+              <select id="fb-preaprobado"><option value="">—</option><option>Sí, pre-aprobado</option><option>En trámite</option><option>No aún</option></select>
+            </div>
+            <div class="field"><label>Cuota mensual máxima</label><input id="fb-cuota" type="text" placeholder="S/ 1,200 / mes"></div>
+            <div class="field"><label>Inicial disponible</label><input id="fb-inicial" type="text" placeholder="$15,000"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📍 ¿Dónde busca?</div>
+        <div class="form-grid">
+          <div class="field"><label>Zona general</label>
+            <select id="fb-zona-busc"><option value="">—</option><option>Centro</option><option>Cono Sur</option><option>Cono Norte</option><option>San Antonio</option><option>Alto de la Alianza</option><option>Ciudad Nueva</option><option>Pocollay</option><option>Gregorio Albarracín</option><option>Otro</option></select>
+          </div>
+          <div class="field"><label>Distrito/sector específico</label><input id="fb-distrito" type="text" placeholder="Urb. Las Praderas"></div>
+          <div class="field full"><label>Referencias de ubicación importantes</label><input id="fb-referencias" type="text" placeholder="Cerca al Hospital, frente a Av. Industrial..."></div>
+          <div class="field"><label>¿Flexible en zona?</label>
+            <select id="fb-flex-zona"><option value="">—</option><option>Sí, muy flexible</option><option>Puede moverse un poco</option><option>No, zona fija</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🏠 Tipo de propiedad buscada</div>
+        <div class="form-grid">
+          <div class="field"><label>Tipo</label>
+            <select id="fb-tipo-busc"><option value="">—</option><option>Casa</option><option>Departamento</option><option>Lote</option><option>Local comercial</option><option>Terreno</option><option>Oficina</option><option>Combinación</option></select>
+          </div>
+          <div class="field"><label>Metraje mínimo (m²)</label><input id="fb-m2min" type="text" placeholder="100 m²"></div>
+          <div class="field"><label>Metraje ideal</label><input id="fb-m2ideal" type="text" placeholder="150–200 m²"></div>
+          <div class="field"><label>Dormitorios mínimos</label>
+            <select id="fb-dorm"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4+</option><option>No aplica</option></select>
+          </div>
+          <div class="field"><label>¿Cochera?</label>
+            <select id="fb-cochera"><option value="">—</option><option>Sí, indispensable</option><option>Deseable</option><option>No necesaria</option></select>
+          </div>
+          <div class="field"><label>¿Jardín/patio?</label>
+            <select id="fb-jardin"><option value="">—</option><option>Sí, indispensable</option><option>Deseable</option><option>No necesita</option></select>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🎯 Uso y requerimiento</div>
+        <div class="form-grid">
+          <div class="field"><label>Finalidad principal</label>
+            <select id="fb-finalidad" onchange="toggleFinalidad()">
+              <option value="">—</option><option>Para vivir</option><option>Para vivir y alquilar parte</option><option>Inversión / alquiler total</option><option>Negocio / comercio</option><option>Mixto (vivir + negocio)</option>
+            </select>
+          </div>
+          <div id="fin-vivir" class="field" style="display:none;"><label>¿Quién va a vivir?</label><input id="fb-quien-vive" type="text" placeholder="Familia de 4, pareja..."></div>
+          <div id="fin-giro" class="field" style="display:none;"><label>Giro del negocio</label>
+            <select id="fb-giro"><option value="">—</option><option>Ferretería</option><option>Botica / Farmacia</option><option>Restaurante / Comida</option><option>Consultorio / Clínica</option><option>Laboratorio</option><option>Tienda de ropa</option><option>Supermercado / Minimarket</option><option>Oficina administrativa</option><option>Taller mecánico</option><option>Peluquería / Estética</option><option>Gym / Deporte</option><option>Otro</option></select>
+          </div>
+          <div id="fin-afluencia" class="field" style="display:none;"><label>Afluencia comercial</label>
+            <select id="fb-afluencia"><option value="">—</option><option>Alta (avenida principal)</option><option>Media (calle secundaria)</option><option>Baja (interior / pasaje)</option></select>
+          </div>
+          <div id="fin-acceso" class="field" style="display:none;"><label>¿Acceso vehicular?</label>
+            <select id="fb-acceso"><option value="">—</option><option>Sí, indispensable</option><option>Deseable</option><option>No necesita</option></select>
+          </div>
+          <div id="fin-rentabilidad" class="field" style="display:none;"><label>Rentabilidad mínima esperada</label><input id="fb-rentabilidad" type="text" placeholder="8% anual"></div>
+          <div class="field full"><label>Observaciones de requerimiento</label><textarea id="fb-obs-req" placeholder="Condiciones especiales, detalles importantes..."></textarea></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Notas generales</div>
+        <div class="field"><textarea id="fb-notas" placeholder="Primera conversación, observaciones, condiciones especiales..."></textarea></div>
+      </div>
+      <input type="hidden" id="fb-id">
+      <input type="hidden" id="fb-lead-origen-id">
+      <div class="btn-row">
+        <button class="btn btn-primary" style="background:var(--orange);" onclick="guardarBuscador()">💾 Guardar buscador</button>
+        <button class="btn btn-secondary" onclick="showPage('buscadores')">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- ══════════ FUNNEL ══════════ -->
+    <div id="page-funnel" class="page">
+      <div class="page-header">
+        <h1>Funnel de Ventas</h1>
+        <div class="sub">Tasas de conversión por etapa y benchmarks del sector</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Tu funnel actual</div>
+        <div id="funnel-full"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Benchmarks del sector inmobiliario</div>
+        <table>
+          <thead><tr><th>Transición</th><th>Benchmark bajo</th><th>Benchmark óptimo</th><th>Tu tasa</th><th>Estado</th></tr></thead>
+          <tbody id="funnel-bench-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══════════ CANALES ══════════ -->
+    <div id="page-canales" class="page">
+      <div class="page-header">
+        <h1>Canales & ROI</h1>
+        <div class="sub">Leads y conversión por canal de origen</div>
+      </div>
+      <div id="canales-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px;"></div>
+      <div class="card" style="padding:0;overflow:hidden;">
+        <div style="padding:14px 18px 0;"><div class="card-title">Detalle por canal</div></div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Canal</th><th>Leads</th><th>Contactados</th><th>Visitas</th><th>Cierres</th><th>Conv. global</th><th>Calidad</th></tr></thead>
+            <tbody id="canales-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ MODAL: DETALLE / EDITAR LEAD ══ -->
+<div class="modal-bg" id="modal-lead">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 id="modal-lead-nombre">Lead</h2>
+      <button class="modal-close" onclick="closeModal('modal-lead')">✕</button>
+    </div>
+    <div class="tabs" style="margin-bottom:14px;">
+      <button class="tab active" onclick="switchTab('modal','info')">Info</button>
+      <button class="tab" onclick="switchTab('modal','timeline')">Historial</button>
+      <button class="tab" onclick="switchTab('modal','editar')">Editar</button>
+    </div>
+
+    <!-- INFO -->
+    <div id="tab-modal-info" class="tab-content active">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;" id="modal-info-grid"></div>
+      <div style="margin-top:14px;" id="modal-countdown-wrap"></div>
+    </div>
+
+      <!-- DERIVAR A BUSCADOR -->
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+        <p style="font-size:11.5px;color:var(--ink2);margin-bottom:8px;">¿Este lead no avanza con la propiedad actual? Pásalo a la base de buscadores con un clic.</p>
+        <button class="btn btn-buscador" onclick="derivarABuscador()" style="padding:9px 16px;font-size:12px;">🔍 Derivar a Base de Buscadores</button>
+      </div>
+
+    <!-- HISTORIAL -->
+    <div id="tab-modal-timeline" class="tab-content">
+      <div id="modal-timeline"></div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px;">
+        <div class="card-title">Registrar nuevo toque</div>
+        <div class="form-grid" style="margin-bottom:10px;">
+          <div class="field">
+            <label>Tipo de contacto</label>
+            <select id="toque-tipo">
+              <option>Llamada realizada</option><option>WhatsApp enviado</option><option>Email enviado</option>
+              <option>Visita agendada</option><option>Visita realizada</option><option>Propuesta enviada</option>
+              <option>Negociación</option><option>Seguimiento</option><option>Nota interna</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Nueva etapa (opcional)</label>
+            <select id="toque-etapa">
+              <option value="">— sin cambio —</option>
+              <option>Nuevo</option><option>Contactado</option><option>Agendado</option>
+              <option>Visitado</option><option>Negociando</option><option>Cerrado</option><option>Perdido</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label>Nota / Resultado</label>
+            <textarea id="toque-nota" placeholder="¿Qué pasó? ¿Qué dijo el cliente?" style="min-height:60px;"></textarea>
+          </div>
+          <div class="field">
+            <label>Próxima acción</label>
+            <input id="toque-prox" type="text" placeholder="Ej: Llamar el viernes">
+          </div>
+          <div class="field">
+            <label>Fecha próxima acción</label>
+            <input id="toque-prox-dt" type="datetime-local">
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="registrarToque()">✓ Registrar toque</button>
+      </div>
+    </div>
+
+    <!-- EDITAR -->
+    <div id="tab-modal-editar" class="tab-content">
+      <div class="form-grid">
+        <div class="field full"><label>Nombre</label><input id="me-nombre" type="text"></div>
+        <div class="field"><label>Número</label><input id="me-numero" type="tel"></div>
+        <div class="field"><label>Canal</label>
+          <select id="me-canal"><option>Facebook</option><option>TikTok</option><option>Instagram</option><option>Referido</option><option>Portal web</option><option>Google Ads</option><option>WhatsApp directo</option><option>Otro</option></select>
+        </div>
+        <div class="field"><label>Propiedad</label><input id="me-propiedad" type="text"></div>
+        <div class="field"><label>Presupuesto</label><input id="me-presupuesto" type="text"></div>
+        <div class="field"><label>Etapa</label>
+          <select id="me-etapa"><option>Nuevo</option><option>Contactado</option><option>Agendado</option><option>Visitado</option><option>Negociando</option><option>Cerrado</option><option>Perdido</option></select>
+        </div>
+        <div class="field"><label>Interés</label>
+          <select id="me-interes"><option value="">—</option><option>Alto</option><option>Medio</option><option>Bajo</option><option>Solo cotizando</option></select>
+        </div>
+        <div class="field"><label>Modo de compra</label>
+          <select id="me-modo"><option value="">—</option><option>Contado</option><option>Crédito hipotecario</option><option>Cuotas</option><option>Otro</option></select>
+        </div>
+        <div class="field"><label>¿Ofertó? Monto</label><input id="me-oferta" type="text" placeholder="Ej: $75,000"></div>
+        <div class="field"><label>Visita agendada</label><input id="me-visita-dt" type="datetime-local"></div>
+        <div class="field"><label>Motivo pérdida (si aplica)</label>
+          <select id="me-motivo"><option value="">—</option><option>Precio alto</option><option>No calificó crédito</option><option>Eligió otra propiedad</option><option>Ya no busca</option><option>Sin respuesta</option><option>Otro</option></select>
+        </div>
+        <div class="field full"><label>Notas</label><textarea id="me-notas" style="min-height:70px;"></textarea></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="guardarEdicionLead()">💾 Guardar cambios</button>
+        <button class="btn btn-danger" onclick="eliminarLeadModal()">🗑 Eliminar lead</button>
+      </div>
+    </div>
+
+    <input type="hidden" id="modal-lead-id">
+  </div>
+</div>
+
+<!-- ══ MODAL: POST-VISITA ══ -->
+<div class="modal-bg" id="modal-pv">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>Registro Post-Visita</h2>
+      <button class="modal-close" onclick="closeModal('modal-pv')">✕</button>
+    </div>
+    <div class="form-grid">
+      <div class="field full"><div style="font-size:13px;font-weight:700;color:var(--ink2);" id="pv-lead-name">—</div></div>
+      <div class="field"><label>¿Sigue interesado?</label>
+        <select id="pv-interes"><option value="">—</option><option>Sí, muy interesado</option><option>Sí, con dudas</option><option>Necesita pensarlo</option><option>No por ahora</option><option>No</option></select>
+      </div>
+      <div class="field"><label>Modo de compra</label>
+        <select id="pv-modo"><option value="">—</option><option>Contado</option><option>Crédito hipotecario</option><option>Cuotas</option><option>Otro</option></select>
+      </div>
+      <div class="field"><label>¿Ofertó?</label>
+        <select id="pv-oferto"><option value="">—</option><option>Sí</option><option>No</option></select>
+      </div>
+      <div class="field"><label>¿Cuánto ofertó? (USD)</label><input id="pv-cuanto" type="text" placeholder="$75,000"></div>
+      <div class="field"><label>¿Re-agendó?</label>
+        <select id="pv-reagendo"><option value="">—</option><option>Sí</option><option>No</option></select>
+      </div>
+      <div class="field"><label>Nueva visita (si re-agendó)</label><input id="pv-nueva-visita" type="datetime-local"></div>
+      <div class="field full"><label>Observaciones post-visita</label><textarea id="pv-notas" style="min-height:70px;" placeholder="¿Qué le gustó? ¿Qué objetó? ¿Qué sigue?"></textarea></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="guardarPostVisita()">💾 Guardar post-visita</button>
+      <button class="btn btn-buscador" onclick="pvDerivar()" style="padding:8px 14px;">🔍 Derivar también a Buscadores</button>
+    </div>
+    <input type="hidden" id="pv-lead-id">
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+        </div>
+      </div>
+
+      <!-- VIEW: GRUPOS FB -->
+      <div class="view" id="view-grupos">
+        <div class="view-head">
+          <span class="view-eyebrow">Publicación orgánica</span>
+          <h2>Gestión</h2>
+          <p>Tu plan del día y el pool de grupos — compartido por todo el equipo.</p>
+        </div>
+
+        <!-- PLACEHOLDER: EN CONSTRUCCIÓN -->
+        <div class="gestion-building" id="gestionBuilding">
+          <div class="gestion-gear">🔧</div>
+          <div class="gestion-building-title">CIMA Ventures trabajando en tu progreso</div>
+          <div class="gestion-building-sub">Estamos afinando esta sección para que la tengas aún mejor. Vuelve pronto.</div>
+        </div>
+
+        <div id="gestionRealContent" style="display:none;">
+        <div class="subtabs">
+          <button class="subtab-btn active" data-subtab="planning">Mi Planning</button>
+          <button class="subtab-btn" data-subtab="pool">Pool de Grupos</button>
+        </div>
+
+        <!-- SUBTAB: MI PLANNING -->
+        <div class="subtab-panel active" id="subtab-planning">
+          <div class="block">
+            <div class="cards3">
+              <div class="card" style="text-align:center;">
+                <div class="card-label">Hoy</div>
+                <div class="card-value" id="planHoyVal">0/5</div>
+                <div class="card-desc">publicaciones de tu meta diaria</div>
+              </div>
+              <div class="card" style="text-align:center;">
+                <div class="card-label">Este mes</div>
+                <div class="card-value" id="planMesVal">0</div>
+                <div class="card-desc">publicaciones acumuladas</div>
+              </div>
+              <div class="card" style="text-align:center;">
+                <div class="card-label" id="planHoraLabel">Franja sugerida ahora</div>
+                <div class="card-value" style="font-size:16px;" id="planHoraVal">—</div>
+                <div class="card-desc">según la hora del día</div>
+              </div>
+            </div>
+
+            <div class="plan-progress-track" style="margin-top:16px;">
+              <div class="plan-progress-fill" id="planProgressFill" style="width:0%;"></div>
+            </div>
+          </div>
+
+          <div class="section-head" style="margin-top:8px;">
+            <span class="view-eyebrow">Tu checklist de hoy</span>
+            <h2 style="font-size:19px;">Marca conforme vayas publicando</h2>
+            <p>Ordenados por cuánto tiempo llevan esperando desde tu última publicación ahí — los grupos bloqueados para el equipo no aparecen aquí.</p>
+          </div>
+          <div class="block">
+            <input type="text" id="planBuscador" class="plan-search" placeholder="🔎 Buscar grupo...">
+            <div id="planSugerencias"><div class="crm-note">Cargando checklist...</div></div>
+          </div>
+        </div>
+
+        <!-- SUBTAB: POOL DE GRUPOS -->
+        <div class="subtab-panel" id="subtab-pool">
+          <!-- REQUISITOS -->
+          <div class="block">
+            <div class="tools-grid">
+              <div class="tool-card" style="cursor:default;">
+                <div class="tool-icon">1</div>
+                <div class="tool-title">Antes de publicar</div>
+                <div class="tool-desc">Necesitas tu Fan Page lista: foto tuya presentable, portada con imagen real del proyecto (nunca de banco de imágenes), y WhatsApp visible en la info.</div>
+              </div>
+              <div class="tool-card" style="cursor:default;">
+                <div class="tool-icon">2</div>
+                <div class="tool-title">Cómo se publica</div>
+                <div class="tool-desc">Publicas en tu Fan Page → desde tu cuenta personal buscas esa publicación → la <b>compartes</b> (no la subas de nuevo) en los grupos donde estás.</div>
+              </div>
+              <div class="tool-card" style="cursor:default;">
+                <div class="tool-icon">3</div>
+                <div class="tool-title">Mejores horarios</div>
+                <div class="tool-desc">7:00–9:00 am · 12:00–2:00 pm · 8:00–11:00 pm (el de mejor conversión).</div>
+              </div>
+              <div class="tool-card" style="cursor:default;">
+                <div class="tool-icon">4</div>
+                <div class="tool-title">Tu pieza, personalizada</div>
+                <div class="tool-desc">Cada video o imagen debe llevar tu nombre y tu WhatsApp visible — nunca un número genérico del equipo.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- POOL DE GRUPOS -->
+          <div class="section-head" style="margin-top:8px;">
+            <span class="view-eyebrow">Pool compartido</span>
+            <h2 style="font-size:19px;">Grupos y su semáforo</h2>
+            <p>0-1 publicaciones esta semana = 🟢 libre · 2 = 🟠 último cupo · 3 = 🔴 bloqueado 7 días para todo el equipo.</p>
+          </div>
+
+          <div class="block">
+            <div class="card" style="margin-bottom:16px;">
+              <div class="form-grid-2">
+                <div class="calc-field"><label for="nuevoGrupoNombre">Nombre del grupo</label><input type="text" id="nuevoGrupoNombre" placeholder="Ej: Compra Venta Tacna"></div>
+                <div class="calc-field"><label for="nuevoGrupoLink">Link del grupo (opcional)</label><input type="text" id="nuevoGrupoLink" placeholder="https://facebook.com/groups/..."></div>
+              </div>
+              <button class="btn-grupo-add" id="addGrupoBtn">+ Agregar grupo al pool</button>
+              <div class="form-msg" id="addGrupoMsg"></div>
+            </div>
+
+            <div id="gruposList"><div class="crm-note">Cargando grupos...</div></div>
+          </div>
+
+          <!-- MIS PUBLICACIONES -->
+          <div class="section-head">
+            <span class="view-eyebrow">Reporte</span>
+            <h2 style="font-size:19px;">Mis publicaciones recientes</h2>
+            <p>Registra cuántos mensajes de WhatsApp te llegó por cada una — ayuda a saber qué pieza rinde mejor.</p>
+          </div>
+          <div class="block">
+            <div id="misPublicacionesList"><div class="crm-note">Cargando...</div></div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- VIEW: CONVENIOS -->
+      <!-- VIEW: HERRAMIENTAS -->
+      <div class="view" id="view-herramientas">
+        <div class="view-head">
+          <span class="view-eyebrow">En terreno</span>
+          <h2>Herramientas de campo</h2>
+          <p>Todo lo que usas frente al cliente, listo para usar.</p>
+        </div>
+
+        <div class="block">
+          <div class="tools-grid">
+            <a href="#" class="tool-card">
+              <div class="tool-icon">D</div>
+              <div class="tool-title">Documentos del Proyecto</div>
+              <div class="tool-desc">Título de propiedad, ficha registral y demás documentos legales del proyecto — descárgalos si un cliente los pide.</div>
+              <div class="tool-cta">Ver documentos →</div>
+            </a>
+          </div>
+        </div>
+
+        <div class="view-head">
+          <span class="view-eyebrow">Herramienta de cierre</span>
+          <h2>Calculadora de cuota inicial</h2>
+          <p>Úsala frente al cliente para mostrarle en el momento cuánto le costaría financiar el lote.</p>
+        </div>
+        <div class="block">
+          <div class="calc-panel">
+            <div class="calc-using">Condiciones del proyecto Costa Dorada</div>
+            <div class="calc-inputs">
+              <div class="calc-field"><label for="precio">Precio del lote (S/)</label><input type="number" id="precio" value="45000" min="0" step="1000"></div>
+              <div class="calc-field"><label for="inicial">Inicial (%)</label><input type="number" id="inicial" value="20" min="0" max="100" step="1"></div>
+              <div class="calc-field"><label for="plazo">Plazo (meses)</label><input type="number" id="plazo" value="36" min="1" step="1"></div>
+              <div class="calc-field"><label for="tasa">Tasa de interés anual (%)</label><input type="number" id="tasa" value="12" min="0" step="0.5"></div>
+            </div>
+            <div class="calc-results">
+              <div class="calc-result"><div class="calc-result-label">Monto de inicial</div><div class="calc-result-value" id="rInicial">S/9,000</div></div>
+              <div class="calc-result"><div class="calc-result-label">Monto a financiar</div><div class="calc-result-value" id="rFinanciado">S/36,000</div></div>
+              <div class="calc-result highlight"><div class="calc-result-label">Cuota mensual aprox.</div><div class="calc-result-value" id="rCuota">S/1,196</div></div>
+            </div>
+            <div class="calc-note">Cálculo referencial — confirma siempre las condiciones exactas con la inmobiliaria antes de comprometer un número con el cliente.</div>
+          </div>
+        </div>
+
+        <div class="view-head">
+          <span class="view-eyebrow">Presupuesto del cliente</span>
+          <h2>¿Le alcanza a tu cliente?</h2>
+          <p>Ingresa lo que tu cliente tiene disponible y te decimos si encaja con las condiciones del proyecto.</p>
+        </div>
+        <div class="block">
+          <div class="match-panel">
+            <div class="match-inputs">
+              <div class="calc-field"><label for="matchInicial">Presupuesto para inicial (S/)</label><input type="number" id="matchInicial" value="5000" min="0" step="500"></div>
+              <div class="calc-field"><label for="matchMensual">Presupuesto mensual (S/)</label><input type="number" id="matchMensual" value="900" min="0" step="50"></div>
+            </div>
+            <div class="match-results" id="matchResults"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: PLAN EDUCACIONAL CR (SEAR) -->
+      <div class="view" id="view-sear">
+        <div class="view-head">
+          <span class="view-eyebrow">Formación</span>
+          <h2>SEAR</h2>
+          <p>Sistema Educacional de Alto Rendimiento — tu formación como asesor.</p>
+        </div>
+
+        <div class="block">
+          <div class="tools-grid">
+            <div class="tool-card sear-module" data-modulo="Video de bienvenida" style="cursor:pointer;">
+              <div class="tool-icon">▶</div>
+              <div class="tool-title">Video de bienvenida</div>
+              <div class="tool-desc">Un mensaje de bienvenida al equipo y a tu nuevo back office.</div>
+              <div class="tool-cta">Ver módulo →</div>
+            </div>
+            <div class="tool-card sear-module" data-modulo="Módulo 1 — Gestión de llamadas" style="cursor:pointer;">
+              <div class="tool-icon">1</div>
+              <div class="tool-title">Gestión de llamadas</div>
+              <div class="tool-desc">Cómo manejar la llamada con un lead, de principio a cierre.</div>
+              <div class="tool-cta">Ver módulo →</div>
+            </div>
+            <div class="tool-card sear-module" data-modulo="Módulo 2 — Publicación orgánica" style="cursor:pointer;">
+              <div class="tool-icon">2</div>
+              <div class="tool-title">Publicación orgánica</div>
+              <div class="tool-desc">Cómo publicar en redes y grupos para generar leads sin pagar.</div>
+              <div class="tool-cta">Ver módulo →</div>
+            </div>
+            <div class="tool-card sear-module" data-modulo="Módulo 3 — Publicidad digital (Meta Ads)" style="cursor:pointer;">
+              <div class="tool-icon">3</div>
+              <div class="tool-title">Publicidad digital</div>
+              <div class="tool-desc">Cómo pautar con presupuesto en Meta Ads — configuración y presupuesto.</div>
+              <div class="tool-cta">Ver módulo →</div>
+            </div>
+            <div class="tool-card sear-module" data-modulo="Módulo 4 — Recorrido del Back Office" style="cursor:pointer;">
+              <div class="tool-icon">4</div>
+              <div class="tool-title">Recorrido del Back Office</div>
+              <div class="tool-desc">Cómo usar cada parte de tu plataforma: CRM, Gestión, Herramientas.</div>
+              <div class="tool-cta">Ver módulo →</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="block" id="searModulePlaceholder" style="display:none;">
+          <div class="gestion-building">
+            <div class="gestion-gear">⚙️</div>
+            <div class="gestion-building-title" id="searModuleTitle">Trabajando en este módulo</div>
+            <div class="gestion-building-sub">Seguimos preparando el contenido — pronto vas a poder verlo aquí.</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    /* El login real (correo/contraseña) se maneja en el módulo de Firebase, al final del archivo. */
+
+    /* NAVIGATION */
+    function goToView(name){
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === name));
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('appShell').classList.toggle('crm-fullscreen', name === 'crm');
+    }
+    window.goToView = goToView;
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => goToView(item.dataset.view));
+    });
+    document.querySelectorAll('[data-goto]').forEach(el => {
+      el.addEventListener('click', (e) => { e.preventDefault(); goToView(el.dataset.goto); });
+    });
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    /* FECHA Y SEMANA ACTUAL */
+    function renderDateContext(){
+      const hoy = new Date();
+      const dia = hoy.getDate();
+      const semana = Math.ceil(dia / 7);
+      const mes = hoy.toLocaleDateString('es-PE', {month:'long'});
+      const anio = hoy.getFullYear();
+      const fechaTexto = hoy.toLocaleDateString('es-PE', {day:'numeric', month:'long', year:'numeric'});
+      document.getElementById('weekLabel').textContent = 'Semana ' + semana + ' de ' + mes.charAt(0).toUpperCase() + mes.slice(1) + ' ' + anio;
+      document.getElementById('todayLabel').textContent = 'Hoy es ' + fechaTexto + '. Esto es lo que llevas hasta el momento.';
+    }
+    renderDateContext();
+
+    /* TU AVANCE Y AVANCE DE EQUIPO — valores fijos de ejemplo (no interactivo) */
+    // Tu avance: 2 ventas · Avance del equipo: 7 ventas — ya configurados directamente en el HTML/CSS de arriba.
+
+    /* CALCULADORA — proyecto Costa Dorada (condición única) */
+    function fmtMoney(n){ return 'S/' + Math.round(n).toLocaleString('es-PE'); }
+
+    function amortizar(precio, inicialPct, plazo, tasaAnual){
+      const montoInicial = precio * (inicialPct/100);
+      const montoFinanciado = precio - montoInicial;
+      const tasaMensual = (tasaAnual/100)/12;
+      let cuota;
+      if(tasaMensual === 0) cuota = montoFinanciado / plazo;
+      else cuota = montoFinanciado * tasaMensual / (1 - Math.pow(1+tasaMensual, -plazo));
+      return {montoInicial, montoFinanciado, cuota};
+    }
+
+    function calcular(){
+      const precio = parseFloat(document.getElementById('precio').value) || 0;
+      const inicialPct = parseFloat(document.getElementById('inicial').value) || 0;
+      const plazo = parseFloat(document.getElementById('plazo').value) || 1;
+      const tasaAnual = parseFloat(document.getElementById('tasa').value) || 0;
+      const r = amortizar(precio, inicialPct, plazo, tasaAnual);
+      document.getElementById('rInicial').textContent = fmtMoney(r.montoInicial);
+      document.getElementById('rFinanciado').textContent = fmtMoney(r.montoFinanciado);
+      document.getElementById('rCuota').textContent = fmtMoney(r.cuota);
+    }
+    document.querySelectorAll('#precio, #inicial, #plazo, #tasa').forEach(el => {
+      el.addEventListener('input', calcular);
+    });
+    calcular();
+
+    /* ¿LE ALCANZA AL CLIENTE? — contra las condiciones únicas del proyecto */
+    function renderMatch(){
+      const inicialBudget = parseFloat(document.getElementById('matchInicial').value) || 0;
+      const mensualBudget = parseFloat(document.getElementById('matchMensual').value) || 0;
+      const container = document.getElementById('matchResults');
+
+      const precio = parseFloat(document.getElementById('precio').value) || 0;
+      const inicialPct = parseFloat(document.getElementById('inicial').value) || 0;
+      const plazo = parseFloat(document.getElementById('plazo').value) || 1;
+      const tasaAnual = parseFloat(document.getElementById('tasa').value) || 0;
+      const r = amortizar(precio, inicialPct, plazo, tasaAnual);
+
+      const inicialOk = inicialBudget >= r.montoInicial;
+      const cuotaOk = mensualBudget >= r.cuota;
+      let status, statusClass, detail;
+
+      if(inicialOk && cuotaOk){
+        status = 'Alcanza'; statusClass = 'ok';
+        detail = 'Inicial ' + fmtMoney(r.montoInicial) + ' · Cuota aprox. ' + fmtMoney(r.cuota) + '/mes';
+      } else if(!inicialOk && cuotaOk){
+        status = 'Ajustado'; statusClass = 'warn';
+        detail = 'Le faltan ' + fmtMoney(r.montoInicial - inicialBudget) + ' para el inicial (necesita ' + fmtMoney(r.montoInicial) + ')';
+      } else if(inicialOk && !cuotaOk){
+        status = 'Ajustado'; statusClass = 'warn';
+        detail = 'La cuota quedaría ' + fmtMoney(r.cuota - mensualBudget) + ' por encima de su presupuesto mensual';
+      } else {
+        status = 'No alcanza'; statusClass = 'no';
+        detail = 'Necesita ' + fmtMoney(r.montoInicial) + ' de inicial y ' + fmtMoney(r.cuota) + '/mes';
+      }
+
+      container.innerHTML = '<div class="match-row">' +
+        '<div class="match-agency">Costa Dorada</div>' +
+        '<div class="match-detail">' + detail + '</div>' +
+        '<div class="match-status ' + statusClass + '">' + status + '</div></div>';
+    }
+    document.getElementById('matchInicial').addEventListener('input', renderMatch);
+    document.getElementById('matchMensual').addEventListener('input', renderMatch);
+    document.querySelectorAll('#precio, #inicial, #plazo, #tasa').forEach(el => {
+      el.addEventListener('input', renderMatch);
+    });
+    renderMatch();
+    renderMatch();
+  </script>
+
+  <script>
+
+// ══════════════════════════════════════════════
+//  STORAGE — conectado a Firebase (reemplaza localStorage)
+// ══════════════════════════════════════════════
+const LS = {
+  leads: () => [],          // ya no se usa para cargar; la carga inicial la hace bootCrm()
+  saveLeads: (d) => { leads = d; window.__crmSave && window.__crmSave({ leads: d }); if(typeof renderResumenGeneral==='function') renderResumenGeneral(); },
+};
+
+let leads = [];
+let buscadores = [];
+let currentModalLeadId = null;
+let agendaMesOffset = 0; // meses desde hoy
+
+// ══════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════
+function toast(msg, color) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.background = color || 'var(--green)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function fmtDateShort(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+}
+
+function diasDesde(iso) {
+  if (!iso) return null;
+  return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+}
+
+function horasHasta(iso) {
+  if (!iso) return null;
+  return Math.round((new Date(iso).getTime() - Date.now()) / 3600000);
+}
+
+function countdownLabel(iso) {
+  if (!iso) return null;
+  const h = horasHasta(iso);
+  if (h < 0) return { label: 'Visita pasada', cls: 'past' };
+  if (h < 24) return { label: `¡Hoy! ${Math.round(h)}h`, cls: 'urgent' };
+  if (h < 48) return { label: 'Mañana', cls: 'warn' };
+  const d = Math.floor(h / 24);
+  return { label: `En ${d} días`, cls: d <= 3 ? 'warn' : 'ok' };
+}
+
+function badgeEtapa(etapa) {
+  const map = { 'Nuevo': 'badge-nuevo', 'Contactado': 'badge-contactado', 'Agendado': 'badge-agendado', 'Visitado': 'badge-visitado', 'Negociando': 'badge-negociando', 'Cerrado': 'badge-cerrado', 'Perdido': 'badge-perdido' };
+  return `<span class="badge ${map[etapa] || 'badge-nuevo'}">${etapa || 'Nuevo'}</span>`;
+}
+
+function nombreMes(d) {
+  return d.toLocaleDateString('es-PE', { month: 'long', year: 'numeric' });
+}
+
+function hoyIso() { return new Date().toISOString(); }
+function hoyStr() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+
+  const map = { dashboard: 0, agenda: 1, leads: 2, 'nuevo-lead': 3, postvisita: 4, seguimiento: 5, buscadores: 6, 'nuevo-buscador': 7, funnel: 8, canales: 9, inmoplan: 10 };
+  const btns = document.querySelectorAll('.nav-btn');
+  if (btns[map[p]]) btns[map[p]].classList.add('active');
+
+  // Close sidebar on mobile
+  document.getElementById('crmSidebar').classList.remove('open');
+
+  if (p === 'dashboard') renderDashboard();
+  if (p === 'leads') renderLeadsTable();
+  if (p === 'nuevo-lead') resetLeadForm();
+  if (p === 'agenda') renderAgenda();
+  if (p === 'postvisita') renderPostvisitaTable();
+  if (p === 'seguimiento') renderSeguimientoTable();
+  if (p === 'funnel') renderFunnel();
+  if (p === 'canales') renderCanales();
+
+  if (p === 'buscadores') renderBuscadores();
+  if (p === 'nuevo-buscador') { document.getElementById('fb-title').textContent='Nuevo Buscador'; }
+}
+
+function toggleSidebar() {
+  document.getElementById('crmSidebar').classList.toggle('open');
+}
+
+function switchTab(group, tab) {
+  document.querySelectorAll(`#tab-${group}-${tab}`).forEach(() => {});
+  // Find all tab buttons and contents in the same parent group
+  const allContents = document.querySelectorAll(`[id^="tab-${group}-"]`);
+  allContents.forEach(el => el.classList.remove('active'));
+  const target = document.getElementById(`tab-${group}-${tab}`);
+  if (target) target.classList.add('active');
+
+  // Toggle tab buttons
+  const modal = target?.closest('.modal, .page');
+  if (modal) {
+    modal.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    modal.querySelectorAll('.tab').forEach(t => {
+      if (t.getAttribute('onclick')?.includes(`'${tab}'`)) t.classList.add('active');
+    });
+  }
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ══════════════════════════════════════════════
+//  LEAD CRUD
+// ══════════════════════════════════════════════
+function guardarLead() {
+  const nombre = document.getElementById('fl-nombre').value.trim();
+  if (!nombre) { toast('Escribe un nombre', 'var(--red)'); return; }
+  const numero = document.getElementById('fl-numero').value.trim();
+  if (!numero) { toast('Escribe un número', 'var(--red)'); return; }
+
+  const editId = document.getElementById('fl-edit-id').value;
+  const visitaDt = document.getElementById('fl-visita-dt').value;
+
+  const l = {
+    id: editId || Date.now().toString(),
+    nombre,
+    numero,
+    canal: document.getElementById('fl-canal').value,
+    propiedad: document.getElementById('fl-propiedad').value,
+    presupuesto: document.getElementById('fl-presupuesto').value,
+    etapa: document.getElementById('fl-etapa').value,
+    contesto: document.getElementById('fl-contesto').value,
+    interes: document.getElementById('fl-interes').value,
+    visitaDt: visitaDt || null,
+    visitaProp: document.getElementById('fl-visita-prop').value,
+    notas: document.getElementById('fl-notas').value,
+    creadoEn: editId ? (leads.find(x => x.id === editId)?.creadoEn || hoyIso()) : hoyIso(),
+    ultimaActividad: hoyIso(),
+    toques: editId ? (leads.find(x => x.id === editId)?.toques || []) : [],
+    postVisita: editId ? (leads.find(x => x.id === editId)?.postVisita || null) : null,
+    modo: '', oferta: '', motivoPerdida: '',
+  };
+
+  // Auto-add creation toque
+  if (!editId) {
+    l.toques.push({ tipo: 'Registro inicial', nota: l.notas || 'Lead ingresado al CRM', fecha: hoyIso(), etapa: l.etapa });
+    if (visitaDt) {
+      l.toques.push({ tipo: 'Visita agendada', nota: `Visita programada para ${fmtDate(visitaDt)}`, fecha: hoyIso(), etapa: 'Agendado', prox: visitaDt });
+      if (l.etapa === 'Nuevo' || l.etapa === 'Contactado') l.etapa = 'Agendado';
+    }
+  }
+
+  if (editId) {
+    const idx = leads.findIndex(x => x.id === editId);
+    if (idx >= 0) leads[idx] = l;
+  } else {
+    leads.push(l);
+  }
+
+  LS.saveLeads(leads);
+  toast('✓ Lead guardado');
+  showPage('leads');
+}
+
+function resetLeadForm() {
+  ['fl-nombre','fl-numero','fl-propiedad','fl-presupuesto','fl-visita-prop','fl-notas','fl-visita-dt'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('fl-edit-id').value = '';
+  document.getElementById('fl-etapa').value = 'Nuevo';
+  document.getElementById('fl-canal').value = 'Facebook';
+  document.getElementById('fl-contesto').value = '';
+  document.getElementById('fl-interes').value = '';
+  document.getElementById('form-lead-title').textContent = 'Nuevo Lead';
+}
+
+function editarLead(id) {
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  showPage('nuevo-lead');
+  document.getElementById('form-lead-title').textContent = 'Editar Lead';
+  document.getElementById('fl-edit-id').value = l.id;
+  document.getElementById('fl-nombre').value = l.nombre;
+  document.getElementById('fl-numero').value = l.numero;
+  document.getElementById('fl-canal').value = l.canal;
+  document.getElementById('fl-propiedad').value = l.propiedad || '';
+  document.getElementById('fl-presupuesto').value = l.presupuesto || '';
+  document.getElementById('fl-etapa').value = l.etapa || 'Nuevo';
+  document.getElementById('fl-contesto').value = l.contesto || '';
+  document.getElementById('fl-interes').value = l.interes || '';
+  document.getElementById('fl-visita-dt').value = l.visitaDt || '';
+  document.getElementById('fl-visita-prop').value = l.visitaProp || '';
+  document.getElementById('fl-notas').value = l.notas || '';
+}
+
+function eliminarLead(id) {
+  if (!confirm('¿Eliminar este lead permanentemente?')) return;
+  leads = leads.filter(x => x.id !== id);
+  LS.saveLeads(leads);
+  toast('Lead eliminado', 'var(--red)');
+  renderLeadsTable();
+}
+
+// ══════════════════════════════════════════════
+//  MODAL LEAD DETAIL
+// ══════════════════════════════════════════════
+function abrirModalLead(id) {
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  currentModalLeadId = id;
+  document.getElementById('modal-lead-nombre').textContent = l.nombre;
+  document.getElementById('modal-lead-id').value = id;
+
+  // INFO TAB
+  const cd = l.visitaDt ? countdownLabel(l.visitaDt) : null;
+  document.getElementById('modal-countdown-wrap').innerHTML = cd
+    ? `<div style="margin-bottom:10px;"><span class="countdown ${cd.cls}">⏱ Visita: ${cd.label}</span></div>`
+    : '';
+
+  document.getElementById('modal-info-grid').innerHTML = [
+    ['📞 Número', `<a href="tel:${l.numero}" style="color:var(--accent);">${l.numero}</a>`],
+    ['📡 Canal', l.canal || '—'],
+    ['🏠 Propiedad', l.propiedad || '—'],
+    ['💰 Presupuesto', l.presupuesto || '—'],
+    ['📊 Etapa', badgeEtapa(l.etapa)],
+    ['❤️ Interés', l.interes || '—'],
+    ['📅 Visita', l.visitaDt ? fmtDate(l.visitaDt) : '—'],
+    ['🚗 Modo compra', l.modo || '—'],
+    ['💬 Oferta', l.oferta || '—'],
+    ['📝 Notas', l.notas || '—'],
+    ['📅 Creado', fmtDate(l.creadoEn)],
+    ['🔔 Última actividad', fmtDate(l.ultimaActividad)],
+  ].map(([k, v]) => `<div style="background:var(--surface2);border-radius:7px;padding:10px;"><div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--ink3);margin-bottom:3px;">${k}</div><div style="font-size:12.5px;">${v}</div></div>`).join('');
+
+  // TIMELINE TAB
+  renderTimeline(l);
+
+  // EDITAR TAB
+  document.getElementById('me-nombre').value = l.nombre;
+  document.getElementById('me-numero').value = l.numero;
+  document.getElementById('me-canal').value = l.canal || 'Facebook';
+  document.getElementById('me-propiedad').value = l.propiedad || '';
+  document.getElementById('me-presupuesto').value = l.presupuesto || '';
+  document.getElementById('me-etapa').value = l.etapa || 'Nuevo';
+  document.getElementById('me-interes').value = l.interes || '';
+  document.getElementById('me-modo').value = l.modo || '';
+  document.getElementById('me-oferta').value = l.oferta || '';
+  document.getElementById('me-visita-dt').value = l.visitaDt || '';
+  document.getElementById('me-motivo').value = l.motivoPerdida || '';
+  document.getElementById('me-notas').value = l.notas || '';
+
+  // Reset tabs
+  switchTab('modal', 'info');
+  openModal('modal-lead');
+}
+
+function renderTimeline(l) {
+  const toques = l.toques || [];
+  if (!toques.length) {
+    document.getElementById('modal-timeline').innerHTML = '<p style="color:var(--ink3);font-size:12px;">Sin actividad registrada.</p>';
+    return;
+  }
+  const icons = { 'Llamada realizada': '📞', 'WhatsApp enviado': '💬', 'Email enviado': '📧', 'Visita agendada': '📅', 'Visita realizada': '🏠', 'Propuesta enviada': '📄', 'Negociación': '🤝', 'Seguimiento': '🔁', 'Nota interna': '📝', 'Registro inicial': '✨' };
+  document.getElementById('modal-timeline').innerHTML = `<div class="timeline">` +
+    [...toques].reverse().map(t => `
+      <div class="tl-item">
+        <div class="tl-dot">${icons[t.tipo] || '•'}</div>
+        <div class="tl-body">
+          <div class="tl-title">${t.tipo}${t.etapa ? ` <span style="opacity:.6;font-weight:500;"> → ${t.etapa}</span>` : ''}</div>
+          <div class="tl-meta">${fmtDate(t.fecha)}</div>
+          ${t.nota ? `<div class="tl-note">${t.nota}</div>` : ''}
+          ${t.prox ? `<div style="font-size:10.5px;margin-top:4px;color:var(--yellow);">⏭ Próxima acción: ${fmtDate(t.prox)}</div>` : ''}
+        </div>
+      </div>`).join('') + `</div>`;
+}
+
+function registrarToque() {
+  const id = document.getElementById('modal-lead-id').value;
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+
+  const tipo = document.getElementById('toque-tipo').value;
+  const etapa = document.getElementById('toque-etapa').value;
+  const nota = document.getElementById('toque-nota').value.trim();
+  const prox = document.getElementById('toque-prox').value;
+  const proxDt = document.getElementById('toque-prox-dt').value;
+
+  const toque = { tipo, nota, fecha: hoyIso() };
+  if (etapa) { toque.etapa = etapa; l.etapa = etapa; }
+  if (prox) toque.prox = prox;
+  if (proxDt) toque.proxDt = proxDt;
+
+  l.toques = l.toques || [];
+  l.toques.push(toque);
+  l.ultimaActividad = hoyIso();
+
+  // If visita type, update visitaDt
+  if (tipo === 'Visita agendada' && proxDt) { l.visitaDt = proxDt; }
+
+  LS.saveLeads(leads);
+  renderTimeline(l);
+  document.getElementById('toque-nota').value = '';
+  document.getElementById('toque-etapa').value = '';
+  document.getElementById('toque-prox').value = '';
+  document.getElementById('toque-prox-dt').value = '';
+  toast('✓ Toque registrado');
+  updateBadges();
+}
+
+function guardarEdicionLead() {
+  const id = document.getElementById('modal-lead-id').value;
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+
+  const prevEtapa = l.etapa;
+  l.nombre = document.getElementById('me-nombre').value;
+  l.numero = document.getElementById('me-numero').value;
+  l.canal = document.getElementById('me-canal').value;
+  l.propiedad = document.getElementById('me-propiedad').value;
+  l.presupuesto = document.getElementById('me-presupuesto').value;
+  l.etapa = document.getElementById('me-etapa').value;
+  l.interes = document.getElementById('me-interes').value;
+  l.modo = document.getElementById('me-modo').value;
+  l.oferta = document.getElementById('me-oferta').value;
+  l.visitaDt = document.getElementById('me-visita-dt').value || null;
+  l.motivoPerdida = document.getElementById('me-motivo').value;
+  l.notas = document.getElementById('me-notas').value;
+  l.ultimaActividad = hoyIso();
+
+  if (prevEtapa !== l.etapa) {
+    l.toques = l.toques || [];
+    l.toques.push({ tipo: 'Cambio de etapa', nota: `${prevEtapa} → ${l.etapa}`, fecha: hoyIso(), etapa: l.etapa });
+  }
+
+  LS.saveLeads(leads);
+  closeModal('modal-lead');
+  toast('✓ Lead actualizado');
+  renderLeadsTable();
+}
+
+function eliminarLeadModal() {
+  const id = document.getElementById('modal-lead-id').value;
+  if (!confirm('¿Eliminar este lead?')) return;
+  leads = leads.filter(x => x.id !== id);
+  LS.saveLeads(leads);
+  closeModal('modal-lead');
+  toast('Lead eliminado', 'var(--red)');
+  renderLeadsTable();
+}
+
+// ══════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════
+function renderDashboard() {
+  const now = new Date();
+  document.getElementById('dash-date').textContent = now.toLocaleDateString('es-PE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+  const hoy = hoyStr();
+  const activos = leads.filter(l => !['Cerrado', 'Perdido'].includes(l.etapa));
+  const cierres = leads.filter(l => l.etapa === 'Cerrado' && l.ultimaActividad?.startsWith(now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')));
+  const visitasHoy = leads.filter(l => l.visitaDt && l.visitaDt.startsWith(hoy));
+  const sinContacto = leads.filter(l => l.etapa === 'Nuevo' && diasDesde(l.creadoEn) >= 1);
+  const conv = leads.length ? ((leads.filter(l => l.etapa === 'Cerrado').length / leads.length) * 100).toFixed(1) : 0;
+
+  document.getElementById('kpi-total').textContent = leads.length;
+  document.getElementById('kpi-activos').textContent = activos.length;
+  document.getElementById('kpi-visitas-hoy').textContent = visitasHoy.length;
+  document.getElementById('kpi-cierres').textContent = cierres.length;
+  document.getElementById('kpi-conversion').textContent = conv + '%';
+  document.getElementById('kpi-sin-contacto').textContent = sinContacto.length;
+
+  // ALERTS
+  const alerts = [];
+  if (sinContacto.length) alerts.push({ cls: 'crit', msg: `🚨 ${sinContacto.length} lead(s) nuevo(s) sin primer contacto` });
+  visitasHoy.forEach(l => {
+    const cd = countdownLabel(l.visitaDt);
+    if (cd && cd.cls === 'urgent') alerts.push({ cls: 'warn', msg: `⏰ Visita HOY con ${l.nombre} — ${fmtDateShort(l.visitaDt)}` });
+  });
+  const enRiesgo = activos.filter(l => {
+    const d = diasDesde(l.ultimaActividad);
+    return d !== null && d >= 5;
+  });
+  if (enRiesgo.length) alerts.push({ cls: 'warn', msg: `⚠️ ${enRiesgo.length} lead(s) sin actividad hace más de 5 días` });
+
+  // Mañana
+  const manana = new Date(); manana.setDate(manana.getDate() + 1);
+  const mananaStr = `${manana.getFullYear()}-${String(manana.getMonth()+1).padStart(2,'0')}-${String(manana.getDate()).padStart(2,'0')}`;
+  const visitasManana = leads.filter(l => l.visitaDt && l.visitaDt.startsWith(mananaStr));
+  if (visitasManana.length) alerts.push({ cls: 'info', msg: `📅 ${visitasManana.length} visita(s) mañana: ${visitasManana.map(l=>l.nombre).join(', ')}` });
+
+  const strip = document.getElementById('alerts-strip');
+  strip.innerHTML = alerts.map(a => `<div class="alert-item ${a.cls}">${a.msg}</div>`).join('') || '';
+
+  // Próximas visitas
+  const prox = leads.filter(l => l.visitaDt && new Date(l.visitaDt) >= now)
+    .sort((a, b) => new Date(a.visitaDt) - new Date(b.visitaDt)).slice(0, 5);
+  const proxEl = document.getElementById('dash-visitas-prox');
+  proxEl.innerHTML = prox.length ? prox.map(l => {
+    const cd = countdownLabel(l.visitaDt);
+    return `<div class="stat-row" style="cursor:pointer;" onclick="abrirModalLead('${l.id}')">
+      <div><div style="font-size:12px;font-weight:700;">${l.nombre}</div><div style="font-size:10.5px;color:var(--ink2);">${l.propiedad || '—'}</div></div>
+      <div style="text-align:right;"><div style="font-size:11px;">${fmtDateShort(l.visitaDt)}</div><span class="countdown ${cd?.cls || 'ok'}" style="font-size:10px;">${cd?.label || ''}</span></div>
+    </div>`;
+  }).join('') : '<div style="font-size:12px;color:var(--ink3);">Sin visitas próximas.</div>';
+
+  // Leads recientes
+  const recientes = [...leads].sort((a,b) => new Date(b.creadoEn)-new Date(a.creadoEn)).slice(0,5);
+  document.getElementById('dash-leads-recientes').innerHTML = recientes.length
+    ? recientes.map(l => `<div class="stat-row" style="cursor:pointer;" onclick="abrirModalLead('${l.id}')">
+        <div><div style="font-size:12px;font-weight:700;">${l.nombre}</div><div style="font-size:10px;color:var(--ink2);">${l.canal} · ${fmtDateShort(l.creadoEn)}</div></div>
+        ${badgeEtapa(l.etapa)}
+      </div>`).join('')
+    : '<div style="font-size:12px;color:var(--ink3);">Sin leads aún.</div>';
+
+  // Funnel mini
+  renderFunnelMini('dash-funnel');
+
+  // En riesgo
+  const riesgoEl = document.getElementById('dash-riesgo');
+  riesgoEl.innerHTML = enRiesgo.length
+    ? enRiesgo.map(l => `<div class="stat-row" style="cursor:pointer;" onclick="abrirModalLead('${l.id}')">
+        <div><div style="font-size:12px;font-weight:700;">${l.nombre}</div><div style="font-size:10px;color:var(--ink2);">${l.etapa} · ${l.canal}</div></div>
+        <span style="font-size:11px;color:var(--red);font-weight:700;">${diasDesde(l.ultimaActividad)}d sin actividad</span>
+      </div>`).join('')
+    : '<div style="font-size:12px;color:var(--green);">Todo al día ✓</div>';
+
+  updateBadges();
+}
+
+function updateBadges() {
+  if(typeof updateBuscBadge==='function')updateBuscBadge();
+  updateBuscBadge();
+  // Agenda badge: visitas próximas 7 días
+  const limite = new Date(); limite.setDate(limite.getDate() + 7);
+  const cnt = leads.filter(l => l.visitaDt && new Date(l.visitaDt) >= new Date() && new Date(l.visitaDt) <= limite).length;
+  const badge = document.getElementById('badge-agenda');
+  if (badge) { badge.textContent = cnt; badge.style.display = cnt ? '' : 'none'; }
+}
+
+// ══════════════════════════════════════════════
+//  FUNNEL HELPERS
+// ══════════════════════════════════════════════
+const ETAPAS = ['Nuevo', 'Contactado', 'Agendado', 'Visitado', 'Negociando', 'Cerrado'];
+const ETAPA_COLORS = ['#3b82f6','#7c5cfc','#f59e0b','#10b981','#e11d63','#10b981'];
+
+function etapaCount(e) { return leads.filter(l => l.etapa === e).length; }
+
+function renderFunnelMini(containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const max = leads.length || 1;
+  el.innerHTML = ETAPAS.map((e, i) => {
+    const n = etapaCount(e);
+    const pct = Math.round((n / max) * 100);
+    return `<div class="funnel-row">
+      <div class="funnel-stage">${e}</div>
+      <div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${pct}%;background:${ETAPA_COLORS[i]};">${n > 0 ? n : ''}</div></div>
+      <div class="funnel-count">${n}</div>
+    </div>`;
+  }).join('') + `<div class="funnel-row"><div class="funnel-stage" style="color:var(--red);">Perdido</div><div class="funnel-bar-wrap"><div class="funnel-bar" style="width:${Math.round((etapaCount('Perdido')/max)*100)}%;background:var(--red);">${etapaCount('Perdido')||''}</div></div><div class="funnel-count">${etapaCount('Perdido')}</div></div>`;
+}
+
+function renderFunnel() {
+  renderFunnelMini('funnel-full');
+
+  const bench = [
+    ['Lead → Contactado', 30, 75, 'Nuevo', 'Contactado'],
+    ['Contactado → Agendado', 25, 65, 'Contactado', 'Agendado'],
+    ['Agendado → Visitado', 60, 90, 'Agendado', 'Visitado'],
+    ['Visitado → Negociando', 30, 55, 'Visitado', 'Negociando'],
+    ['Negociando → Cerrado', 15, 45, 'Negociando', 'Cerrado'],
+  ];
+  const tbody = document.getElementById('funnel-bench-tbody');
+  tbody.innerHTML = bench.map(([label, low, opt, e1, e2]) => {
+    const n1 = etapaCount(e1) + etapaCount(e2) + leads.filter(l=>['Visitado','Negociando','Cerrado'].includes(l.etapa) && e1 === 'Nuevo').length;
+    const cnt1 = leads.filter(l => !['Nuevo'].includes(e1) || true).length;
+    const from = leads.filter(l => l.etapa === e1 || (ETAPAS.indexOf(l.etapa) > ETAPAS.indexOf(e1))).length;
+    const to = leads.filter(l => l.etapa === e2 || (ETAPAS.indexOf(l.etapa) > ETAPAS.indexOf(e2))).length;
+    const tasa = from > 0 ? Math.round((to / from) * 100) : 0;
+    const estado = tasa < low ? '🔴 Bajo' : tasa < opt ? '🟡 Normal' : '🟢 Óptimo';
+    return `<tr><td>${label}</td><td>${low}%</td><td>${opt}%</td><td><strong>${tasa}%</strong></td><td>${estado}</td></tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  LEADS TABLE
+// ══════════════════════════════════════════════
+function renderLeadsTable() {
+  const search = document.getElementById('leads-search').value.toLowerCase();
+  const filtroEtapa = document.getElementById('leads-filter-etapa').value;
+  const filtroCanal = document.getElementById('leads-filter-canal').value;
+
+  let filtered = leads.filter(l => {
+    const matchSearch = !search || l.nombre.toLowerCase().includes(search) || l.numero.includes(search);
+    const matchEtapa = !filtroEtapa || l.etapa === filtroEtapa;
+    const matchCanal = !filtroCanal || l.canal === filtroCanal;
+    return matchSearch && matchEtapa && matchCanal;
+  }).sort((a, b) => new Date(b.creadoEn) - new Date(a.creadoEn));
+
+  const tbody = document.getElementById('leads-tbody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="10" class="empty"><div class="icon">👥</div><p>Sin leads que coincidan.</p></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((l, i) => {
+    const dias = diasDesde(l.ultimaActividad);
+    const diasColor = dias >= 5 ? 'var(--red)' : dias >= 3 ? 'var(--yellow)' : 'var(--green)';
+    const cd = l.visitaDt ? countdownLabel(l.visitaDt) : null;
+    return `<tr>
+      <td style="color:var(--ink3);">${i + 1}</td>
+      <td><strong style="cursor:pointer;color:var(--accent);" onclick="abrirModalLead('${l.id}')">${l.nombre}</strong></td>
+      <td><a href="tel:${l.numero}" style="color:var(--ink2);">${l.numero}</a></td>
+      <td><span class="badge badge-canal">${l.canal}</span></td>
+      <td>${badgeEtapa(l.etapa)}</td>
+      <td style="font-size:11px;color:var(--ink2);">${l.propiedad || '—'}</td>
+      <td>${cd ? `<span class="countdown ${cd.cls}">${cd.label}</span>` : '<span style="color:var(--ink3);font-size:11px;">—</span>'}</td>
+      <td style="font-size:11px;color:${diasColor};">${dias !== null ? dias + 'd' : '—'}</td>
+      <td style="font-size:11px;color:var(--ink2);">${fmtDateShort(l.ultimaActividad)}</td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-secondary btn-sm btn-icon" onclick="abrirModalLead('${l.id}')" title="Ver detalle">👁</button>
+          <button class="btn btn-secondary btn-sm btn-icon" onclick="abrirPostVisitaModal('${l.id}')" title="Post-visita">🏠</button>
+          <button class="btn btn-danger btn-sm btn-icon" onclick="eliminarLead('${l.id}')" title="Eliminar">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function resetFiltros() {
+  document.getElementById('leads-search').value = '';
+  document.getElementById('leads-filter-etapa').value = '';
+  document.getElementById('leads-filter-canal').value = '';
+  renderLeadsTable();
+}
+
+// ══════════════════════════════════════════════
+//  POST-VISITA
+// ══════════════════════════════════════════════
+function abrirPostVisitaModal(id) {
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  document.getElementById('pv-lead-id').value = id;
+  document.getElementById('pv-lead-name').textContent = l.nombre + (l.visitaDt ? ' · Visita: ' + fmtDate(l.visitaDt) : '');
+  const pv = l.postVisita || {};
+  document.getElementById('pv-interes').value = pv.interes || '';
+  document.getElementById('pv-modo').value = pv.modo || '';
+  document.getElementById('pv-oferto').value = pv.oferto || '';
+  document.getElementById('pv-cuanto').value = pv.cuanto || '';
+  document.getElementById('pv-reagendo').value = pv.reagendo || '';
+  document.getElementById('pv-nueva-visita').value = pv.nuevaVisita || '';
+  document.getElementById('pv-notas').value = pv.notas || '';
+  openModal('modal-pv');
+}
+
+function guardarPostVisita() {
+  const id = document.getElementById('pv-lead-id').value;
+  const l = leads.find(x => x.id === id);
+  if (!l) return;
+  const nuevaVisita = document.getElementById('pv-nueva-visita').value;
+  l.postVisita = {
+    interes: document.getElementById('pv-interes').value,
+    modo: document.getElementById('pv-modo').value,
+    oferto: document.getElementById('pv-oferto').value,
+    cuanto: document.getElementById('pv-cuanto').value,
+    reagendo: document.getElementById('pv-reagendo').value,
+    nuevaVisita: nuevaVisita || null,
+    notas: document.getElementById('pv-notas').value,
+    fecha: hoyIso(),
+  };
+  if (nuevaVisita) { l.visitaDt = nuevaVisita; l.etapa = 'Agendado'; }
+  else if (l.etapa === 'Agendado') l.etapa = 'Visitado';
+  l.modo = l.postVisita.modo;
+  l.oferta = l.postVisita.cuanto;
+  l.ultimaActividad = hoyIso();
+  l.toques = l.toques || [];
+  l.toques.push({ tipo: 'Visita realizada', nota: l.postVisita.notas || 'Post-visita registrada', fecha: hoyIso(), etapa: l.etapa });
+  LS.saveLeads(leads);
+  closeModal('modal-pv');
+  toast('✓ Post-visita guardada');
+  renderPostvisitaTable();
+}
+
+function renderPostvisitaTable() {
+  const visitados = leads.filter(l => l.etapa === 'Visitado' || l.postVisita);
+  const tbody = document.getElementById('postvisita-tbody');
+  if (!visitados.length) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty"><div class="icon">🏠</div><p>Sin visitas registradas aún.</p></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = visitados.map(l => {
+    const pv = l.postVisita || {};
+    return `<tr>
+      <td><strong style="cursor:pointer;color:var(--accent);" onclick="abrirModalLead('${l.id}')">${l.nombre}</strong></td>
+      <td style="font-size:11px;">${l.visitaProp || l.propiedad || '—'}</td>
+      <td style="font-size:11px;">${l.visitaDt ? fmtDateShort(l.visitaDt) : '—'}</td>
+      <td style="font-size:11px;">${pv.interes || '—'}</td>
+      <td style="font-size:11px;">${l.presupuesto || pv.cuanto || '—'}</td>
+      <td style="font-size:11px;">${pv.modo || l.modo || '—'}</td>
+      <td style="font-size:11px;">${pv.oferto === 'Sí' ? '✓ ' + (pv.cuanto||'') : pv.oferto || '—'}</td>
+      <td>${badgeEtapa(l.etapa)}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="abrirPostVisitaModal('${l.id}')">✏️ Editar</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  SEGUIMIENTO
+// ══════════════════════════════════════════════
+function renderSeguimientoTable() {
+  const activos = leads.filter(l => !['Cerrado', 'Perdido'].includes(l.etapa))
+    .sort((a, b) => diasDesde(a.ultimaActividad) - diasDesde(b.ultimaActividad)).reverse();
+  const tbody = document.getElementById('seg-tbody');
+  if (!activos.length) {
+    tbody.innerHTML = `<tr><td colspan="7" class="empty"><div class="icon">🔁</div><p>Sin leads activos.</p></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = activos.map(l => {
+    const dias = diasDesde(l.ultimaActividad);
+    const dColor = dias >= 5 ? 'var(--red)' : dias >= 3 ? 'var(--yellow)' : 'var(--green)';
+    const toques = (l.toques || []).length;
+    const ultimoToque = l.toques?.length ? l.toques[l.toques.length - 1] : null;
+    const proxAccion = ultimoToque?.prox || '—';
+    return `<tr>
+      <td><strong style="cursor:pointer;color:var(--accent);" onclick="abrirModalLead('${l.id}')">${l.nombre}</strong><div style="font-size:10px;color:var(--ink2);">${l.canal}</div></td>
+      <td>${badgeEtapa(l.etapa)}</td>
+      <td style="font-size:11px;">${fmtDateShort(l.ultimaActividad)}</td>
+      <td style="font-weight:700;color:${dColor};">${dias}d</td>
+      <td style="font-size:11px;color:var(--accent);">${proxAccion}</td>
+      <td><span style="font-family:Archivo;font-weight:800;font-size:16px;">${toques}</span></td>
+      <td><button class="btn btn-primary btn-sm" onclick="abrirModalLead('${l.id}');switchTab('modal','timeline')">➕ Toque</button></td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  CANALES
+// ══════════════════════════════════════════════
+function renderCanales() {
+  const canales = ['Facebook','TikTok','Instagram','Referido','Portal web','Google Ads','WhatsApp directo','Otro'];
+  const grid = document.getElementById('canales-grid');
+  const tbody = document.getElementById('canales-tbody');
+
+  grid.innerHTML = canales.map(c => {
+    const cnt = leads.filter(l => l.canal === c).length;
+    if (!cnt) return '';
+    const cierres = leads.filter(l => l.canal === c && l.etapa === 'Cerrado').length;
+    const conv = cnt ? ((cierres / cnt) * 100).toFixed(1) : 0;
+    return `<div class="kpi">
+      <div class="kpi-num" style="font-size:22px;">${cnt}</div>
+      <div class="kpi-lbl">${c}</div>
+      <div class="kpi-delta up">${conv}% conv.</div>
+    </div>`;
+  }).join('');
+
+  tbody.innerHTML = canales.map(c => {
+    const total = leads.filter(l => l.canal === c).length;
+    if (!total) return '';
+    const contactados = leads.filter(l => l.canal === c && l.etapa !== 'Nuevo').length;
+    const visitas = leads.filter(l => l.canal === c && ['Visitado','Negociando','Cerrado'].includes(l.etapa)).length;
+    const cierres = leads.filter(l => l.canal === c && l.etapa === 'Cerrado').length;
+    const conv = total ? ((cierres / total) * 100).toFixed(1) : 0;
+    const calidad = conv >= 10 ? '🟢 Alta' : conv >= 3 ? '🟡 Media' : '🔴 Baja';
+    return `<tr>
+      <td><strong>${c}</strong></td>
+      <td>${total}</td><td>${contactados}</td><td>${visitas}</td><td>${cierres}</td>
+      <td><strong>${conv}%</strong></td><td>${calidad}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  AGENDA CALENDAR
+// ══════════════════════════════════════════════
+function agendaNavMes(dir) {
+  agendaMesOffset += dir;
+  renderAgenda();
+}
+
+function renderAgenda() {
+  const base = new Date();
+  base.setDate(1);
+  base.setMonth(base.getMonth() + agendaMesOffset);
+  document.getElementById('agenda-mes-label').textContent = nombreMes(base);
+
+  renderAgendaMensual(base);
+  renderAgendaSemanal();
+  renderAgendaDiaria();
+}
+
+function renderAgendaMensual(base) {
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const head = document.getElementById('agenda-cal-head');
+  head.innerHTML = dias.map(d => `<div class="agenda-day-head">${d}</div>`).join('');
+
+  const year = base.getFullYear(), month = base.getMonth();
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const hoyDate = new Date(); hoyDate.setHours(0,0,0,0);
+
+  const cal = document.getElementById('agenda-cal');
+  let cells = [];
+
+  // Empty start
+  for (let i = 0; i < firstDay; i++) cells.push(`<div></div>`);
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dayDate = new Date(year, month, d);
+    const isToday = dayDate.getTime() === hoyDate.getTime();
+
+    const visitasDay = leads.filter(l => l.visitaDt && l.visitaDt.startsWith(dateStr));
+    const seguDay = leads.filter(l => {
+      if (!l.toques?.length) return false;
+      const last = l.toques[l.toques.length-1];
+      return last?.proxDt?.startsWith(dateStr);
+    });
+
+    cells.push(`<div class="agenda-day ${isToday ? 'today' : ''} ${visitasDay.length ? 'has-visit' : ''}">
+      <div class="day-num">${d}</div>
+      ${visitasDay.map(l => `<div class="agenda-event ev-visit" onclick="abrirModalLead('${l.id}')" style="cursor:pointer;" title="${l.nombre}">🏠 ${l.nombre.split(' ')[0]}</div>`).join('')}
+      ${seguDay.map(l => `<div class="agenda-event ev-follow" title="${l.nombre}">🔔 ${l.nombre.split(' ')[0]}</div>`).join('')}
+    </div>`);
+  }
+
+  cal.innerHTML = cells.join('');
+}
+
+function renderAgendaSemanal() {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const monday = new Date(now); monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  const dias = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+  let html = `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;">`;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday); d.setDate(monday.getDate() + i);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const isToday = dateStr === hoyStr();
+    const visitas = leads.filter(l => l.visitaDt && l.visitaDt.startsWith(dateStr));
+    html += `<div style="background:${isToday?'var(--accent-bg)':'var(--surface)'};border:1px solid ${isToday?'var(--accent)':'var(--border)'};border-radius:8px;padding:10px;min-height:120px;">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:${isToday?'var(--accent)':'var(--ink3)'};">${dias[i]}</div>
+      <div style="font-size:16px;font-weight:800;margin:2px 0 8px;">${d.getDate()}</div>
+      ${visitas.map(l => {
+        const h = new Date(l.visitaDt).toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+        return `<div class="agenda-event ev-visit" onclick="abrirModalLead('${l.id}')" style="cursor:pointer;margin-bottom:4px;">🏠 ${h}<br>${l.nombre.split(' ')[0]}</div>`;
+      }).join('')}
+      ${!visitas.length ? `<div style="font-size:10px;color:var(--ink3);font-style:italic;">Libre</div>` : ''}
+    </div>`;
+  }
+  html += '</div>';
+  document.getElementById('agenda-semanal-content').innerHTML = html;
+}
+
+function renderAgendaDiaria() {
+  const hoy = hoyStr();
+  const visitasHoy = leads.filter(l => l.visitaDt && l.visitaDt.startsWith(hoy))
+    .sort((a,b) => new Date(a.visitaDt)-new Date(b.visitaDt));
+  const seguHoy = leads.filter(l => {
+    if (!l.toques?.length) return false;
+    return l.toques.some(t => t.proxDt?.startsWith(hoy));
+  });
+
+  const hoyDate = new Date();
+  document.getElementById('agenda-diaria-content').innerHTML = `
+    <div style="font-family:Archivo;font-weight:800;font-size:16px;margin-bottom:14px;">
+      ${hoyDate.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})}
+    </div>
+    <div class="card"><div class="card-title">🏠 Visitas del día (${visitasHoy.length})</div>
+      ${visitasHoy.length ? visitasHoy.map(l => {
+        const cd = countdownLabel(l.visitaDt);
+        return `<div class="stat-row" style="cursor:pointer;" onclick="abrirModalLead('${l.id}')">
+          <div><strong>${l.nombre}</strong><div style="font-size:11px;color:var(--ink2);">${l.propiedad || '—'} · ${l.canal}</div></div>
+          <div style="text-align:right;"><div style="font-size:12px;">${fmtDateShort(l.visitaDt)}</div><span class="countdown ${cd?.cls||'ok'}">${cd?.label||''}</span></div>
+        </div>`;
+      }).join('') : '<div style="font-size:12px;color:var(--ink3);">Sin visitas hoy.</div>'}
+    </div>
+    <div class="card"><div class="card-title">🔔 Seguimientos programados hoy (${seguHoy.length})</div>
+      ${seguHoy.length ? seguHoy.map(l => `
+        <div class="stat-row" style="cursor:pointer;" onclick="abrirModalLead('${l.id}')">
+          <div><strong>${l.nombre}</strong><div style="font-size:11px;color:var(--ink2);">${l.etapa}</div></div>
+          ${badgeEtapa(l.etapa)}
+        </div>`).join('') : '<div style="font-size:12px;color:var(--ink3);">Sin seguimientos programados.</div>'}
+    </div>`;
+}
+
+// ══════════════════════════════════════════════
+//  SEED DATA (for demo / first load)
+// ══════════════════════════════════════════════
+function seedDemoData() {
+  if (leads.length > 0) return;
+  const ahora = new Date();
+  const mañana = new Date(); mañana.setDate(mañana.getDate()+1); mañana.setHours(10,0,0,0);
+  const pasado = new Date(); pasado.setDate(pasado.getDate()+3); pasado.setHours(15,30,0,0);
+
+  leads = [
+    {
+      id: 'demo1', nombre: 'María Condori', numero: '+51 998 123 456', canal: 'Facebook',
+      propiedad: 'Depto Los Olivos', presupuesto: '$85,000', etapa: 'Agendado',
+      contesto: 'Sí', interes: 'Alto', visitaDt: mañana.toISOString().slice(0,16),
+      visitaProp: 'Depto Los Olivos — 2do piso', notas: 'Busca para vivir, tiene pre-aprobado bancario.',
+      creadoEn: new Date(ahora.getTime()-86400000*2).toISOString(), ultimaActividad: new Date(ahora.getTime()-3600000).toISOString(), modo:'', oferta:'', motivoPerdida:'',
+      toques: [
+        { tipo:'Registro inicial', nota:'Llegó por Facebook Ad de Depto Los Olivos', fecha: new Date(ahora.getTime()-86400000*2).toISOString(), etapa:'Nuevo' },
+        { tipo:'Llamada realizada', nota:'Contestó de inmediato, muy interesada. Quiere 3 dormitorios.', fecha: new Date(ahora.getTime()-86400000).toISOString(), etapa:'Contactado' },
+        { tipo:'Visita agendada', nota:`Visita confirmada para ${mañana.toLocaleDateString('es-PE')} a las 10am`, fecha: new Date(ahora.getTime()-3600000).toISOString(), etapa:'Agendado', prox:'Confirmar por WhatsApp la tarde anterior' },
+      ], postVisita: null
+    },
+    {
+      id: 'demo2', nombre: 'Carlos Mamani', numero: '+51 977 654 321', canal: 'TikTok',
+      propiedad: 'Casa Urb. Tarapacá', presupuesto: '$120,000', etapa: 'Contactado',
+      contesto: 'Sí', interes: 'Medio', visitaDt: null, visitaProp:'',
+      notas: 'Inversionista, busca para alquilar. Tiene tiempo para decidir.',
+      creadoEn: new Date(ahora.getTime()-86400000*5).toISOString(), ultimaActividad: new Date(ahora.getTime()-86400000*5).toISOString(), modo:'Contado', oferta:'', motivoPerdida:'',
+      toques: [
+        { tipo:'Registro inicial', nota:'Vio video TikTok de casa Tarapacá', fecha: new Date(ahora.getTime()-86400000*5).toISOString(), etapa:'Nuevo' },
+        { tipo:'WhatsApp enviado', nota:'Envié catálogo y precios. Dijo que lo revisaría.', fecha: new Date(ahora.getTime()-86400000*5).toISOString(), etapa:'Contactado' },
+      ], postVisita: null
+    },
+    {
+      id: 'demo3', nombre: 'Rosa Quispe', numero: '+51 955 789 012', canal: 'Referido',
+      propiedad: 'Lote Alto de Lima', presupuesto: '$45,000', etapa: 'Negociando',
+      contesto: 'Sí', interes: 'Alto', visitaDt: pasado.toISOString().slice(0,16),
+      visitaProp: 'Lote Alto de Lima — Mz C Lote 8', notas: 'Referida por Miguel Torres. Quiere negociar precio.',
+      creadoEn: new Date(ahora.getTime()-86400000*10).toISOString(), ultimaActividad: new Date(ahora.getTime()-3600000*2).toISOString(), modo:'Crédito hipotecario', oferta:'$42,000', motivoPerdida:'',
+      toques: [
+        { tipo:'Registro inicial', nota:'Referida por cliente Miguel Torres', fecha: new Date(ahora.getTime()-86400000*10).toISOString(), etapa:'Nuevo' },
+        { tipo:'Llamada realizada', nota:'Muy interesada. Visita confirmada.', fecha: new Date(ahora.getTime()-86400000*7).toISOString(), etapa:'Agendado' },
+        { tipo:'Visita realizada', nota:'Le encantó el lote. Ofertó $42,000. Estamos negociando.', fecha: new Date(ahora.getTime()-86400000*3).toISOString(), etapa:'Negociando' },
+      ],
+      postVisita: { interes:'Sí, muy interesado', modo:'Crédito hipotecario', oferto:'Sí', cuanto:'$42,000', reagendo:'No', notas:'Pidió 3 días para hablar con su banco.', fecha: new Date(ahora.getTime()-86400000*3).toISOString() }
+    },
+  ];
+  LS.saveLeads(leads);
+}
+
+// ══════════════════════════════════════════════
+//  INIT — ahora espera la conexión a Firebase (ver módulo al final del archivo)
+// ══════════════════════════════════════════════
+function renderResumenGeneral(){
+  const elTotal = document.getElementById('sumKpiTotal');
+  if(!elTotal) return; // la vista Inicio aún no está en el DOM en este momento
+  const ahora = new Date();
+  const haceUnaSemana = new Date(ahora.getTime() - 7*86400000);
+
+  const total = leads.length;
+  const nuevos = leads.filter(l => l.creadoEn && new Date(l.creadoEn) >= haceUnaSemana).length;
+  const enSeguimiento = leads.filter(l => !['Cerrado','Perdido'].includes(l.etapa)).length;
+  const calificados = leads.filter(l => l.etapa === 'Negociando').length;
+  const visitasAgendadas = leads.filter(l => l.visitaDt && new Date(l.visitaDt) >= ahora).length;
+
+  elTotal.textContent = total;
+  document.getElementById('sumKpiNuevos').textContent = nuevos;
+  document.getElementById('sumKpiSeguimiento').textContent = enSeguimiento;
+  document.getElementById('sumKpiCalificados').textContent = calificados;
+  document.getElementById('sumKpiVisitas').textContent = visitasAgendadas;
+}
+
+function runInitialRender(){
+  // No usamos seedDemoData() aquí: con datos reales de Firebase, no queremos leads de ejemplo falsos.
+  renderDashboard();
+  updateBadges();
+  if(typeof updateBuscBadge==='function')updateBuscBadge();
+  updateBuscBadge();
+  renderResumenGeneral();
+}
+
+// Update countdowns every minute
+setInterval(() => {
+  const activePage = document.querySelector('.page.active')?.id;
+  if (activePage === 'page-dashboard') renderDashboard();
+  if (activePage === 'page-leads') renderLeadsTable();
+  if (activePage === 'page-agenda') renderAgenda();
+  updateBadges();
+}, 60000);
+
+// ════════════════════════════════════════
+//  BUSCADORES MODULE
+// ════════════════════════════════════════
+function loadBusc(){ return []; } // ya no se usa para cargar; la carga inicial la hace bootCrm()
+function saveBusc(d){ buscadores = d; window.__crmSave && window.__crmSave({ buscadores: d }); if(typeof renderResumenGeneral==='function') renderResumenGeneral(); }
+// buscadores ya se declaró arriba, junto con leads
+
+function toggleHipotecario(){
+  const v=document.getElementById('fb-modo-busc')?.value||'';
+  const el=document.getElementById('hip-extra');
+  if(el)el.style.display=['Hipotecario / Crédito','Contado + Hipotecario'].includes(v)?'block':'none';
+}
+function toggleFinalidad(){
+  const v=document.getElementById('fb-finalidad')?.value||'';
+  const isVivir=v.includes('vivir');
+  const isNeg=v.includes('Negocio')||v.includes('negocio')||v.includes('comercio')||v.includes('Mixto');
+  const isInv=v.includes('Inversión')||v.includes('alquiler total');
+  const show=(id,flag)=>{const el=document.getElementById(id);if(el)el.style.display=flag?'':'none';};
+  show('fin-vivir',isVivir);show('fin-giro',isNeg);show('fin-afluencia',isNeg);show('fin-acceso',isNeg);show('fin-rentabilidad',isInv);
+}
+function resetBuscForm(){
+  ['fb-nombre','fb-numero','fb-pmin','fb-pmax','fb-distrito','fb-referencias','fb-m2min','fb-m2ideal','fb-cuota','fb-inicial','fb-rentabilidad','fb-obs-req','fb-notas','fb-quien-vive'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const setV=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+  setV('fb-id','');setV('fb-lead-origen-id','');
+  ['fb-origen','fb-estado-busc','fb-urgencia','fb-conversa','fb-modo-busc','fb-zona-busc','fb-tipo-busc','fb-dorm','fb-cochera','fb-jardin','fb-finalidad','fb-flex-zona'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  const dbanner=document.getElementById('derivar-banner');if(dbanner)dbanner.style.display='none';
+  const dtitle=document.getElementById('fb-title');if(dtitle)dtitle.textContent='Nuevo Buscador';
+  ['hip-extra','fin-vivir','fin-giro','fin-afluencia','fin-acceso','fin-rentabilidad'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+}
+function derivarABuscador(){
+  const id=document.getElementById('modal-lead-id').value;
+  const l=leads.find(x=>x.id===id);if(!l)return;
+  closeModal('modal-lead');
+  resetBuscForm();
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+  set('fb-nombre',l.nombre);set('fb-numero',l.numero);
+  set('fb-pmin',l.presupuesto||'');set('fb-pmax',l.presupuesto||'');
+  set('fb-origen','Derivado de lead');set('fb-notas',l.notas||'');
+  set('fb-id','');set('fb-lead-origen-id',l.id);
+  if(l.modo){const el=document.getElementById('fb-modo-busc');if(el)el.value=l.modo;}
+  const dtitle=document.getElementById('fb-title');if(dtitle)dtitle.textContent='Nuevo Buscador (derivado de lead)';
+  const dbanner=document.getElementById('derivar-banner');if(dbanner)dbanner.style.display='block';
+  showPage('buscadores');
+  // navigate to the form
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  const pg=document.getElementById('page-nuevo-buscador');if(pg)pg.classList.add('active');
+  toast('✓ Datos pre-llenados. Completa el perfil.','var(--orange)');
+}
+function pvDerivar(){
+  const id=document.getElementById('pv-lead-id').value;
+  const l=leads.find(x=>x.id===id);if(!l)return;
+  guardarPostVisita();closeModal('modal-pv');
+  resetBuscForm();
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v;};
+  set('fb-nombre',l.nombre);set('fb-numero',l.numero);
+  set('fb-pmin',l.presupuesto||'');set('fb-pmax',l.presupuesto||'');
+  set('fb-origen','Derivado de lead');set('fb-id','');set('fb-lead-origen-id',l.id);
+  const pvn=document.getElementById('pv-notas');
+  set('fb-notas',(l.notas||'')+(pvn?.value?'\nPost-visita: '+pvn.value:''));
+  const dtitle=document.getElementById('fb-title');if(dtitle)dtitle.textContent='Nuevo Buscador (post-visita)';
+  const dbanner=document.getElementById('derivar-banner');if(dbanner)dbanner.style.display='block';
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  const pg=document.getElementById('page-nuevo-buscador');if(pg)pg.classList.add('active');
+  toast('✓ Datos pre-llenados desde post-visita.','var(--orange)');
+}
+function guardarBuscador(){
+  const nombre=(document.getElementById('fb-nombre')?.value||'').trim();
+  const numero=(document.getElementById('fb-numero')?.value||'').trim();
+  if(!nombre){toast('Escribe un nombre','var(--red)');return;}
+  if(!numero){toast('Escribe un número','var(--red)');return;}
+  const v=(id)=>document.getElementById(id)?.value||'';
+  const editId=v('fb-id');
+  const b={
+    id:editId||Date.now().toString(),
+    nombre,numero,
+    origen:v('fb-origen'),leadOrigenId:v('fb-lead-origen-id'),
+    estado:v('fb-estado-busc')||'Activo',urgencia:v('fb-urgencia'),
+    pmin:v('fb-pmin'),pmax:v('fb-pmax'),conversa:v('fb-conversa'),
+    modo:v('fb-modo-busc'),entidad:v('fb-entidad'),preaprobado:v('fb-preaprobado'),
+    cuota:v('fb-cuota'),inicial:v('fb-inicial'),
+    zona:v('fb-zona-busc'),distrito:v('fb-distrito'),referencias:v('fb-referencias'),flexZona:v('fb-flex-zona'),
+    tipo:v('fb-tipo-busc'),m2min:v('fb-m2min'),m2ideal:v('fb-m2ideal'),
+    dorm:v('fb-dorm'),cochera:v('fb-cochera'),jardin:v('fb-jardin'),
+    finalidad:v('fb-finalidad'),quienVive:v('fb-quien-vive'),
+    giro:v('fb-giro'),afluencia:v('fb-afluencia'),acceso:v('fb-acceso'),rentabilidad:v('fb-rentabilidad'),
+    obsReq:v('fb-obs-req'),notas:v('fb-notas'),
+    creadoEn:editId?(buscadores.find(x=>x.id===editId)?.creadoEn||hoyIso()):hoyIso(),
+    ultimaActividad:hoyIso(),
+    propsMostradas:editId?(buscadores.find(x=>x.id===editId)?.propsMostradas||[]):[],
+  };
+  if(editId){const idx=buscadores.findIndex(x=>x.id===editId);if(idx>=0)buscadores[idx]=b;else buscadores.push(b);}
+  else buscadores.push(b);
+  saveBusc(buscadores);
+  toast('✓ Buscador guardado','var(--orange)');
+  showPage('buscadores');
+}
+function bEstadoBadge(e){
+  const m={'Activo':'badge-visitado','En espera':'badge-agendado','Ya compró':'badge-cerrado','Frío':'badge-perdido'};
+  return'<span class="badge '+(m[e]||'badge-nuevo')+'">'+( e||'Activo')+'</span>';
+}
+function renderBuscadores(){
+  const search=(document.getElementById('bf-search')?.value||'').toLowerCase();
+  const fEst=document.getElementById('bf-estado')?.value||'';
+  const fTipo=document.getElementById('bf-tipo')?.value||'';
+  const fZona=document.getElementById('bf-zona')?.value||'';
+  let fil=buscadores.filter(b=>{
+    const ms=!search||b.nombre.toLowerCase().includes(search)||(b.numero||'').includes(search);
+    return ms&&(!fEst||b.estado===fEst)&&(!fTipo||b.tipo===fTipo)&&(!fZona||b.zona===fZona);
+  }).sort((a,b2)=>new Date(b2.creadoEn)-new Date(a.creadoEn));
+  const tbody=document.getElementById('busc-tbody');
+  if(!tbody)return;
+  tbody.innerHTML=fil.length?fil.map((b,i)=>`<tr>
+    <td style="color:var(--ink3);">${i+1}</td>
+    <td><strong style="cursor:pointer;color:var(--accent);" onclick="openBuscDetail('${b.id}')">${b.nombre}</strong><div style="font-size:10px;color:var(--ink2);">${b.origen||'—'}</div></td>
+    <td><a href="tel:${b.numero}" style="color:var(--ink2);font-size:12px;">${b.numero}</a></td>
+    <td style="font-size:11px;">${b.pmin||'?'} – ${b.pmax||'?'}</td>
+    <td style="font-size:11px;">${b.modo||'—'}${b.entidad?' · '+b.entidad:''}</td>
+    <td style="font-size:11px;">${b.zona||'—'}${b.distrito?' / '+b.distrito:''}</td>
+    <td style="font-size:11px;">${b.tipo||'—'}</td>
+    <td style="font-size:11px;">${b.finalidad||'—'}${b.giro?' · '+b.giro:''}</td>
+    <td>${bEstadoBadge(b.estado)}</td>
+    <td style="font-size:11px;">${(b.propsMostradas||[]).length} prop.</td>
+    <td><div style="display:flex;gap:3px;">
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="openBuscDetail('${b.id}')" title="Ver perfil">👁</button>
+      <button class="btn btn-secondary btn-sm btn-icon" onclick="editarBuscador('${b.id}')" title="Editar">✏️</button>
+      <button class="btn btn-danger btn-sm btn-icon" onclick="elimBuscador('${b.id}')" title="Eliminar">🗑</button>
+    </div></td>
+  </tr>`).join(''):`<tr><td colspan="11" class="empty"><div class="icon">🔍</div><p>Sin buscadores registrados.<br>Agrega uno nuevo o deriva un lead desde Mis Leads.</p></td></tr>`;
+  updateBuscBadge();
+}
+function clearBF(){
+  ['bf-search'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['bf-estado','bf-tipo','bf-zona'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  renderBuscadores();
+}
+function openBuscDetail(id){
+  const b=buscadores.find(x=>x.id===id);if(!b)return;
+  const info=[
+    ['Número',b.numero],['Origen',b.origen||'—'],['Estado',b.estado||'—'],
+    ['Urgencia',b.urgencia||'—'],['Presupuesto',`${b.pmin||'?'} – ${b.pmax||'?'} USD`],
+    ['Conversable',b.conversa||'—'],['Modo de compra',b.modo||'—'],
+    ['Entidad financiera',b.entidad||'—'],['Pre-aprobación',b.preaprobado||'—'],
+    ['Cuota máx.',b.cuota||'—'],['Inicial',b.inicial||'—'],
+    ['Zona',`${b.zona||'—'}${b.distrito?' / '+b.distrito:''}`],
+    ['Referencias',b.referencias||'—'],['Flexible en zona',b.flexZona||'—'],
+    ['Tipo propiedad',b.tipo||'—'],['Metraje',`mín ${b.m2min||'—'}, ideal ${b.m2ideal||'—'}`],
+    ['Dormitorios',b.dorm||'—'],['Cochera',b.cochera||'—'],['Jardín',b.jardin||'—'],
+    ['Finalidad',b.finalidad||'—'],['Giro negocio',b.giro||'—'],
+    ['Afluencia req.',b.afluencia||'—'],['Acceso vehicular',b.acceso||'—'],
+    ['Notas',b.notas||'—'],['Props mostradas',`${(b.propsMostradas||[]).length} registrada(s)`],
+  ];
+  alert('PERFIL BUSCADOR — '+b.nombre+'\n\n'+info.map(([k,v])=>k+': '+v).join('\n'));
+}
+function editarBuscador(id){
+  const b=buscadores.find(x=>x.id===id);if(!b)return;
+  resetBuscForm();
+  const set=(eid,val)=>{const el=document.getElementById(eid);if(el)el.value=val||'';};
+  set('fb-id',b.id);set('fb-nombre',b.nombre);set('fb-numero',b.numero);
+  set('fb-origen',b.origen);set('fb-estado-busc',b.estado);set('fb-urgencia',b.urgencia);
+  set('fb-pmin',b.pmin);set('fb-pmax',b.pmax);set('fb-conversa',b.conversa);
+  set('fb-modo-busc',b.modo);set('fb-zona-busc',b.zona);set('fb-distrito',b.distrito);
+  set('fb-referencias',b.referencias);set('fb-flex-zona',b.flexZona);
+  set('fb-tipo-busc',b.tipo);set('fb-m2min',b.m2min);set('fb-m2ideal',b.m2ideal);
+  set('fb-dorm',b.dorm);set('fb-cochera',b.cochera);set('fb-jardin',b.jardin);
+  set('fb-finalidad',b.finalidad);set('fb-quien-vive',b.quienVive);
+  set('fb-giro',b.giro);set('fb-afluencia',b.afluencia);set('fb-acceso',b.acceso);
+  set('fb-rentabilidad',b.rentabilidad);set('fb-obs-req',b.obsReq);set('fb-notas',b.notas);
+  const dtitle=document.getElementById('fb-title');if(dtitle)dtitle.textContent='Editar Buscador';
+  toggleHipotecario();toggleFinalidad();
+  document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+  const pg=document.getElementById('page-nuevo-buscador');if(pg)pg.classList.add('active');
+}
+function elimBuscador(id){
+  if(!confirm('¿Eliminar este buscador?'))return;
+  buscadores=buscadores.filter(x=>x.id!==id);saveBusc(buscadores);toast('Eliminado','var(--red)');renderBuscadores();
+}
+function updateBuscBadge(){
+  if(typeof buscadores==='undefined')return;
+  const cnt=buscadores.filter(b=>b.estado==='Activo').length;
+  const bdg=document.getElementById('badge-buscadores');
+  if(bdg){bdg.textContent=cnt;bdg.style.display=cnt?'':'none';}
+  const kb=document.getElementById('kpi-buscadores');if(kb)kb.textContent=cnt;
+}
+function registrarPropMostrada(buscId){
+  const nombre=prompt('Nombre de la propiedad mostrada:');if(!nombre)return;
+  const reaccion=prompt('Reacción del cliente:\n1. Muy interesado\n2. Interesado con dudas\n3. No le convenció\n4. Rechazó por precio\n5. Rechazó por zona\n6. Ofertó')||'—';
+  const nota=prompt('Nota (¿por qué no cerró? ¿qué le faltó?):')||'';
+  const b=buscadores.find(x=>x.id===buscId);if(!b)return;
+  b.propsMostradas=b.propsMostradas||[];
+  b.propsMostradas.push({nombre,reaccion,nota,fecha:hoyStr()});
+  b.ultimaActividad=hoyIso();
+  saveBusc(buscadores);toast('✓ Propiedad registrada');renderBuscadores();
+}
+
+  </script>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, setDoc, updateDoc, addDoc, collection, query, where, orderBy, limit, serverTimestamp, getDocs, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBJPLelgVb3JXVDR4iHv3-fzpofOwHEpfk",
+      authDomain: "cima-ventures-lotizacion.firebaseapp.com",
+      projectId: "cima-ventures-lotizacion",
+      storageBucket: "cima-ventures-lotizacion.firebasestorage.app",
+      messagingSenderId: "1096056750760",
+      appId: "1:1096056750760:web:ca878a57646c9057f9789d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let unsubscribeMine = null;
+
+    function currentMonthKey(){
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    }
+
+    /* LOGIN REAL */
+    document.getElementById('loginBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginCode').value;
+      const msg = document.getElementById('loginMsg');
+      msg.textContent = '';
+      try{
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch(err){
+        msg.textContent = 'Correo o contraseña incorrectos.';
+      }
+    });
+
+    /* SEAR — módulos (placeholder individual por módulo) */
+    document.querySelectorAll('.sear-module').forEach(card => {
+      card.addEventListener('click', () => {
+        const nombre = card.dataset.modulo;
+        document.getElementById('searModuleTitle').textContent = 'Trabajando en: ' + nombre;
+        const placeholder = document.getElementById('searModulePlaceholder');
+        placeholder.style.display = 'block';
+        placeholder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* CERRAR SESIÓN */
+    document.getElementById('portalLogoutBtn').addEventListener('click', () => {
+      signOut(auth);
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if(user){
+        // Verificar que esta cuenta sea realmente un asesor registrado antes de dejarla entrar
+        const advisorDoc = await getDoc(doc(db, 'advisors', user.uid));
+        if(!advisorDoc.exists()){
+          document.getElementById('loginMsg').textContent = 'Esta cuenta no tiene un back office de asesor asociado.';
+          await signOut(auth);
+          return;
+        }
+
+        document.getElementById('loginGate').style.display = 'none';
+        document.getElementById('appShell').classList.add('show');
+
+        const advisorName = advisorDoc.data().name;
+
+        // Escuchar SUS ventas del mes, en tiempo real
+        if(unsubscribeMine) unsubscribeMine();
+        const myQuery = query(
+          collection(db, 'sales'),
+          where('monthKey', '==', currentMonthKey()),
+          where('advisorUid', '==', user.uid)
+        );
+        unsubscribeMine = onSnapshot(myQuery, (snapshot) => {
+          updateMyProgress(snapshot.size);
+        }, (err) => console.warn('Firestore (individual):', err.message));
+
+        // Arrancar el CRM integrado con los datos reales de este asesor
+        bootCrm(user.uid);
+
+        // Arrancar Grupos FB
+        currentAdvisorUid = user.uid;
+        currentAdvisorName = advisorName;
+        loadGruposFB();
+        loadMisPublicaciones();
+        loadPlanning();
+      } else {
+        document.getElementById('loginGate').style.display = 'flex';
+        document.getElementById('appShell').classList.remove('show');
+        if(unsubscribeMine){ unsubscribeMine(); unsubscribeMine = null; }
+      }
+    });
+
+    /* CRM INTEGRADO — carga y guarda los leads/buscadores de este asesor en Firestore */
+    async function bootCrm(uid){
+      const ref = doc(db, 'crm_data', uid);
+      const snap = await getDoc(ref);
+      const data = snap.exists() ? snap.data() : {};
+      leads = data.leads || [];
+      buscadores = data.buscadores || [];
+
+      window.__crmSave = (partial) => {
+        setDoc(doc(db, 'crm_data', uid), partial, { merge: true });
+      };
+
+      if(typeof runInitialRender === 'function') runInitialRender();
+    }
+
+    function updateMyProgress(count){
+      const el = document.getElementById('myProgressVal');
+      const fill = document.getElementById('myProgressFill');
+      const msg = document.getElementById('myProgressMsg');
+      if(!el) return;
+      el.textContent = count;
+      fill.style.width = Math.min(count/5,1)*100 + '%';
+      const msgs = [
+        'Aún no registras ventas este mes — vamos por la primera.',
+        '¡Primera venta! Ya estás en marcha.',
+        'Vas por la segunda — buen ritmo.',
+        'Nivel acelerador — tus ventas anteriores ya suben de valor.',
+        'Sigues sumando, todo cuenta para el mes.',
+        '¡Al tope! Cada venta extra sigue valiendo S/1,400.'
+      ];
+      msg.textContent = msgs[Math.min(count,5)];
+    }
+
+    function updateTeamProgress(count){
+      const el = document.getElementById('teamProgressVal');
+      const fill = document.getElementById('teamProgressFill');
+      const msg = document.getElementById('teamProgressMsg');
+      if(!el) return;
+      el.textContent = count;
+      fill.style.width = Math.min(count/16,1)*100 + '%';
+      let m;
+      if(count >= 14) m = '¡Meta 3 alcanzada! Todo el equipo suma +S/300 este mes.';
+      else if(count >= 10) m = 'Meta 2 alcanzada — +S/200 para todo el equipo. Faltan ' + (14-count) + ' para Meta 3.';
+      else if(count >= 8) m = 'Meta 1 alcanzada — +S/100 para todo el equipo. Faltan ' + (10-count) + ' para Meta 2.';
+      else m = 'Faltan ' + (8-count) + ' ventas del equipo para alcanzar Meta 1.';
+      msg.textContent = m;
+    }
+
+    // Avance del equipo: todas las ventas del mes actual, sin importar el asesor (no requiere login)
+    const teamQuery = query(collection(db, 'sales'), where('monthKey', '==', currentMonthKey()));
+    onSnapshot(teamQuery, (snapshot) => {
+      updateTeamProgress(snapshot.size);
+    }, (err) => console.warn('Firestore (equipo):', err.message));
+
+    /* ══════════════ GRUPOS FB ══════════════ */
+    let currentAdvisorUid = null;
+    let currentAdvisorName = null;
+
+    document.getElementById('addGrupoBtn').addEventListener('click', async () => {
+      const nombreEl = document.getElementById('nuevoGrupoNombre');
+      const linkEl = document.getElementById('nuevoGrupoLink');
+      const msg = document.getElementById('addGrupoMsg');
+      const nombre = nombreEl.value.trim();
+      const link = linkEl.value.trim();
+
+      if(!nombre){
+        msg.textContent = 'Escribe el nombre del grupo.';
+        msg.className = 'form-msg err';
+        return;
+      }
+      try{
+        await addDoc(collection(db, 'grupos_fb'), {
+          nombre, link: link || null,
+          creadoPor: currentAdvisorName || 'Asesor',
+          creadoEn: new Date().toISOString()
+        });
+        msg.textContent = '✓ Grupo agregado al pool compartido.';
+        msg.className = 'form-msg ok';
+        nombreEl.value = '';
+        linkEl.value = '';
+        loadGruposFB();
+      } catch(err){
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'form-msg err';
+      }
+    });
+
+    async function loadGruposFB(){
+      const listEl = document.getElementById('gruposList');
+      const gruposSnap = await getDocs(collection(db, 'grupos_fb'));
+
+      if(gruposSnap.empty){
+        listEl.innerHTML = '<div class="crm-note">Todavía no hay grupos en el pool — agrega el primero arriba.</div>';
+        return;
+      }
+
+      const haceUnaSemana = new Date(Date.now() - 7*86400000).toISOString();
+      let html = '';
+
+      for(const grupoDoc of gruposSnap.docs){
+        const g = grupoDoc.data();
+        const pubQuery = query(
+          collection(db, 'publicaciones_grupo'),
+          where('grupoId', '==', grupoDoc.id),
+          where('fecha', '>=', haceUnaSemana)
+        );
+        const pubSnap = await getDocs(pubQuery);
+        const count = pubSnap.size;
+
+        let estado, label, disabled = '';
+        if(count >= 3){ estado = 'rojo'; label = 'Bloqueado esta semana'; disabled = 'disabled'; }
+        else if(count === 2){ estado = 'naranja'; label = 'Último cupo'; }
+        else { estado = 'verde'; label = 'Libre'; }
+
+        html += '<div class="grupo-card">' +
+          '<span class="semaforo-dot ' + estado + '"></span>' +
+          '<div class="grupo-info">' +
+            '<div class="grupo-nombre">' + g.nombre + '</div>' +
+            '<div class="grupo-meta">' + count + '/3 publicaciones esta semana · ' + label +
+              (g.link ? ' · <a class="grupo-link" href="' + g.link + '" target="_blank">Abrir grupo</a>' : '') +
+            '</div>' +
+          '</div>' +
+          (estado === 'rojo'
+            ? '<span class="grupo-bloqueado-tag">🔴 Bloqueado</span>'
+            : '<button class="btn-publicar" data-id="' + grupoDoc.id + '" data-nombre="' + g.nombre.replace(/"/g,'&quot;') + '" ' + disabled + '>Publiqué aquí</button>'
+          ) +
+        '</div>';
+      }
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('.btn-publicar').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const grupoId = btn.dataset.id;
+          const grupoNombre = btn.dataset.nombre;
+          const pieza = prompt('¿Qué pieza/ángulo publicaste? (opcional, ayuda para el reporte)') || '';
+          try{
+            await addDoc(collection(db, 'publicaciones_grupo'), {
+              grupoId, grupoNombre,
+              advisorUid: currentAdvisorUid,
+              advisorName: currentAdvisorName,
+              pieza: pieza.trim(),
+              mensajesRecibidos: null,
+              fecha: new Date().toISOString(),
+              createdAt: serverTimestamp()
+            });
+            loadGruposFB();
+            loadMisPublicaciones();
+          } catch(err){
+            alert('Error al registrar: ' + err.message);
+          }
+        });
+      });
+    }
+
+    async function loadMisPublicaciones(){
+      const listEl = document.getElementById('misPublicacionesList');
+      const q = query(
+        collection(db, 'publicaciones_grupo'),
+        where('advisorUid', '==', currentAdvisorUid),
+        orderBy('createdAt', 'desc'),
+        limit(15)
+      );
+      let snap;
+      try{
+        snap = await getDocs(q);
+      } catch(err){
+        listEl.innerHTML = '<div class="crm-note">Aún no hay publicaciones registradas.</div>';
+        return;
+      }
+
+      if(snap.empty){
+        listEl.innerHTML = '<div class="crm-note">Aún no has registrado ninguna publicación.</div>';
+        return;
+      }
+
+      let html = '';
+      snap.forEach(d => {
+        const p = d.data();
+        const fecha = p.fecha ? p.fecha.substring(0,10) : '—';
+        html += '<div class="pub-row">' +
+          '<div class="pub-info"><b>' + p.grupoNombre + '</b><div class="pub-meta">' + fecha + (p.pieza ? ' · ' + p.pieza : '') + '</div></div>' +
+          '<div class="pub-msg-input"><span>Mensajes WhatsApp:</span>' +
+            '<input type="number" min="0" value="' + (p.mensajesRecibidos ?? '') + '" data-id="' + d.id + '" placeholder="0"></div>' +
+        '</div>';
+      });
+      listEl.innerHTML = html;
+
+      listEl.querySelectorAll('.pub-msg-input input').forEach(input => {
+        input.addEventListener('change', async () => {
+          const val = parseInt(input.value, 10);
+          try{
+            await updateDoc(doc(db, 'publicaciones_grupo', input.dataset.id), {
+              mensajesRecibidos: isNaN(val) ? null : val
+            });
+          } catch(err){
+            console.warn('Error guardando mensajes:', err.message);
+          }
+        });
+      });
+    }
+
+    /* ══════════════ SUBTABS DE GESTIÓN ══════════════ */
+    document.querySelectorAll('.subtab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.subtab-btn').forEach(b => b.classList.toggle('active', b === btn));
+        const target = btn.dataset.subtab;
+        document.querySelectorAll('.subtab-panel').forEach(p => p.classList.toggle('active', p.id === 'subtab-' + target));
+      });
+    });
+
+    /* ══════════════ MI PLANNING ══════════════ */
+    const META_DIARIA = 5;
+
+    function franjaSugerida(){
+      const h = new Date().getHours();
+      if(h >= 7 && h < 9) return '🟢 Ahora es buena hora (7-9am)';
+      if(h >= 12 && h < 14) return '🟢 Ahora es buena hora (12-2pm)';
+      if(h >= 20 && h < 23) return '🟢 Ahora es la mejor hora (8-11pm)';
+      return 'Próxima: 7-9am, 12-2pm, 8-11pm';
+    }
+
+    async function loadPlanning(){
+      document.getElementById('planHoraVal').textContent = franjaSugerida();
+
+      // Traer TODAS mis publicaciones (para hoy, el mes, y calcular última vez por grupo)
+      const myQ = query(collection(db, 'publicaciones_grupo'), where('advisorUid', '==', currentAdvisorUid));
+      const mySnap = await getDocs(myQ);
+      const misPubs = mySnap.docs.map(d => d.data());
+
+      const hoy = new Date().toISOString().substring(0,10);
+      const mesActual = currentMonthKey();
+      const hoyCount = misPubs.filter(p => p.fecha && p.fecha.substring(0,10) === hoy).length;
+      const mesCount = misPubs.filter(p => p.fecha && p.fecha.substring(0,7) === mesActual).length;
+
+      document.getElementById('planHoyVal').textContent = hoyCount + '/' + META_DIARIA;
+      document.getElementById('planMesVal').textContent = mesCount;
+      document.getElementById('planProgressFill').style.width = Math.min((hoyCount/META_DIARIA)*100, 100) + '%';
+
+      // última vez que YO publiqué en cada grupo, y si ya publiqué HOY en cada grupo
+      const ultimaPorGrupo = {};
+      const hoyPorGrupo = {};
+      misPubs.forEach(p => {
+        if(!p.grupoId || !p.fecha) return;
+        if(!ultimaPorGrupo[p.grupoId] || p.fecha > ultimaPorGrupo[p.grupoId]) ultimaPorGrupo[p.grupoId] = p.fecha;
+        if(p.fecha.substring(0,10) === hoy) hoyPorGrupo[p.grupoId] = true;
+      });
+
+      // Traer el pool completo y su semáforo (últimos 7 días, de todo el equipo)
+      const gruposSnap = await getDocs(collection(db, 'grupos_fb'));
+      const haceUnaSemana = new Date(Date.now() - 7*86400000).toISOString();
+      const candidatos = [];
+
+      for(const grupoDoc of gruposSnap.docs){
+        const g = grupoDoc.data();
+        const pubQuery = query(
+          collection(db, 'publicaciones_grupo'),
+          where('grupoId', '==', grupoDoc.id),
+          where('fecha', '>=', haceUnaSemana)
+        );
+        const pubSnap = await getDocs(pubQuery);
+        const count = pubSnap.size;
+        if(count >= 3) continue; // bloqueado, no aparece en el checklist
+
+        candidatos.push({
+          id: grupoDoc.id,
+          nombre: g.nombre,
+          ultima: ultimaPorGrupo[grupoDoc.id] || null,
+          count,
+          yaHoy: !!hoyPorGrupo[grupoDoc.id]
+        });
+      }
+
+      // Ordenar: nunca publicado primero, luego el que lleva más tiempo esperando
+      candidatos.sort((a,b) => {
+        if(!a.ultima && !b.ultima) return 0;
+        if(!a.ultima) return -1;
+        if(!b.ultima) return 1;
+        return a.ultima < b.ultima ? -1 : 1;
+      });
+
+      window.__planCandidatos = candidatos; // para que el buscador filtre sin re-consultar Firebase
+      renderPlanChecklist(candidatos);
+    }
+
+    function renderPlanChecklist(candidatos){
+      const sugEl = document.getElementById('planSugerencias');
+
+      if(candidatos.length === 0){
+        sugEl.innerHTML = '<div class="crm-note">No hay grupos libres en el pool ahora mismo — todos están en cooldown. Agrega más grupos en "Pool de Grupos".</div>';
+        return;
+      }
+
+      sugEl.innerHTML = candidatos.map(c => {
+        const diasTexto = c.ultima ? Math.floor((Date.now() - new Date(c.ultima)) / 86400000) + ' días sin publicar ahí' : 'nunca publicaste aquí';
+        const dotClass = c.count === 2 ? 'naranja' : 'verde';
+        return '<label class="check-row ' + (c.yaHoy ? 'done' : '') + '" data-id="' + c.id + '" data-nombre="' + c.nombre.replace(/"/g,'&quot;') + '">' +
+          '<input type="checkbox" ' + (c.yaHoy ? 'checked disabled' : '') + '>' +
+          '<span class="check-box">✓</span>' +
+          '<div class="check-info">' +
+            '<div class="check-nombre">' + c.nombre + '</div>' +
+            '<div class="check-meta"><span class="check-dot ' + dotClass + '"></span>' + diasTexto + ' · ' + c.count + '/3 del equipo esta semana</div>' +
+          '</div>' +
+        '</label>';
+      }).join('');
+
+      sugEl.querySelectorAll('.check-row').forEach(row => {
+        row.addEventListener('click', async (e) => {
+          if(row.classList.contains('done')) { e.preventDefault(); return; }
+          e.preventDefault();
+          const grupoId = row.dataset.id;
+          const grupoNombre = row.dataset.nombre;
+          const pieza = prompt('¿Qué pieza/ángulo publicaste? (opcional, ayuda para el reporte)') || '';
+          try{
+            await addDoc(collection(db, 'publicaciones_grupo'), {
+              grupoId, grupoNombre,
+              advisorUid: currentAdvisorUid,
+              advisorName: currentAdvisorName,
+              pieza: pieza.trim(),
+              mensajesRecibidos: null,
+              fecha: new Date().toISOString(),
+              createdAt: serverTimestamp()
+            });
+            loadPlanning();
+            loadGruposFB();
+            loadMisPublicaciones();
+          } catch(err){
+            alert('Error al registrar: ' + err.message);
+          }
+        });
+      });
+    }
+
+    document.getElementById('planBuscador').addEventListener('input', (e) => {
+      const texto = e.target.value.trim().toLowerCase();
+      const candidatos = window.__planCandidatos || [];
+      const filtrados = texto ? candidatos.filter(c => c.nombre.toLowerCase().includes(texto)) : candidatos;
+      renderPlanChecklist(filtrados);
+    });
+  </script>
+
+</body>
+</html>
