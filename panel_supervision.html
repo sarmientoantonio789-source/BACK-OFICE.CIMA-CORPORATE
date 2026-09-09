@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Supervisión — Briad Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B1420; --panel:#121F30; --panel-2:#0F1A28; --line: rgba(255,255,255,0.08);
+    --green:#1A3A29; --sage:#79BE8A; --gold:#C9A84C; --red:#E0715A; --blue:#5B8DBE;
+    --text:#EDF2EE; --text-soft:#8FA096;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;}
+
+  /* LOGIN */
+  .login-gate{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:24px;}
+  .login-card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:40px 34px;max-width:380px;width:100%;}
+  .login-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;margin:0 0 6px;}
+  .login-sub{font-size:12.5px;color:var(--text-soft);margin-bottom:22px;}
+  .login-field{margin-bottom:14px;}
+  .login-field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-soft);font-weight:600;margin-bottom:6px;}
+  .login-field input{width:100%;padding:11px 12px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-size:14px;}
+  .login-field input:focus{outline:none;border-color:var(--sage);}
+  .login-btn{width:100%;padding:12px;border:none;border-radius:8px;background:var(--sage);color:var(--green);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:6px;}
+  .login-msg{margin-top:12px;font-size:12.5px;text-align:center;color:var(--red);min-height:16px;}
+
+  /* APP SHELL */
+  .app-shell{display:none;min-height:100vh;}
+  .app-shell.show{display:flex;}
+
+  .sidebar{width:230px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:20px 14px;position:sticky;top:0;height:100vh;}
+  .sidebar-brand{display:flex;align-items:center;gap:9px;padding:0 6px 18px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .brand-dot{width:9px;height:9px;border-radius:50%;background:var(--sage);flex-shrink:0;}
+  .brand-text{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;letter-spacing:.02em;}
+  .brand-sub{font-size:10.5px;color:var(--text-soft);}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--text-soft);margin-bottom:4px;transition:background .15s ease,color .15s ease;}
+  .nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:10.5px;font-weight:800;padding:1px 7px;border-radius:10px;}
+  .nav-item:hover{background:rgba(255,255,255,0.04);color:var(--text);}
+  .nav-item.active{background:var(--green);color:var(--text);}
+  .nav-item.active .nav-icon{color:var(--sage);}
+  .nav-icon{width:24px;height:24px;border-radius:6px;background:rgba(255,255,255,0.06);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:11px;}
+  .sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--line);}
+  .logout-btn{width:100%;background:none;border:1px solid var(--line);color:var(--text-soft);border-radius:8px;padding:8px 10px;font-size:12px;cursor:pointer;}
+  .logout-btn:hover{background:rgba(255,255,255,0.05);color:var(--text);}
+  .sidebar-copy{margin-top:10px;font-size:10.5px;color:var(--text-soft);opacity:.6;}
+
+  .main{flex:1;min-width:0;}
+  .view{display:none;padding:36px 40px 80px;max-width:1040px;}
+  .view.active{display:block;}
+  .view-head{margin-bottom:28px;}
+  .view-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11.5px;color:var(--sage);font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px;}
+  h2{font-family:'Space Grotesk',sans-serif;font-size:22px;margin:0 0 6px;font-weight:700;}
+  .view-head p{color:var(--text-soft);font-size:13.5px;margin:0;max-width:560px;}
+  .section{margin-top:36px;}
+  h3{font-family:'Space Grotesk',sans-serif;font-size:15.5px;margin:0 0 14px;font-weight:600;}
+
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;}
+  .kpis-compact{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;}
+  .kpis-compact .kpi{padding:11px 14px;}
+  .report-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:16px;}
+  .report-tab{background:none;border:none;color:var(--text-soft);font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;}
+  .report-tab.active{color:var(--sage);border-bottom-color:var(--sage);}
+  .report-panel{display:none;}
+  .report-panel.active{display:block;}
+  .reporte-tipo-btn{background:none;border:none;color:var(--text-soft);font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:6px;cursor:pointer;}
+  .reporte-tipo-btn.active{background:var(--sage);color:var(--green);}
+  .ac-modo-btn{background:none;color:var(--text-soft);font-family:inherit;}
+  .ac-modo-btn.active{background:var(--sage);color:var(--green);}
+  .kpis-compact .kpi-label{font-size:9.5px;margin-bottom:5px;}
+  .kpis-compact .kpi-value{font-size:16px;}
+  .agenda-tipo-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .agenda-tipo-card .agenda-tipo-titulo{font-size:13px;font-weight:700;margin-bottom:10px;}
+  .agenda-tipo-card .agenda-tipo-fila{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line);}
+  .agenda-tipo-card .agenda-tipo-fila:first-of-type{border-top:none;}
+  .agenda-tipo-card .agenda-tipo-fila .num{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--sage);}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
+  .kpi-label{font-size:10.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;line-height:1.3;}
+  .kpi-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--sage);}
+  .kpi-value.warn{color:var(--red);}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+  .field label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-soft);font-weight:600;margin-bottom:6px;}
+  .field input, .field select{width:100%;padding:10px 11px;border-radius:8px;border:1px solid var(--line);background:var(--panel-2);color:var(--text);font-size:13.5px;}
+  .field input:focus, .field select:focus{outline:none;border-color:var(--sage);}
+  .btn{padding:11px 18px;border:none;border-radius:8px;background:var(--sage);color:var(--green);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;}
+  .btn-secondary{padding:9px 16px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;cursor:pointer;}
+  .btn-del{padding:6px 12px;border:1px solid var(--red);border-radius:7px;background:none;color:var(--red);font-size:12px;cursor:pointer;}
+  .btn-del:hover{background:rgba(224,113,90,0.12);}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .form-msg{margin-top:12px;font-size:12.5px;min-height:16px;}
+  .form-msg.ok{color:var(--sage);}
+  .form-msg.err{color:var(--red);}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;max-width:440px;width:100%;max-height:90vh;overflow-y:auto;}
+  .modal-box .field{margin-top:12px;}
+  .modal-box .field:first-of-type{margin-top:0;}
+  .modal-box label{font-size:11.5px;color:var(--text-soft);font-weight:600;text-transform:uppercase;letter-spacing:0.03em;display:block;margin-bottom:5px;}
+  .modal-box select, .modal-box textarea{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13.5px;}
+  .modal-box textarea{min-height:60px;resize:vertical;}
+  .fecha-hora-row{display:flex;gap:6px;align-items:center;}
+  .fecha-hora-row input[type=date]{flex:1.4;min-width:0;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 8px;color:var(--text);font-family:inherit;font-size:13px;}
+  .fecha-hora-row input.hora-min-input{width:64px;flex:none;min-width:0;text-align:center;letter-spacing:0.5px;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 4px;color:var(--text);font-family:inherit;font-size:13px;}
+  .ampm-toggle{display:flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-shrink:0;}
+  .ampm-btn{border:none;background:var(--panel-2);color:var(--text-soft);font-weight:700;font-size:11.5px;padding:9px 9px;cursor:pointer;}
+  .ampm-btn.active{background:var(--sage);color:var(--green);}
+
+  table{width:100%;border-collapse:collapse;margin-top:4px;}
+  th{text-align:left;padding:10px 12px;font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-soft);border-bottom:1px solid var(--line);}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:13.5px;}
+  td.num{font-family:'JetBrains Mono',monospace;text-align:right;}
+
+  .note{font-size:12px;color:var(--text-soft);margin-top:14px;}
+  .trend-legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-soft);}
+  .legend-item b{color:var(--text);font-family:'JetBrains Mono',monospace;margin-left:2px;}
+  .legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+  /* FUNNEL AGREGADO */
+  .funnel-row{display:flex;align-items:center;gap:12px;padding:7px 0;}
+  .funnel-label{width:110px;font-size:12.5px;font-weight:600;flex-shrink:0;}
+  .funnel-track{flex:1;height:10px;background:var(--panel-2);border-radius:6px;overflow:hidden;}
+  .funnel-fill{height:100%;border-radius:6px;background:var(--sage);}
+  .funnel-count{width:32px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--text-soft);}
+
+  /* RANKING */
+  .rank-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);}
+  .rank-row:last-child{border-bottom:none;}
+  .rank-pos{width:22px;font-family:'Space Grotesk',sans-serif;font-weight:700;color:var(--gold);font-size:14px;}
+  .rank-name{flex:1;font-size:13.5px;font-weight:600;}
+  .rank-bar-track{margin-top:6px;height:6px;background:var(--panel-2);border-radius:4px;overflow:hidden;}
+  .rank-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--sage));}
+  .rank-value{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--sage);white-space:nowrap;}
+
+  .mobile-topbar{display:none;background:var(--panel);padding:14px 18px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
+  .mobile-menu-btn{background:none;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;}
+
+  @media (max-width:860px){
+    .sidebar{position:fixed;left:-240px;top:0;z-index:150;transition:left .25s ease;}
+    .sidebar.open{left:0;}
+    .mobile-topbar{display:flex;}
+    .view{padding:26px 18px 70px;}
+    .kpis{grid-template-columns:repeat(2,1fr);}
+    .form-grid{grid-template-columns:1fr;}
+  }
+</style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+</head>
+<body>
+
+  <!-- LOGIN GERENCIAL -->
+  <div class="login-gate" id="loginGate">
+    <div class="login-card">
+      <div class="login-title">Panel de Supervisión</div>
+      <div class="login-sub">Briad Group · Acceso solo para supervisores</div>
+      <div class="login-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="adminEmail" placeholder="tu@correo.com">
+      </div>
+      <div class="login-field">
+        <label>Contraseña</label>
+        <input type="password" id="adminPassword" placeholder="••••••">
+      </div>
+      <button class="login-btn" id="adminLoginBtn">Ingresar</button>
+      <div class="login-msg" id="loginMsg"></div>
+    </div>
+  </div>
+
+  <!-- APP SHELL -->
+  <div class="app-shell" id="appShell">
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-brand" style="flex-direction:column;align-items:flex-start;">
+        <div class="brand-text">BRIAD GROUP</div>
+        <div style="font-size:9px;letter-spacing:.1em;color:var(--text-soft);margin:1px 0 4px;">INMOBILIARIA</div>
+        <div class="brand-sub">Panel de Supervisión</div>
+      </div>
+
+      <div class="nav-item active" data-view="dashboard"><span class="nav-icon">D</span> Dashboard</div>
+      <div class="nav-item" data-view="mi-equipo"><span class="nav-icon">👥</span> Mi Equipo</div>
+      <div class="nav-item" data-view="seguimiento-asesores"><span class="nav-icon">S</span> Seguimiento Asesores</div>
+      <div class="nav-item" data-view="reportes"><span class="nav-icon">📊</span> Reportes</div>
+
+      <div class="sidebar-foot">
+        <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+        <div class="sidebar-copy">Briad Group © Uso interno</div>
+        <div style="margin-top:4px;font-size:10px;color:var(--text-soft);font-weight:700;letter-spacing:0.04em;opacity:0.6;">v1.0</div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="mobile-topbar">
+        <button class="mobile-menu-btn" id="menuBtn">☰ Menú</button>
+        <span class="brand-text">BRIAD GROUP</span>
+      </div>
+
+      <!-- VIEW: DASHBOARD -->
+      <div class="view active" id="view-dashboard">
+        <div class="view-head">
+          <span class="view-eyebrow">Este mes</span>
+          <h2>Panel de control en vivo</h2>
+          <p>Conectado directamente a Firebase — esto refleja datos reales de todo el equipo.</p>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-label">Conversión global</div><div class="kpi-value" id="kpiConversion">—</div></div>
+          <div class="kpi"><div class="kpi-label">Calificados (negociando)</div><div class="kpi-value" id="kpiCalificados">—</div></div>
+          <div class="kpi"><div class="kpi-label">Leads en riesgo (+5 días)</div><div class="kpi-value warn" id="kpiRiesgo">—</div></div>
+        </div>
+
+        <div class="section">
+          <h3>Agendamientos — Meet / Oficina / Visita</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+            <div class="agenda-tipo-card">
+              <div class="agenda-tipo-titulo">📹 Meet</div>
+              <div class="agenda-tipo-fila"><span>Hoy</span><span class="num" id="agendaMeetHoy">—</span></div>
+              <div class="agenda-tipo-fila"><span>Esta semana</span><span class="num" id="agendaMeetSemana">—</span></div>
+              <div class="agenda-tipo-fila"><span>Este mes</span><span class="num" id="agendaMeetMes">—</span></div>
+            </div>
+            <div class="agenda-tipo-card">
+              <div class="agenda-tipo-titulo">🏢 Oficina</div>
+              <div class="agenda-tipo-fila"><span>Hoy</span><span class="num" id="agendaOficinaHoy">—</span></div>
+              <div class="agenda-tipo-fila"><span>Esta semana</span><span class="num" id="agendaOficinaSemana">—</span></div>
+              <div class="agenda-tipo-fila"><span>Este mes</span><span class="num" id="agendaOficinaMes">—</span></div>
+            </div>
+            <div class="agenda-tipo-card">
+              <div class="agenda-tipo-titulo">🏞️ Visita a Terreno</div>
+              <div class="agenda-tipo-fila"><span>Hoy</span><span class="num" id="agendaVisitaHoy">—</span></div>
+              <div class="agenda-tipo-fila"><span>Esta semana</span><span class="num" id="agendaVisitaSemana">—</span></div>
+              <div class="agenda-tipo-fila"><span>Este mes</span><span class="num" id="agendaVisitaMes">—</span></div>
+            </div>
+            <div class="agenda-tipo-card">
+              <div class="agenda-tipo-titulo">📞 Llamadas</div>
+              <div class="agenda-tipo-fila"><span>Hoy</span><span class="num" id="agendaLlamadaHoy">—</span></div>
+              <div class="agenda-tipo-fila"><span>Esta semana</span><span class="num" id="agendaLlamadaSemana">—</span></div>
+              <div class="agenda-tipo-fila"><span>Este mes</span><span class="num" id="agendaLlamadaMes">—</span></div>
+              <div class="agenda-tipo-fila" style="border-top:1px dashed var(--line);margin-top:4px;padding-top:8px;"><span style="color:var(--text-soft);font-size:11.5px;">↳ de las cuales, automáticas hoy</span><span class="num" id="agendaLlamadaAutoHoy" style="color:var(--gold);">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Contexto general</h3>
+          <div class="kpis-compact">
+            <div class="kpi"><div class="kpi-label">Asesores activos</div><div class="kpi-value" id="kpiAdvisors">—</div></div>
+            <div class="kpi"><div class="kpi-label">Ventas del equipo (mes)</div><div class="kpi-value" id="kpiTeamSales">—</div></div>
+            <div class="kpi"><div class="kpi-label">Leads totales del equipo</div><div class="kpi-value" id="kpiLeadsTotal">—</div></div>
+            <div class="kpi"><div class="kpi-label">Nuevos esta semana</div><div class="kpi-value" id="kpiNuevosSemana">—</div></div>
+            <div class="kpi"><div class="kpi-label">Meta más cercana</div><div class="kpi-value" id="kpiNextMeta" style="font-size:13px;">—</div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between;">
+            <div>
+              <div style="font-weight:700;font-size:14px;margin-bottom:3px;">🔄 Rotación automática de clientes inactivos</div>
+              <div style="font-size:12.5px;color:var(--text-soft);" id="rotacionEstadoTexto">Revisando...</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Días sin gestión antes de rotar:</label>
+              <input type="number" id="rotacionDiasInput" min="1" max="30" style="width:60px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--text);font-family:inherit;text-align:center;">
+              <button class="btn-secondary" id="guardarRotacionDiasBtn">Guardar</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Prospección vs. ventas — evolución del mes</h3>
+          <div class="card">
+            <svg id="trendChart" viewBox="0 0 600 200" style="width:100%;height:200px;display:block;"></svg>
+            <div id="trendLegend" class="trend-legend"></div>
+            <div class="note">Acumulado del mes, cruzando captación, contacto, calificación y cierres — para ver cuánto tráfico/prospección necesitas para llegar a tus ventas.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Funnel de ventas del equipo</h3>
+          <div class="card" id="funnelCard">
+            <div style="color:var(--text-soft);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Ranking de asesores — ventas este mes</h3>
+          <div class="card" id="rankingCard">
+            <div style="color:var(--text-soft);font-size:13px;">Cargando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: MI EQUIPO -->
+      <div class="view" id="view-mi-equipo">
+        <div class="view-head">
+          <span class="view-eyebrow" id="miEquipoNombreSupervisor">Mi equipo</span>
+          <h2>Mi Equipo</h2>
+          <p>Agrega o quita asesores de tu equipo. Solo puedes sumar a los que todavía no tienen supervisor.</p>
+        </div>
+
+        <div class="section" style="margin-top:0;">
+          <h3>Crear nuevo asesor</h3>
+          <div class="card">
+            <div class="form-grid">
+              <div class="field"><label>Nombre completo</label><input type="text" id="newAdvisorName" placeholder="Ej: Rosa Mamani"></div>
+              <div class="field"><label>Correo electrónico</label><input type="email" id="newAdvisorEmail" placeholder="rosa@correo.com"></div>
+              <div class="field"><label>Contraseña inicial</label><input type="text" id="newAdvisorPassword" placeholder="Mínimo 6 caracteres"></div>
+              <div class="field"><label>Tipo</label>
+                <select id="newAdvisorTipo">
+                  <option value="interno">Interno</option>
+                  <option value="externo">Externo</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn" id="createAdvisorBtn">Crear asesor</button>
+            <div class="form-msg" id="createAdvisorMsg"></div>
+            <div class="note">El nuevo asesor queda automáticamente en tu equipo — no hace falta agregarlo aparte.</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Agregar a mi equipo</h3>
+          <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <select id="miEquipoDisponiblesSelect" style="flex:1;min-width:200px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--text);font-family:inherit;">
+              <option value="">— elegir asesor sin equipo —</option>
+            </select>
+            <button class="btn" id="miEquipoAgregarBtn">Agregar a mi equipo</button>
+          </div>
+          <div class="form-msg" id="miEquipoMsg"></div>
+        </div>
+
+        <div class="section">
+          <h3>Mi equipo actual</h3>
+          <div class="card">
+            <table>
+              <thead><tr><th>Nombre</th><th>Correo</th><th>Tipo</th><th>Acciones</th></tr></thead>
+              <tbody id="miEquipoActualBody">
+                <tr><td colspan="4" style="color:var(--text-soft);">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: SEGUIMIENTO ASESORES -->
+      <div class="view" id="view-seguimiento-asesores">
+        <div class="view-head">
+          <span class="view-eyebrow">Equipo</span>
+          <h2>Seguimiento Asesores</h2>
+          <p>Elige un asesor para ver su avance y auditar su cartera.</p>
+        </div>
+
+        <div class="section" style="margin-top:0;">
+          <div class="card" id="seguimientoAsesoresList" style="padding:10px;">
+            <div style="color:var(--text-soft);font-size:13px;padding:14px;">Cargando...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: DETALLE DE ASESOR -->
+      <div class="view" id="view-asesor-detalle">
+        <div class="view-head">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+            <button class="btn-secondary" id="volverAsesoresBtn">← Volver a Seguimiento Asesores</button>
+            <button class="btn" id="verReportesAsesorBtn">📊 Ver Reportes de este asesor</button>
+          </div>
+          <span class="view-eyebrow">Auditoría individual</span>
+          <h2 id="detalleAsesorNombre">—</h2>
+          <p id="detalleAsesorCorreo">—</p>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-label">Leads totales</div><div class="kpi-value" id="detKpiTotal">—</div></div>
+          <div class="kpi"><div class="kpi-label">Nuevos sin gestionar</div><div class="kpi-value" id="detKpiNuevos">—</div></div>
+          <div class="kpi"><div class="kpi-label">En seguimiento</div><div class="kpi-value" id="detKpiSeguimiento">—</div></div>
+          <div class="kpi"><div class="kpi-label">Ventas este mes</div><div class="kpi-value" id="detKpiVentas">—</div></div>
+        </div>
+
+        <div class="section" style="margin-top:0;">
+          <div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;">
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Ver leads generados en:</label>
+              <select id="detalleMesFiltro" style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;">
+                <option value="">Todo el histórico</option>
+              </select>
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Ver por lote:</label>
+              <select id="detalleLoteFiltro" style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;">
+                <option value="">Todos los lotes</option>
+              </select>
+            </div>
+            <button class="btn" id="abrirAgregarClienteBtn">+ Agregar Cliente</button>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="card">
+            <div id="detalleEtapaTabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"></div>
+            <div id="detalleEtapaBarra" style="display:flex;height:8px;border-radius:4px;overflow:hidden;margin-bottom:6px;"></div>
+            <div id="detalleEtapaPorcentajes" style="display:flex;margin-bottom:4px;"></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <h3 style="margin:0;">Cartera completa de este asesor</h3>
+            <button class="btn" id="descargarCarteraBtn">⬇ Descargar (Excel/CSV)</button>
+          </div>
+          <div class="card">
+            <table>
+              <thead><tr><th>Nombre</th><th>Número</th><th>Canal</th><th>Última instancia</th><th>Comentarios del asesor</th><th>Última actividad</th><th>Resultado</th></tr></thead>
+              <tbody id="detalleLeadsBody">
+                <tr><td colspan="7" style="color:var(--text-soft);">Cargando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: REPORTES (Día / Semana / Rango, consolidado) -->
+      <div class="view" id="view-reportes">
+        <div class="view-head">
+          <span class="view-eyebrow">Para gerencia</span>
+          <h2>Reportes</h2>
+          <p>Tu progreso a los tres niveles — diario, semanal y por rango — en un solo lugar.</p>
+        </div>
+
+        <div class="section" style="margin-top:0;">
+          <div class="card" id="filtroAsesorBanner" style="display:none;background:var(--panel-2);border:1px solid var(--sage);align-items:center;justify-content:space-between;gap:10px;">
+            <span style="font-size:13px;">Mostrando: <b id="filtroAsesorNombre" style="color:var(--sage);">—</b></span>
+            <button class="btn-secondary" id="quitarFiltroAsesorBtn">Ver equipo completo ✕</button>
+          </div>
+
+          <div class="report-tabs">
+            <button class="report-tab active" data-reporttab="dia" type="button">Día</button>
+            <button class="report-tab" data-reporttab="semana" type="button">Semana</button>
+            <button class="report-tab" data-reporttab="rango" type="button">Rango / Mes</button>
+          </div>
+
+          <!-- PANEL: DÍA -->
+          <div class="report-panel active" id="reportPanel-dia">
+            <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Día:</label>
+              <input type="date" id="resumenDiaFecha" style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;">
+              <button class="btn-secondary" id="resumenDiaHoyBtn" type="button">Hoy</button>
+              <button class="btn" id="resumenDiaGenerarBtn">Generar</button>
+            </div>
+            <div class="kpis" id="resumenDiaKpis" style="display:none;margin-top:12px;">
+              <div class="kpi"><div class="kpi-label">Toques registrados</div><div class="kpi-value" id="rdKpiToques">—</div></div>
+              <div class="kpi"><div class="kpi-label">Leads nuevos</div><div class="kpi-value" id="rdKpiNuevos">—</div></div>
+              <div class="kpi"><div class="kpi-label">Ventas cerradas</div><div class="kpi-value" id="rdKpiVentas">—</div></div>
+            </div>
+            <div class="card">
+              <table>
+                <thead><tr><th>Hora</th><th>Asesor</th><th>Cliente</th><th>Tipo</th><th>Nota</th></tr></thead>
+                <tbody id="resumenDiaBody">
+                  <tr><td colspan="5" style="color:var(--text-soft);">Elige un día y dale a "Generar".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PANEL: SEMANA -->
+          <div class="report-panel" id="reportPanel-semana">
+            <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Semana que incluye el día:</label>
+              <input type="date" id="resumenSemanaFecha" style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;">
+              <button class="btn-secondary" id="resumenSemanaHoyBtn" type="button">Esta semana</button>
+              <button class="btn" id="resumenSemanaGenerarBtn">Generar</button>
+            </div>
+            <div class="note" style="margin-top:0;" id="resumenSemanaRangoTexto"></div>
+            <div class="kpis" id="resumenSemanaKpis" style="display:none;margin-top:12px;">
+              <div class="kpi"><div class="kpi-label">Toques registrados</div><div class="kpi-value" id="rsKpiToques">—</div></div>
+              <div class="kpi"><div class="kpi-label">Leads nuevos</div><div class="kpi-value" id="rsKpiNuevos">—</div></div>
+              <div class="kpi"><div class="kpi-label">Ventas cerradas</div><div class="kpi-value" id="rsKpiVentas">—</div></div>
+            </div>
+            <div class="card">
+              <table>
+                <thead><tr><th>Fecha y hora</th><th>Asesor</th><th>Cliente</th><th>Tipo</th><th>Nota</th></tr></thead>
+                <tbody id="resumenSemanaBody">
+                  <tr><td colspan="5" style="color:var(--text-soft);">Elige un día de la semana y dale a "Generar".</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- PANEL: RANGO / MES -->
+          <div class="report-panel" id="reportPanel-rango">
+            <div class="card" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Desde:</label>
+              <input type="date" id="reporteFechaDesde" style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Hasta:</label>
+              <input type="date" id="reporteFechaHasta" style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--text);font-family:inherit;">
+              <button class="btn-secondary" id="reporteAtajoHoyBtn" type="button">Hoy</button>
+              <button class="btn-secondary" id="reporteAtajoMesBtn" type="button">Este mes</button>
+              <button class="btn" id="generarReporteBtn">Generar reporte</button>
+            </div>
+            <div class="note" style="margin-top:0;">Para un solo día, pon la misma fecha en "Desde" y "Hasta". Funciona para cualquier rango — un día, una semana, varios meses juntos.</div>
+
+            <div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <label style="font-size:12.5px;color:var(--text-soft);font-weight:600;">Grupo:</label>
+              <div style="display:flex;background:var(--panel-2);border-radius:8px;padding:3px;">
+                <button class="reporte-tipo-btn active" data-tipofiltro="todos" type="button">Todos</button>
+                <button class="reporte-tipo-btn" data-tipofiltro="interno" type="button">Solo Internos</button>
+                <button class="reporte-tipo-btn" data-tipofiltro="externo" type="button">Solo Externos</button>
+              </div>
+            </div>
+
+            <div class="card">
+              <div style="font-size:13px;font-weight:700;margin-bottom:12px;">Personalizar reporte — qué secciones incluir</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;">
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;"><input type="checkbox" class="reporte-seccion-check" data-seccion="embudoGestion" checked> Embudo de Gestión</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;"><input type="checkbox" class="reporte-seccion-check" data-seccion="embudoAsesor" checked> Embudo por Asesor</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;"><input type="checkbox" class="reporte-seccion-check" data-seccion="gestionTocar" checked> % Gestionado vs. Sin Tocar</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;"><input type="checkbox" class="reporte-seccion-check" data-seccion="resultadoFinal" checked> Resultado final</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;"><input type="checkbox" class="reporte-seccion-check" data-seccion="tasaExito" checked> Tasa de Éxito por Reunión</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-soft);"><input type="checkbox" class="reporte-seccion-check" data-seccion="canal"> Leads por Canal</label>
+                <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text-soft);"><input type="checkbox" class="reporte-seccion-check" data-seccion="ventasAsesor"> Ventas por Asesor</label>
+              </div>
+            </div>
+
+            <div class="card" id="reporteResumenCard" style="display:none;">
+              <div id="reporteResumenContenido"></div>
+              <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+                <button class="btn" id="descargarExcelBtn">⬇ Descargar Excel/CSV</button>
+                <button class="btn-secondary" id="descargarPdfBtn">🖨 Generar PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import {
+      getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+      createUserWithEmailAndPassword, setPersistence, browserSessionPersistence,
+      updateEmail, updatePassword
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, collection, doc, setDoc, getDoc, addDoc, deleteDoc, updateDoc, serverTimestamp,
+      getDocs, query, where, orderBy, limit, onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBJPLelgVb3JXVDR4iHv3-fzpofOwHEpfk",
+      authDomain: "cima-ventures-lotizacion.firebaseapp.com",
+      projectId: "cima-ventures-lotizacion",
+      storageBucket: "cima-ventures-lotizacion.firebasestorage.app",
+      messagingSenderId: "1096056750760",
+      appId: "1:1096056750760:web:ca878a57646c9057f9789d"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    setPersistence(auth, browserSessionPersistence);
+    const db = getFirestore(app);
+
+    function currentMonthKey(){
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    }
+    function diasDesde(fechaISO){
+      if(!fechaISO) return null;
+      const d = (new Date() - new Date(fechaISO)) / 86400000;
+      return Math.floor(d);
+    }
+
+    /* ══════════════════════════════════════════════
+       ROTACIÓN AUTOMÁTICA DE CLIENTES INACTIVOS
+       Corre cada vez que gerencia entra al panel — no es un proceso
+       en segundo plano (eso necesitaría Cloud Functions / plan Blaze).
+       ══════════════════════════════════════════════ */
+    function goToView(name){
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === name));
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
+      document.getElementById('sidebar').classList.remove('open');
+    }
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => goToView(item.dataset.view));
+    });
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('open');
+    });
+
+    /* LOGIN GERENCIAL */
+    async function intentarLoginAdmin(){
+      const email = document.getElementById('adminEmail').value.trim();
+      const password = document.getElementById('adminPassword').value;
+      const msg = document.getElementById('loginMsg');
+      try{
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch(err){
+        msg.textContent = 'No se pudo ingresar: ' + err.message;
+      }
+    }
+    document.getElementById('adminLoginBtn').addEventListener('click', intentarLoginAdmin);
+    ['adminEmail','adminPassword'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') intentarLoginAdmin();
+      });
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => signOut(auth));
+
+    let miSupervisorUid = null;
+
+    onAuthStateChanged(auth, async (user) => {
+      if(user){
+        // Verificar que esta cuenta sea realmente un supervisor antes de dejarla entrar
+        const supervisorDoc = await getDoc(doc(db, 'supervisors', user.uid));
+        if(!supervisorDoc.exists()){
+          document.getElementById('loginMsg').textContent = 'Esta cuenta no tiene permisos de supervisión.';
+          await signOut(auth);
+          return;
+        }
+        miSupervisorUid = user.uid;
+        document.getElementById('miEquipoNombreSupervisor').textContent = supervisorDoc.data().name || '';
+
+        document.getElementById('loginGate').style.display = 'none';
+        document.getElementById('appShell').classList.add('show');
+        loadAdvisors();
+        loadTeamCrmAggregate();
+        loadMiEquipo();
+      } else {
+        document.getElementById('loginGate').style.display = 'flex';
+        document.getElementById('appShell').classList.remove('show');
+      }
+    });
+
+    /* CREAR ASESOR (usando una app secundaria para no cerrar tu sesión) */
+    document.getElementById('createAdvisorBtn').addEventListener('click', async () => {
+      const name = document.getElementById('newAdvisorName').value.trim();
+      const email = document.getElementById('newAdvisorEmail').value.trim();
+      const password = document.getElementById('newAdvisorPassword').value;
+      const tipo = document.getElementById('newAdvisorTipo').value;
+      const msg = document.getElementById('createAdvisorMsg');
+      const btn = document.getElementById('createAdvisorBtn');
+
+      if(!name || !email || password.length < 6){
+        msg.textContent = 'Completa nombre, correo, y una contraseña de al menos 6 caracteres.';
+        msg.className = 'form-msg err';
+        return;
+      }
+
+      btn.disabled = true;
+      msg.textContent = 'Creando cuenta...';
+      msg.className = 'form-msg';
+
+      const secondaryApp = initializeApp(firebaseConfig, 'Secondary-' + Date.now());
+      const secondaryAuth = getAuth(secondaryApp);
+
+      try{
+        const cred = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+        const uid = cred.user.uid;
+        await signOut(secondaryAuth);
+        await deleteApp(secondaryApp);
+
+        await setDoc(doc(db, 'advisors', uid), {
+          name, email, tipo, supervisorUid: miSupervisorUid
+        });
+
+        msg.textContent = '✓ Asesor creado: ' + name + '. Ya está en tu equipo.';
+        msg.className = 'form-msg ok';
+        document.getElementById('newAdvisorName').value = '';
+        document.getElementById('newAdvisorEmail').value = '';
+        document.getElementById('newAdvisorPassword').value = '';
+        document.getElementById('newAdvisorTipo').value = 'interno';
+        loadMiEquipo();
+        loadAdvisors();
+        loadTeamCrmAggregate();
+      } catch(err){
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'form-msg err';
+      }
+      btn.disabled = false;
+    });
+
+    async function loadMiEquipo(){
+      const tbody = document.getElementById('miEquipoActualBody');
+      const select = document.getElementById('miEquipoDisponiblesSelect');
+      try {
+        const advisorsSnap = await getDocs(collection(db, 'advisors'));
+        const miEquipo = advisorsSnap.docs.filter(d => d.data().supervisorUid === miSupervisorUid);
+        const disponibles = advisorsSnap.docs.filter(d => !d.data().supervisorUid);
+
+        select.innerHTML = '<option value="">— elegir asesor sin equipo —</option>' +
+          disponibles.map(d => '<option value="' + d.id + '">' + (d.data().name || 'Asesor') + '</option>').join('');
+
+        if (!miEquipo.length) {
+          tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-soft);">Todavía no tienes asesores en tu equipo.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = miEquipo.map(d => {
+          const a = d.data();
+          const tipo = a.tipo || 'interno';
+          return '<tr><td>' + a.name + '</td><td>' + a.email + '</td>' +
+            '<td><select onchange="cambiarTipoMiEquipo(&quot;' + d.id + '&quot;, this.value)">' +
+              '<option value="interno"' + (tipo === 'interno' ? ' selected' : '') + '>Interno</option>' +
+              '<option value="externo"' + (tipo === 'externo' ? ' selected' : '') + '>Externo</option>' +
+            '</select></td>' +
+            '<td><button class="btn-secondary" style="color:var(--red);" onclick="quitarDeMiEquipo(&quot;' + d.id + '&quot;, ' + JSON.stringify(a.name).replace(/"/g,'&quot;') + ')">Quitar de mi equipo</button></td></tr>';
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--red);">Error: ' + err.message + '</td></tr>';
+      }
+    }
+
+    window.cambiarTipoMiEquipo = async function(uid, nuevoTipo){
+      await updateDoc(doc(db, 'advisors', uid), { tipo: nuevoTipo });
+      loadMiEquipo();
+      loadAdvisors();
+    };
+
+    document.getElementById('miEquipoAgregarBtn').addEventListener('click', async () => {
+      const uid = document.getElementById('miEquipoDisponiblesSelect').value;
+      const msg = document.getElementById('miEquipoMsg');
+      if (!uid) {
+        msg.textContent = 'Elige un asesor de la lista.';
+        msg.className = 'form-msg err';
+        return;
+      }
+      try {
+        await updateDoc(doc(db, 'advisors', uid), { supervisorUid: miSupervisorUid });
+        msg.textContent = '✓ Asesor agregado a tu equipo.';
+        msg.className = 'form-msg ok';
+        loadMiEquipo();
+        loadAdvisors();
+        loadTeamCrmAggregate();
+      } catch (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'form-msg err';
+      }
+    });
+
+    window.quitarDeMiEquipo = async function(uid, nombre){
+      if (!confirm('¿Quitar a ' + nombre + ' de tu equipo? Ya no vas a ver su avance en tu panel.')) return;
+      await updateDoc(doc(db, 'advisors', uid), { supervisorUid: null });
+      loadMiEquipo();
+      loadAdvisors();
+      loadTeamCrmAggregate();
+    };
+
+    async function loadAdvisors(){
+      const advisorsSnapTodos = await getDocs(collection(db, 'advisors'));
+      const advisorsSnap = { docs: advisorsSnapTodos.docs.filter(d => d.data().supervisorUid === miSupervisorUid) };
+      const rankingCard = document.getElementById('rankingCard');
+      const seguimientoList = document.getElementById('seguimientoAsesoresList');
+
+      if(!advisorsSnap.docs.length){
+        rankingCard.innerHTML = '<div style="color:var(--text-soft);font-size:13px;">Todavía no tienes asesores asignados a tu equipo. Pídele a gerencia que te los asigne desde "Crear Cuenta".</div>';
+        seguimientoList.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:14px;">Todavía no tienes asesores asignados a tu equipo.</div>';
+        document.getElementById('kpiAdvisors').textContent = '0';
+        return;
+      }
+
+      document.getElementById('kpiAdvisors').textContent = advisorsSnap.docs.length;
+      let seguimientoHtml = '';
+      const rankData = [];
+
+      for(const advisorDoc of advisorsSnap.docs){
+        const a = advisorDoc.data();
+        const tipo = a.tipo || 'interno';
+        const salesQuery = query(
+          collection(db, 'sales'),
+          where('advisorUid', '==', advisorDoc.id),
+          where('monthKey', '==', currentMonthKey())
+        );
+        const salesSnap = await getDocs(salesQuery);
+        seguimientoHtml += '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 12px;border-bottom:1px solid var(--line);">' +
+          '<div style="font-weight:700;font-size:14.5px;">' + a.name + ' <span style="font-size:10.5px;font-weight:600;color:var(--text-soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-left:4px;">' + (tipo === 'externo' ? 'Externo' : 'Interno') + '</span></div>' +
+          '<button class="btn" onclick="abrirDetalleAsesor(&quot;' + advisorDoc.id + '&quot;, ' + JSON.stringify(a.name).replace(/"/g,'&quot;') + ', ' + JSON.stringify(a.email).replace(/"/g,'&quot;') + ')">Realizar seguimiento →</button>' +
+        '</div>';
+        rankData.push({ name: a.name, count: salesSnap.size });
+      }
+      seguimientoList.innerHTML = seguimientoHtml;
+
+      rankData.sort((x,y) => y.count - x.count);
+      const maxRank = Math.max(1, ...rankData.map(r => r.count));
+      rankingCard.innerHTML = rankData.map((r, i) => {
+        const pct = (r.count / maxRank) * 100;
+        return '<div class="rank-row">' +
+          '<div class="rank-pos">#' + (i+1) + '</div>' +
+          '<div class="rank-name">' + r.name +
+            '<div class="rank-bar-track"><div class="rank-bar-fill" style="width:' + pct + '%;"></div></div>' +
+          '</div>' +
+          '<div class="rank-value">' + r.count + ' venta' + (r.count===1?'':'s') + '</div></div>';
+      }).join('');
+    }
+
+    /* DETALLE INDIVIDUAL DE ASESOR — AUDITORÍA */
+    let detalleLeadsActuales = [];
+    let detalleLeadsTodos = [];
+    let detalleAsesorActual = { uid: '', name: '', email: '' };
+
+    function ultimaInstanciaLead(l){
+      const toques = l.toques || [];
+      if (toques.length) {
+        const ultimo = toques[toques.length - 1];
+        if (['Información enviada', 'En espera de respuesta'].includes(ultimo.tipo)) return ultimo.tipo;
+      }
+      return l.etapa || 'Nuevo';
+    }
+
+    function ultimoComentarioLead(l){
+      const toques = l.toques || [];
+      if (toques.length) {
+        const ultimo = toques[toques.length - 1];
+        if (ultimo.nota && ultimo.nota.trim()) return ultimo.nota.trim();
+      }
+      if (l.notas && l.notas.trim()) return l.notas.trim();
+      return 'Sin comentarios';
+    }
+
+    async function abrirDetalleAsesor(uid, name, email){
+      detalleAsesorActual = { uid, name, email };
+      etapaActivaDetalle = 'todos';
+      document.getElementById('detalleAsesorNombre').textContent = name;
+      document.getElementById('detalleAsesorCorreo').textContent = email;
+      document.getElementById('detalleLeadsBody').innerHTML = '<tr><td colspan="7" style="color:var(--text-soft);">Cargando...</td></tr>';
+      document.getElementById('detKpiTotal').textContent = '—';
+      document.getElementById('detKpiNuevos').textContent = '—';
+      document.getElementById('detKpiSeguimiento').textContent = '—';
+      document.getElementById('detKpiVentas').textContent = '—';
+
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-asesor-detalle'));
+      document.getElementById('sidebar').classList.remove('open');
+      window.scrollTo(0, 0);
+
+      const crmSnap = await getDoc(doc(db, 'crm_data', uid));
+      const leads = crmSnap.exists() ? (crmSnap.data().leads || []) : [];
+      detalleLeadsTodos = leads;
+
+      const salesQuery = query(
+        collection(db, 'sales'),
+        where('advisorUid', '==', uid),
+        where('monthKey', '==', currentMonthKey())
+      );
+      const salesSnap = await getDocs(salesQuery);
+      document.getElementById('detKpiVentas').textContent = salesSnap.size;
+
+      // Poblar el selector de meses con los meses reales en que se generaron leads
+      const meses = {};
+      leads.forEach(l => {
+        if (!l.creadoEn) return;
+        const key = l.creadoEn.slice(0, 7); // "YYYY-MM"
+        meses[key] = true;
+      });
+      const nombresMes = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      const mesesOrdenados = Object.keys(meses).sort().reverse();
+      const selector = document.getElementById('detalleMesFiltro');
+      selector.innerHTML = '<option value="">Todo el histórico</option>' +
+        mesesOrdenados.map(key => {
+          const [anio, mes] = key.split('-');
+          const label = nombresMes[parseInt(mes, 10) - 1] + ' ' + anio;
+          return '<option value="' + key + '">' + label.charAt(0).toUpperCase() + label.slice(1) + '</option>';
+        }).join('');
+      selector.value = '';
+
+      const lotes = {};
+      leads.forEach(l => { if (l.loteCarga) lotes[l.loteCarga] = true; });
+      const loteSelector = document.getElementById('detalleLoteFiltro');
+      loteSelector.innerHTML = '<option value="">Todos los lotes</option>' +
+        Object.keys(lotes).sort().map(l => '<option value="' + l + '">' + l + '</option>').join('');
+      loteSelector.value = '';
+
+      renderDetalleLeads(leads);
+    }
+    window.abrirDetalleAsesor = abrirDetalleAsesor;
+
+    let etapaActivaDetalle = 'todos';
+
+    const ETAPA_TABS = [
+      { key: 'todos', label: 'Todos', color: '#EDF2EE', bg: '#EDF2EE', text: '#121F30' },
+      { key: 'nuevos', label: 'Nuevos', match: l => l.etapa === 'Nuevo', color: '#5B8DBE' },
+      { key: 'contactados', label: 'Contactados', match: l => l.etapa === 'Contactado', color: '#79BE8A' },
+      { key: 'agendados', label: 'Agendados', match: l => l.etapa === 'Agendado', color: '#C9A84C' },
+      { key: 'visitados', label: 'Visitados', match: l => ['Visitado','Negociando'].includes(l.etapa), color: '#E0711D' },
+      { key: 'cerrados', label: 'Cerrados', match: l => l.etapa === 'Cerrado', color: '#3F8F5F' },
+      { key: 'perdidos', label: 'Perdidos', match: l => l.etapa === 'Perdido', color: '#8B8B8B' },
+    ];
+
+    function renderDetalleLeads(leads){
+      detalleLeadsActuales = leads;
+      const nuevosSinGestionar = leads.filter(l => l.etapa === 'Nuevo' && (l.toques || []).length <= 1);
+      const enSeguimiento = leads.filter(l => !['Cerrado', 'Perdido'].includes(l.etapa));
+
+      document.getElementById('detKpiTotal').textContent = leads.length;
+      document.getElementById('detKpiNuevos').textContent = nuevosSinGestionar.length;
+      document.getElementById('detKpiSeguimiento').textContent = enSeguimiento.length;
+
+      // Pestañas por etapa, con su conteo, y la barra de color proporcional debajo.
+      const total = leads.length || 1;
+      const tabsHtml = ETAPA_TABS.map(t => {
+        const count = t.key === 'todos' ? leads.length : leads.filter(t.match).length;
+        const activa = etapaActivaDetalle === t.key;
+        const bg = activa ? t.color : 'transparent';
+        const border = t.key === 'todos' ? '#EDF2EE' : t.color;
+        const textColor = activa ? '#0B1420' : t.color;
+        return '<button class="etapa-tab-btn" data-etapatab="' + t.key + '" style="background:' + bg + ';border:1px solid ' + border + ';color:' + textColor + ';border-radius:8px;padding:8px 13px;font-size:12px;font-weight:700;cursor:pointer;">' + t.label + ' <span style="opacity:0.75;">' + count + '</span></button>';
+      }).join('');
+      document.getElementById('detalleEtapaTabs').innerHTML = tabsHtml;
+      document.querySelectorAll('.etapa-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          etapaActivaDetalle = btn.dataset.etapatab;
+          renderDetalleLeads(detalleLeadsActuales);
+        });
+      });
+
+      const barraTabs = ETAPA_TABS.slice(1); // sin "Todos" — la barra solo muestra el embudo real
+      document.getElementById('detalleEtapaBarra').innerHTML = barraTabs.map(t => {
+        const count = leads.filter(t.match).length;
+        return '<div style="flex:' + Math.max(count, 0.001) + ';background:' + t.color + ';"></div>';
+      }).join('');
+      document.getElementById('detalleEtapaPorcentajes').innerHTML = barraTabs.map(t => {
+        const count = leads.filter(t.match).length;
+        const pct = Math.round((count / total) * 100);
+        return '<div style="flex:' + Math.max(count, 0.001) + ';text-align:center;"><div style="font-size:9px;color:var(--text-soft);white-space:nowrap;">' + t.label + '</div><div style="font-size:11px;font-weight:700;color:' + t.color + ';">' + pct + '%</div></div>';
+      }).join('');
+
+      // Filtra la tabla de abajo según la pestaña activa, sin perder de vista el total ya calculado arriba.
+      const tabActiva = ETAPA_TABS.find(t => t.key === etapaActivaDetalle);
+      const leadsFiltrados = (tabActiva && tabActiva.key !== 'todos') ? leads.filter(tabActiva.match) : leads;
+
+      const tbody = document.getElementById('detalleLeadsBody');
+      if (!leadsFiltrados.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="color:var(--text-soft);">Ningún lead en esta vista.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = leadsFiltrados.map(l => {
+        const fecha = l.ultimaActividad ? new Date(l.ultimaActividad).toLocaleDateString('es-PE') : '—';
+        const comentario = ultimoComentarioLead(l);
+        return '<tr><td>' + (l.nombre || '—') + '</td><td>' + (l.numero || '—') + '</td><td>' + (l.canal || '—') + '</td><td>' + ultimaInstanciaLead(l) + '</td><td style="max-width:260px;font-size:12.5px;color:var(--text-soft);">' + comentario + '</td><td>' + fecha + '</td><td><button class="btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="abrirModalAgendar(&quot;' + l.id + '&quot;, ' + JSON.stringify(l.nombre || 'Cliente sin nombre').replace(/"/g,'&quot;') + ')">Resultado</button></td></tr>';
+      }).join('');
+    }
+
+    function aplicarFiltrosDetalle(){
+      const mes = document.getElementById('detalleMesFiltro').value;
+      const lote = document.getElementById('detalleLoteFiltro').value;
+      let filtrados = detalleLeadsTodos;
+      if (mes) filtrados = filtrados.filter(l => l.creadoEn && l.creadoEn.startsWith(mes));
+      if (lote) filtrados = filtrados.filter(l => l.loteCarga === lote);
+      etapaActivaDetalle = 'todos';
+      renderDetalleLeads(filtrados);
+    }
+
+    document.getElementById('detalleMesFiltro').addEventListener('change', aplicarFiltrosDetalle);
+    document.getElementById('detalleLoteFiltro').addEventListener('change', aplicarFiltrosDetalle);
+
+    /* ══════════════════════════════════════════════
+       AGENDAR / SEGUIMIENTO MANUAL (gerencia asigna en nombre del asesor)
+       ══════════════════════════════════════════════ */
+    function toggleAMPM(containerId, hiddenId, valor){
+      document.getElementById(hiddenId).value = valor;
+      document.querySelectorAll('#' + containerId + ' .ampm-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === valor);
+      });
+    }
+    window.toggleAMPM = toggleAMPM;
+
+    function formatearHoraMin(el){
+      let digitos = el.value.replace(/\D/g, '').slice(0, 4);
+      el.value = digitos.length > 2 ? digitos.slice(0, 2) + ':' + digitos.slice(2) : digitos;
+    }
+    window.formatearHoraMin = formatearHoraMin;
+
+    function clampHoraMin(el){
+      if (el.value === '') return;
+      let [h, m] = el.value.split(':');
+      let hn = parseInt(h, 10);
+      let mn = m === undefined || m === '' ? 0 : parseInt(m, 10);
+      if (isNaN(hn)) { el.value = ''; return; }
+      if (hn < 1) hn = 1;
+      if (hn > 12) hn = 12;
+      if (isNaN(mn)) mn = 0;
+      if (mn > 59) mn = 59;
+      el.value = String(hn).padStart(2, '0') + ':' + String(mn).padStart(2, '0');
+    }
+    window.clampHoraMin = clampHoraMin;
+
+    function combinarFechaHoraGerencia(){
+      const fecha = document.getElementById('agendarFecha').value;
+      const horaMin = document.getElementById('agendarHoraMin').value;
+      const ampm = document.getElementById('agendarAmpm').value;
+      if (!fecha || !horaMin || !horaMin.includes(':')) return '';
+      const [h, m] = horaMin.split(':');
+      const horaVal = parseInt(h, 10);
+      const minVal = parseInt(m, 10) || 0;
+      if (!horaVal || horaVal < 1 || horaVal > 12) return '';
+      let hora24 = horaVal % 12;
+      if (ampm === 'PM') hora24 += 12;
+      return fecha + 'T' + String(hora24).padStart(2, '0') + ':' + String(minVal).padStart(2, '0');
+    }
+
+    let agendarLeadIdActual = null;
+
+    window.abrirModalAgendar = function(leadId, nombreCliente){
+      agendarLeadIdActual = leadId;
+      document.getElementById('modalAgendarClienteInfo').textContent = 'Cliente: ' + nombreCliente + ' — asesor: ' + detalleAsesorActual.name;
+      document.getElementById('agendarTipoContacto').value = 'Llamada realizada';
+      document.getElementById('agendarNuevaEtapa').value = '';
+      document.getElementById('agendarNota').value = '';
+      document.getElementById('agendarProxTexto').value = '';
+      document.getElementById('agendarFecha').value = '';
+      document.getElementById('agendarHoraMin').value = '';
+      document.getElementById('agendarMsg').textContent = '';
+      toggleAMPM('agendarAmpmToggle', 'agendarAmpm', 'AM');
+      document.getElementById('modalAgendar').classList.add('show');
+    };
+
+    window.cerrarModalAgendar = function(){
+      document.getElementById('modalAgendar').classList.remove('show');
+    };
+
+    document.getElementById('guardarAgendarBtn').addEventListener('click', async () => {
+      const msg = document.getElementById('agendarMsg');
+      const tipoContacto = document.getElementById('agendarTipoContacto').value;
+      const nuevaEtapa = document.getElementById('agendarNuevaEtapa').value;
+      const nota = document.getElementById('agendarNota').value.trim();
+      const proxTexto = document.getElementById('agendarProxTexto').value.trim();
+      const fechaHora = combinarFechaHoraGerencia(); // vacío si no se llenó fecha/hora — es opcional aquí
+
+      if (!nota) {
+        msg.textContent = 'Escribe qué pasó con el cliente antes de guardar.';
+        msg.className = 'form-msg err';
+        return;
+      }
+
+      msg.textContent = 'Guardando...';
+      msg.className = 'form-msg';
+
+      try {
+        const uid = detalleAsesorActual.uid;
+        const ref = doc(db, 'crm_data', uid);
+        const snap = await getDoc(ref);
+        const leads = snap.exists() ? (snap.data().leads || []) : [];
+        const idx = leads.findIndex(l => l.id === agendarLeadIdActual);
+        if (idx === -1) {
+          msg.textContent = 'No se encontró el cliente — puede que ya haya cambiado de cartera.';
+          msg.className = 'form-msg err';
+          return;
+        }
+
+        const lead = leads[idx];
+        const ahora = new Date().toISOString();
+
+        if (nuevaEtapa) {
+          lead.etapa = nuevaEtapa;
+        } else if (lead.etapa === 'Nuevo') {
+          // Si se registra cualquier resultado y el cliente seguía en "Nuevo", pasa solo a "Contactado" —
+          // no tiene sentido pedirle a alguien que elija "Contactado" a mano, si ya está pasando ahora mismo.
+          lead.etapa = 'Contactado';
+        }
+
+        // Reagenda según lo que se llenó — misma lógica que usa el asesor en su propio "Registrar Toque".
+        if (tipoContacto === 'Visita agendada' && fechaHora) {
+          lead.visitaDt = fechaHora;
+        } else if (fechaHora) {
+          lead.llamadaDt = fechaHora;
+          lead.llamadaAutoAgendada = false;
+          lead.llamadaNota = proxTexto || 'Seguimiento programado';
+        } else if (tipoContacto === 'Llamada sin respuesta') {
+          // Mismo reintento automático que ya existe en el back office del asesor: mañana 10am.
+          const manana = new Date();
+          manana.setDate(manana.getDate() + 1);
+          const y = manana.getFullYear(), m = String(manana.getMonth() + 1).padStart(2, '0'), d = String(manana.getDate()).padStart(2, '0');
+          lead.llamadaDt = `${y}-${m}-${d}T10:00`;
+          lead.llamadaAutoAgendada = true;
+          lead.llamadaNota = 'Reintento — no contestó (registrado por gerencia)';
+        }
+
+        lead.toques = lead.toques || [];
+        lead.toques.push({ tipo: tipoContacto, nota, fecha: ahora, etapa: lead.etapa });
+        lead.ultimaActividad = ahora;
+        leads[idx] = lead;
+
+        await setDoc(ref, { leads }, { merge: true });
+
+        msg.textContent = '✓ Guardado — ya se refleja en el back office del asesor.';
+        msg.className = 'form-msg ok';
+        setTimeout(() => {
+          cerrarModalAgendar();
+          abrirDetalleAsesor(detalleAsesorActual.uid, detalleAsesorActual.name, detalleAsesorActual.email);
+        }, 900);
+      } catch (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'form-msg err';
+      }
+    });
+
+    document.getElementById('volverAsesoresBtn').addEventListener('click', () => {
+      goToView('seguimiento-asesores');
+    });
+
+    document.getElementById('descargarCarteraBtn').addEventListener('click', () => {
+      if (!detalleLeadsActuales.length) { alert('Este asesor no tiene leads para descargar.'); return; }
+      const filas = [['Nombre','Número','Canal','Última instancia','Comentarios del asesor','Última actividad']];
+      detalleLeadsActuales.forEach(l => {
+        const fecha = l.ultimaActividad ? new Date(l.ultimaActividad).toLocaleDateString('es-PE') : '';
+        filas.push([l.nombre || '', l.numero || '', l.canal || '', ultimaInstanciaLead(l), ultimoComentarioLead(l), fecha]);
+      });
+      const csv = filas.map(fila => fila.map(v => '"' + String(v).replace(/"/g,'""') + '"').join(',')).join('\r\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const mesSeleccionadoTexto = document.getElementById('detalleMesFiltro').selectedOptions[0].textContent;
+      a.download = 'Cartera - ' + detalleAsesorActual.name + ' - ' + mesSeleccionadoTexto + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    /* ══════════════════════════════════════════════
+       LEADS DE LANDING (captación web → back office)
+       ══════════════════════════════════════════════ */
+    let landingLeadsActuales = [];
+
+    function crearLeadManual(nombre, numero, notaInicial, loteCarga){
+      const now = new Date().toISOString();
+      const notaRegistro = loteCarga
+        ? 'Cliente cargado por gerencia — lote: ' + loteCarga + (notaInicial ? '. ' + notaInicial : '')
+        : 'Cliente agregado manualmente por gerencia.' + (notaInicial ? ' ' + notaInicial : '');
+      return {
+        id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
+        nombre: nombre && nombre.trim() ? nombre.trim() : 'Cliente sin nombre',
+        numero, canal: 'Cliente Asignado', propiedad: '', presupuesto: '', etapa: 'Nuevo',
+        contesto: '', interes: '', visitaDt: null, tipoReunion: 'Visita', llamadaDt: null, llamadaNota: '',
+        viveEnTacna: null, ciudadOrigen: '', fechaVisitaTacna: null,
+        notas: notaInicial || '', creadoEn: now, ultimaActividad: now,
+        toques: [{ tipo: 'Registro inicial', nota: notaRegistro, fecha: now, etapa: 'Nuevo' }],
+        postVisita: null, modo: '', oferta: '', motivoPerdida: '',
+        manzana: '', lote: '', loteCarga: loteCarga || '', precioLote: 0, montoSeparacion: 0, fechaSeparacion: null,
+        plazoInicialDias: 0, montoInicial: 0, plazoFinanciamiento: 0, montoAFinanciar: 0,
+        cuotaMensual: 0, separo: false,
+      };
+    }
+
+    document.getElementById('abrirAgregarClienteBtn').addEventListener('click', () => {
+      document.getElementById('modalAgregarClienteInfo').textContent = 'Se va a agregar a la cartera de: ' + detalleAsesorActual.name;
+      document.getElementById('acNombre').value = '';
+      document.getElementById('acNumero').value = '';
+      document.getElementById('acNota').value = '';
+      document.getElementById('acListaMasiva').value = '';
+      const hoy = new Date();
+      const nombresMesCorto = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+      document.getElementById('acLoteNombre').value = 'Lote ' + hoy.getDate() + ' ' + nombresMesCorto[hoy.getMonth()];
+      document.getElementById('agregarClienteMsg').textContent = '';
+      document.querySelectorAll('.ac-modo-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.ac-modo-btn[data-acmodo="uno"]').classList.add('active');
+      document.getElementById('acModoUno').style.display = 'block';
+      document.getElementById('acModoMasivo').style.display = 'none';
+      document.getElementById('modalAgregarCliente').classList.add('show');
+    });
+
+    document.querySelectorAll('.ac-modo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.ac-modo-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const esMasivo = btn.dataset.acmodo === 'masivo';
+        document.getElementById('acModoUno').style.display = esMasivo ? 'none' : 'block';
+        document.getElementById('acModoMasivo').style.display = esMasivo ? 'block' : 'none';
+      });
+    });
+
+    window.cerrarModalAgregarCliente = function(){
+      document.getElementById('modalAgregarCliente').classList.remove('show');
+    };
+
+    document.getElementById('guardarAgregarClienteBtn').addEventListener('click', async () => {
+      const msg = document.getElementById('agregarClienteMsg');
+      const modoActivo = document.querySelector('.ac-modo-btn.active').dataset.acmodo;
+      const uid = detalleAsesorActual.uid;
+
+      try {
+        const ref = doc(db, 'crm_data', uid);
+        const snap = await getDoc(ref);
+        const leadsActuales = snap.exists() ? (snap.data().leads || []) : [];
+
+        if (modoActivo === 'uno') {
+          const nombre = document.getElementById('acNombre').value.trim();
+          const numero = document.getElementById('acNumero').value.trim();
+          const nota = document.getElementById('acNota').value.trim();
+
+          if (!numero) {
+            msg.textContent = 'Escribe un número de celular.';
+            msg.className = 'form-msg err';
+            return;
+          }
+
+          msg.textContent = 'Guardando...';
+          msg.className = 'form-msg';
+
+          const nuevoLead = crearLeadManual(nombre, numero, nota);
+          await setDoc(ref, { leads: [...leadsActuales, nuevoLead] }, { merge: true });
+          await setDoc(doc(db, 'clientes_asignados', nuevoLead.id), {
+            nombre: nuevoLead.nombre, numero: nuevoLead.numero,
+            fuente: 'Agregado manual por gerencia', advisorUid: uid, advisorName: detalleAsesorActual.name,
+            fechaAsignacion: serverTimestamp(), calificado: null
+          });
+
+          msg.textContent = '✓ Cliente agregado a la cartera de ' + detalleAsesorActual.name + '.';
+        } else {
+          const loteCarga = document.getElementById('acLoteNombre').value.trim() || 'Sin nombre de lote';
+          const lista = document.getElementById('acListaMasiva').value.trim();
+          if (!lista) {
+            msg.textContent = 'Pega al menos un cliente en la lista.';
+            msg.className = 'form-msg err';
+            return;
+          }
+
+          const lineas = lista.split('\n').map(l => l.trim()).filter(l => l);
+          const nuevosLeads = [];
+          const invalidas = [];
+          lineas.forEach(linea => {
+            const partes = linea.split(',');
+            const numero = (partes[1] || '').trim();
+            const nombre = (partes[0] || '').trim();
+            if (!numero) { invalidas.push(linea); return; }
+            nuevosLeads.push(crearLeadManual(nombre, numero, '', loteCarga));
+          });
+
+          if (!nuevosLeads.length) {
+            msg.textContent = 'Ninguna línea tiene el formato correcto (nombre, número).';
+            msg.className = 'form-msg err';
+            return;
+          }
+
+          msg.textContent = 'Guardando ' + nuevosLeads.length + ' cliente(s)...';
+          msg.className = 'form-msg';
+
+          await setDoc(ref, { leads: [...leadsActuales, ...nuevosLeads] }, { merge: true });
+          for (const nl of nuevosLeads) {
+            await setDoc(doc(db, 'clientes_asignados', nl.id), {
+              nombre: nl.nombre, numero: nl.numero,
+              fuente: 'Carga masiva por gerencia — ' + loteCarga, advisorUid: uid, advisorName: detalleAsesorActual.name,
+              fechaAsignacion: serverTimestamp(), calificado: null
+            });
+          }
+
+          msg.textContent = '✓ ' + nuevosLeads.length + ' cliente(s) cargados a la cartera de ' + detalleAsesorActual.name +
+            (invalidas.length ? ' (' + invalidas.length + ' línea(s) no se pudieron leer)' : '') + '.';
+        }
+
+        msg.className = 'form-msg ok';
+        setTimeout(() => {
+          cerrarModalAgregarCliente();
+          abrirDetalleAsesor(detalleAsesorActual.uid, detalleAsesorActual.name, detalleAsesorActual.email);
+        }, 1100);
+      } catch (err) {
+        msg.textContent = 'Error: ' + err.message;
+        msg.className = 'form-msg err';
+      }
+    });
+
+    function cumulativeByDay(porDia, diasEnMes){
+      const acumulado = [];
+      let running = 0;
+      for(let i = 1; i <= diasEnMes; i++){
+        running += porDia[i];
+        acumulado.push(running);
+      }
+      return acumulado;
+    }
+
+    function pointsFor(acumulado, maxVal, w, h, padL, padR, padT, padB){
+      const stepX = (w - padL - padR) / (acumulado.length - 1 || 1);
+      return acumulado.map((v, i) => {
+        const x = padL + i * stepX;
+        const y = h - padB - (v / maxVal) * (h - padT - padB);
+        return [x, y];
+      });
+    }
+
+    function pathFromPoints(points){
+      return points.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+    }
+
+    function renderCombinedTrendChart(){
+      if(cachedSalesSnap === null || cachedAllLeads === null) return;
+
+      const hoy = new Date();
+      const diasEnMes = new Date(hoy.getFullYear(), hoy.getMonth()+1, 0).getDate();
+
+      const captadosPorDia = new Array(diasEnMes + 1).fill(0);
+      const contactadosPorDia = new Array(diasEnMes + 1).fill(0);
+      const calificadosPorDia = new Array(diasEnMes + 1).fill(0);
+      const cerradosPorDia = new Array(diasEnMes + 1).fill(0);
+
+      const mesActual = currentMonthKey();
+
+      cachedAllLeads.forEach(l => {
+        // Captados: fecha de creación del lead
+        if(l.creadoEn){
+          const fc = new Date(l.creadoEn);
+          if(fc.getFullYear() + '-' + String(fc.getMonth()+1).padStart(2,'0') === mesActual){
+            const dia = fc.getDate();
+            if(dia >= 1 && dia <= diasEnMes) captadosPorDia[dia] += 1;
+          }
+        }
+        // Contactados: fecha del primer toque registrado
+        if(l.toques && l.toques.length){
+          const fechas = l.toques.map(t => t.fecha).filter(Boolean).sort();
+          if(fechas.length){
+            const primerContacto = new Date(fechas[0]);
+            if(primerContacto.getFullYear() + '-' + String(primerContacto.getMonth()+1).padStart(2,'0') === mesActual){
+              const dia = primerContacto.getDate();
+              if(dia >= 1 && dia <= diasEnMes) contactadosPorDia[dia] += 1;
+            }
+          }
+          // Calificados: primer toque que marcó etapa "Negociando"
+          const toqueCalifica = l.toques.find(t => t.etapa === 'Negociando' && t.fecha);
+          if(toqueCalifica){
+            const fq = new Date(toqueCalifica.fecha);
+            if(fq.getFullYear() + '-' + String(fq.getMonth()+1).padStart(2,'0') === mesActual){
+              const dia = fq.getDate();
+              if(dia >= 1 && dia <= diasEnMes) calificadosPorDia[dia] += 1;
+            }
+          }
+        }
+      });
+
+      cachedSalesSnap.forEach(d => {
+        const s = d.data();
+        if(s.saleDate){
+          const dia = new Date(s.saleDate).getDate();
+          if(dia >= 1 && dia <= diasEnMes) cerradosPorDia[dia] += 1;
+        }
+      });
+
+      const series = [
+        { nombre: 'Captados',    color: 'var(--blue)', data: cumulativeByDay(captadosPorDia, diasEnMes) },
+        { nombre: 'Contactados', color: 'var(--gold)', data: cumulativeByDay(contactadosPorDia, diasEnMes) },
+        { nombre: 'Calificados', color: '#B388EB',      data: cumulativeByDay(calificadosPorDia, diasEnMes) },
+        { nombre: 'Cerrados (ventas)', color: 'var(--sage)', data: cumulativeByDay(cerradosPorDia, diasEnMes) }
+      ];
+
+      const w = 600, h = 200, padL = 30, padR = 12, padT = 14, padB = 24;
+      const maxVal = Math.max(1, ...series.flatMap(s => s.data));
+
+      let gridLines = '';
+      for(let g = 0; g <= 4; g++){
+        const y = padT + (g/4) * (h - padT - padB);
+        gridLines += `<line x1="${padL}" y1="${y}" x2="${w-padR}" y2="${y}" stroke="var(--line)" stroke-width="1"/>`;
+      }
+
+      let linesSvg = '';
+      series.forEach(s => {
+        const points = pointsFor(s.data, maxVal, w, h, padL, padR, padT, padB);
+        const path = pathFromPoints(points);
+        const last = points[points.length - 1];
+        linesSvg += `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="2.25"/>`;
+        linesSvg += `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="3.5" fill="${s.color}"/>`;
+      });
+
+      const svg = `
+        ${gridLines}
+        ${linesSvg}
+        <text x="${padL}" y="${h-6}" font-size="10" fill="var(--text-soft)" font-family="Inter">1</text>
+        <text x="${w-padR}" y="${h-6}" font-size="10" fill="var(--text-soft)" font-family="Inter" text-anchor="end">${diasEnMes}</text>
+        <text x="${padL}" y="${padT+2}" font-size="10" fill="var(--text-soft)" font-family="Inter">${maxVal}</text>
+      `;
+      document.getElementById('trendChart').innerHTML = svg;
+
+      const legend = document.getElementById('trendLegend');
+      legend.innerHTML = series.map(s =>
+        '<div class="legend-item"><span class="legend-dot" style="background:' + s.color + ';"></span>' +
+        s.nombre + ' <b>' + s.data[s.data.length-1] + '</b></div>'
+      ).join('');
+    }
+
+    /* AGREGADO DE CRM DE TODO EL EQUIPO (leads, funnel, calificados, riesgo) */
+    const ETAPAS = ['Nuevo','Contactado','Agendado','Visitado','Negociando','Cerrado','Perdido'];
+    async function loadTeamCrmAggregate(){
+      const advisorsSnapTodos = await getDocs(collection(db, 'advisors'));
+      const advisorsSnap = { docs: advisorsSnapTodos.docs.filter(d => d.data().supervisorUid === miSupervisorUid) };
+      let allLeads = [];
+
+      for(const a of advisorsSnap.docs){
+        const crmSnap = await getDoc(doc(db, 'crm_data', a.id));
+        if(crmSnap.exists()){
+          const leads = crmSnap.data().leads || [];
+          allLeads = allLeads.concat(leads);
+        }
+      }
+
+      cachedAllLeads = allLeads;
+      renderCombinedTrendChart();
+
+      const total = allLeads.length;
+      const activos = allLeads.filter(l => !['Cerrado','Perdido'].includes(l.etapa));
+      const calificados = allLeads.filter(l => l.etapa === 'Negociando').length;
+      const cerrados = allLeads.filter(l => l.etapa === 'Cerrado').length;
+      const conversion = total ? ((cerrados/total)*100).toFixed(1) + '%' : '—';
+      const enRiesgo = activos.filter(l => {
+        const d = diasDesde(l.ultimaActividad);
+        return d !== null && d >= 5;
+      }).length;
+      const haceUnaSemana = new Date(Date.now() - 7*86400000);
+      const nuevosSemana = allLeads.filter(l => l.creadoEn && new Date(l.creadoEn) >= haceUnaSemana).length;
+
+      document.getElementById('kpiLeadsTotal').textContent = total;
+      document.getElementById('kpiCalificados').textContent = calificados;
+      document.getElementById('kpiConversion').textContent = conversion;
+      document.getElementById('kpiRiesgo').textContent = enRiesgo;
+      document.getElementById('kpiNuevosSemana').textContent = nuevosSemana;
+
+      // Agendamientos por tipo de reunión — solo cuenta lo que sigue pendiente (visitaDt aún activo).
+      // "Hoy" está incluido dentro de "Esta semana", y "Esta semana" dentro de "Este mes" (son acumulados, no exclusivos).
+      const hoyDate = new Date();
+      const hoyKey = hoyDate.toISOString().slice(0, 10);
+      const diaSemana = hoyDate.getDay();
+      const offsetLunes = diaSemana === 0 ? 6 : diaSemana - 1;
+      const lunes = new Date(hoyDate); lunes.setDate(hoyDate.getDate() - offsetLunes);
+      const domingo = new Date(lunes); domingo.setDate(lunes.getDate() + 6);
+      const lunesKey = lunes.toISOString().slice(0, 10);
+      const domingoKey = domingo.toISOString().slice(0, 10);
+      const mesKeyActual = currentMonthKey();
+
+      const agendamientos = { Meet: {hoy:0,semana:0,mes:0}, Oficina: {hoy:0,semana:0,mes:0}, Visita: {hoy:0,semana:0,mes:0} };
+      allLeads.forEach(l => {
+        if (!l.visitaDt) return;
+        const tipo = ['Visita', 'Oficina', 'Meet'].includes(l.tipoReunion) ? l.tipoReunion : 'Visita';
+        const fechaKey = l.visitaDt.slice(0, 10);
+        if (fechaKey.slice(0, 7) === mesKeyActual) agendamientos[tipo].mes++;
+        if (fechaKey >= lunesKey && fechaKey <= domingoKey) agendamientos[tipo].semana++;
+        if (fechaKey === hoyKey) agendamientos[tipo].hoy++;
+      });
+
+      // Llamadas van aparte — usan llamadaDt, no visitaDt, y distinguen automáticas (reagendadas solas por "no contestó")
+      const llamadas = { hoy: 0, semana: 0, mes: 0, autoHoy: 0 };
+      allLeads.forEach(l => {
+        if (!l.llamadaDt) return;
+        const fechaKey = l.llamadaDt.slice(0, 10);
+        if (fechaKey.slice(0, 7) === mesKeyActual) llamadas.mes++;
+        if (fechaKey >= lunesKey && fechaKey <= domingoKey) llamadas.semana++;
+        if (fechaKey === hoyKey) {
+          llamadas.hoy++;
+          if (l.llamadaAutoAgendada) llamadas.autoHoy++;
+        }
+      });
+
+      document.getElementById('agendaMeetHoy').textContent = agendamientos.Meet.hoy;
+      document.getElementById('agendaMeetSemana').textContent = agendamientos.Meet.semana;
+      document.getElementById('agendaMeetMes').textContent = agendamientos.Meet.mes;
+      document.getElementById('agendaOficinaHoy').textContent = agendamientos.Oficina.hoy;
+      document.getElementById('agendaOficinaSemana').textContent = agendamientos.Oficina.semana;
+      document.getElementById('agendaOficinaMes').textContent = agendamientos.Oficina.mes;
+      document.getElementById('agendaVisitaHoy').textContent = agendamientos.Visita.hoy;
+      document.getElementById('agendaVisitaSemana').textContent = agendamientos.Visita.semana;
+      document.getElementById('agendaVisitaMes').textContent = agendamientos.Visita.mes;
+      document.getElementById('agendaLlamadaHoy').textContent = llamadas.hoy;
+      document.getElementById('agendaLlamadaSemana').textContent = llamadas.semana;
+      document.getElementById('agendaLlamadaMes').textContent = llamadas.mes;
+      document.getElementById('agendaLlamadaAutoHoy').textContent = llamadas.autoHoy;
+
+      const funnelCard = document.getElementById('funnelCard');
+      const maxCount = Math.max(1, ...ETAPAS.map(e => allLeads.filter(l => l.etapa === e).length));
+      funnelCard.innerHTML = ETAPAS.map(etapa => {
+        const n = allLeads.filter(l => l.etapa === etapa).length;
+        const pct = (n / maxCount) * 100;
+        return '<div class="funnel-row"><div class="funnel-label">' + etapa + '</div>' +
+          '<div class="funnel-track"><div class="funnel-fill" style="width:' + pct + '%;"></div></div>' +
+          '<div class="funnel-count">' + n + '</div></div>';
+      }).join('');
+    }
+
+    function monthKeyFromDate(d){
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+    }
+    function weekOfMonthFromDate(d){
+      return Math.ceil(d.getDate()/7);
+    }
+
+    let reporteDatosActuales = null;
+    let filtroTipoReporte = 'todos'; // 'todos' | 'interno' | 'externo' — dentro de tu propio equipo
+    let reporteSecciones = {
+      embudoGestion: true, embudoAsesor: true, gestionTocar: true,
+      resultadoFinal: true, tasaExito: true, canal: false, ventasAsesor: false
+    };
+
+    document.querySelectorAll('.reporte-tipo-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.reporte-tipo-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtroTipoReporte = btn.dataset.tipofiltro;
+      });
+    });
+
+    document.querySelectorAll('.reporte-seccion-check').forEach(chk => {
+      chk.addEventListener('change', () => {
+        reporteSecciones[chk.dataset.seccion] = chk.checked;
+      });
+    });
+    function fechaLocalStr(d){
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    document.getElementById('reporteFechaDesde').value = fechaLocalStr(new Date());
+    document.getElementById('reporteFechaHasta').value = fechaLocalStr(new Date());
+
+    document.getElementById('reporteAtajoHoyBtn').addEventListener('click', () => {
+      document.getElementById('reporteFechaDesde').value = fechaLocalStr(new Date());
+      document.getElementById('reporteFechaHasta').value = fechaLocalStr(new Date());
+    });
+    document.getElementById('reporteAtajoMesBtn').addEventListener('click', () => {
+      const hoy = new Date();
+      const primero = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+      const ultimo = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+      document.getElementById('reporteFechaDesde').value = fechaLocalStr(primero);
+      document.getElementById('reporteFechaHasta').value = fechaLocalStr(ultimo);
+    });
+
+    function nombreMesLargo(mesKey){
+      const nombresMes = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      const [anio, mes] = mesKey.split('-');
+      const label = nombresMes[parseInt(mes, 10) - 1] + ' ' + anio;
+      return label.charAt(0).toUpperCase() + label.slice(1);
+    }
+
+    function nombreDiaCorto(fechaStr){
+      const d = new Date(fechaStr + 'T12:00:00');
+      const label = d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+      return label.charAt(0).toUpperCase() + label.slice(1);
+    }
+
+    function primerDiaDelMes(fechaStr){ return fechaStr.slice(0, 7) + '-01'; }
+    function ultimoDiaDelMes(fechaStr){
+      const d = new Date(fechaStr + 'T12:00:00');
+      const ultimo = new Date(d.getFullYear(), d.getMonth() + 1, 0);
+      return ultimo.toISOString().slice(0, 10);
+    }
+
+    // Elige la etiqueta más natural según el rango: un día exacto, uno o varios meses completos,
+    // o un rango de fechas cualquiera — sin que el usuario tenga que decirle cuál es cuál.
+    function nombreRangoReporte(fechaDesde, fechaHasta){
+      if (fechaDesde === fechaHasta) return nombreDiaCorto(fechaDesde);
+      const esMesCompleto = fechaDesde === primerDiaDelMes(fechaDesde) && fechaHasta === ultimoDiaDelMes(fechaHasta);
+      if (esMesCompleto) {
+        const mesKeyDesde = fechaDesde.slice(0, 7);
+        const mesKeyHasta = fechaHasta.slice(0, 7);
+        if (mesKeyDesde === mesKeyHasta) return nombreMesLargo(mesKeyDesde);
+        return nombreMesLargo(mesKeyDesde) + ' — ' + nombreMesLargo(mesKeyHasta);
+      }
+      return nombreDiaCorto(fechaDesde) + ' — ' + nombreDiaCorto(fechaHasta);
+    }
+
+    async function generarDatosReporte(fechaDesde, fechaHasta){
+      const advisorsSnapTodos = await getDocs(collection(db, 'advisors'));
+      let advisorsDocsFiltrados = advisorsSnapTodos.docs.filter(d => d.data().supervisorUid === miSupervisorUid);
+      if (filtroTipoReporte !== 'todos') {
+        advisorsDocsFiltrados = advisorsDocsFiltrados.filter(d => (d.data().tipo || 'interno') === filtroTipoReporte);
+      }
+      const advisorsSnap = { docs: advisorsDocsFiltrados };
+      const porAsesor = [];
+      let totalLeads = 0;
+      const funnelGlobal = { Nuevo: 0, Contactado: 0, Agendado: 0, Visitado: 0, Negociando: 0, Cerrado: 0, Perdido: 0 };
+      const porCanal = {};
+
+      // Sales solo tiene índice por mes (monthKey) — se pide por rango de mes y se filtra
+      // al día exacto usando su fecha completa (saleDate), para que funcione también con un solo día.
+      const mesKeyDesde = monthKeyFromDate(new Date(fechaDesde + 'T12:00:00'));
+      const mesKeyHasta = monthKeyFromDate(new Date(fechaHasta + 'T12:00:00'));
+
+      // Embudo de gestión: cada nivel "incluye" a los que ya llegaron más lejos —
+      // ej. si está en Negociando, ya pasó por Agendado y Visitado en el camino.
+      // Es una aproximación basada en la etapa actual, no un historial exacto toque por toque.
+      const nivelesFunnel = ['Agendado', 'Visitado', 'Negociando', 'Cerrado'];
+      let embudo = { generados: 0, contactados: 0, llamados: 0, efectivos: 0, agendados: 0, visitados: 0, negociando: 0, cerrados: 0 };
+      // Tasa de éxito por tipo de reunión (Visita / Oficina / Meet):
+      // "agendadas" = se les puso fecha; "realizadas" = el asesor la marcó como hecha; "cerradas" = terminó en venta.
+      const porTipoReunion = {
+        Visita: { agendadas: 0, realizadas: 0, separadas: 0 },
+        Oficina: { agendadas: 0, realizadas: 0, separadas: 0 },
+        Meet: { agendadas: 0, realizadas: 0, separadas: 0 }
+      };
+      const embudoPorAsesor = [];
+      const gestionPorAsesor = [];
+      let resultadoCerrados = 0, resultadoPerdidos = 0;
+
+      for (const advisorDoc of advisorsSnap.docs) {
+        const a = advisorDoc.data();
+        const crmSnap = await getDoc(doc(db, 'crm_data', advisorDoc.id));
+        const leads = crmSnap.exists() ? (crmSnap.data().leads || []) : [];
+        const leadsDelMes = leads.filter(l => l.creadoEn && l.creadoEn.slice(0, 10) >= fechaDesde && l.creadoEn.slice(0, 10) <= fechaHasta);
+
+        const salesQuery = query(collection(db, 'sales'), where('advisorUid', '==', advisorDoc.id), where('monthKey', '>=', mesKeyDesde), where('monthKey', '<=', mesKeyHasta));
+        const salesSnapMes = await getDocs(salesQuery);
+        const ventasDelRango = salesSnapMes.docs.filter(d => {
+          const sd = d.data().saleDate;
+          return sd && sd.slice(0, 10) >= fechaDesde && sd.slice(0, 10) <= fechaHasta;
+        });
+
+        let asesorContactado = 0, asesorAgendado = 0, asesorCerrado = 0, asesorGestionado = 0;
+
+        leadsDelMes.forEach(l => {
+          totalLeads++;
+          const etapa = l.etapa || 'Nuevo';
+          if (funnelGlobal[etapa] !== undefined) funnelGlobal[etapa]++;
+          const canal = l.canal || 'Otro';
+          porCanal[canal] = (porCanal[canal] || 0) + 1;
+
+          const toques = l.toques || [];
+          const fueTocado = toques.length > 1;
+          const tuvoLlamada = toques.some(t => (t.tipo || '').toLowerCase().includes('llamada'));
+          // Contacto efectivo = específicamente "Llamada realizada" — el cliente sí contestó.
+          // "Llamada sin respuesta" cuenta como intento (Llamados), pero no aquí.
+          const tuvoContactoEfectivo = toques.some(t => t.tipo === 'Llamada realizada');
+          const llegoAgendado = nivelesFunnel.includes(etapa);
+          const llegoVisitado = ['Visitado', 'Negociando', 'Cerrado'].includes(etapa);
+          const llegoNegociando = ['Negociando', 'Cerrado'].includes(etapa);
+          const llegoCerrado = etapa === 'Cerrado';
+
+          embudo.generados++;
+          if (fueTocado) embudo.contactados++;
+          if (tuvoLlamada) embudo.llamados++;
+          if (tuvoContactoEfectivo) embudo.efectivos++;
+          if (llegoAgendado) embudo.agendados++;
+          if (llegoVisitado) embudo.visitados++;
+          if (llegoNegociando) embudo.negociando++;
+          if (llegoCerrado) embudo.cerrados++;
+
+          if (fueTocado) asesorContactado++;
+          if (llegoAgendado) asesorAgendado++;
+          if (llegoCerrado) asesorCerrado++;
+          if (fueTocado) asesorGestionado++;
+
+          if (etapa === 'Cerrado') resultadoCerrados++;
+          else if (etapa === 'Perdido') resultadoPerdidos++;
+
+          // Tasa de éxito por tipo de reunión — se guía por el historial de toques,
+          // porque la fecha de visita se borra sola una vez que ya se completó.
+          // El "éxito" real de los tres tipos es el mismo: que el cliente separe — no que cierre venta,
+          // ya que la compraventa formal es un paso notarial posterior y distinto.
+          const tipoR = ['Visita', 'Oficina', 'Meet'].includes(l.tipoReunion) ? l.tipoReunion : 'Visita';
+          const fueAgendada = toques.some(t => (t.tipo || '').includes('Visita agendada'));
+          const fueRealizada = !!l.postVisita || toques.some(t => t.tipo === 'Visita realizada');
+          if (fueAgendada) {
+            porTipoReunion[tipoR].agendadas++;
+            if (fueRealizada) {
+              porTipoReunion[tipoR].realizadas++;
+              if (l.separo) porTipoReunion[tipoR].separadas++;
+            }
+          }
+        });
+
+        if (leadsDelMes.length) {
+          embudoPorAsesor.push({ nombre: a.name || 'Asesor', contactado: asesorContactado, agendado: asesorAgendado, cerrado: asesorCerrado });
+          gestionPorAsesor.push({
+            nombre: a.name || 'Asesor',
+            pctGestionado: Math.round((asesorGestionado / leadsDelMes.length) * 100),
+            pctSinTocar: Math.round(((leadsDelMes.length - asesorGestionado) / leadsDelMes.length) * 100)
+          });
+        }
+
+        porAsesor.push({
+          nombre: a.name || 'Asesor',
+          tipo: a.tipo || 'interno',
+          leadsGestionados: leadsDelMes.length,
+          ventas: ventasDelRango.length,
+          conversion: leadsDelMes.length ? ((ventasDelRango.length / leadsDelMes.length) * 100).toFixed(1) : '0.0'
+        });
+      }
+
+      const resultadoEnSeguimiento = totalLeads - resultadoCerrados - resultadoPerdidos;
+
+      const tasasReunion = Object.entries(porTipoReunion).map(([tipo, v]) => ({
+        tipo,
+        agendadas: v.agendadas,
+        realizadas: v.realizadas,
+        separadas: v.separadas,
+        pctRealizacion: v.agendadas ? Math.round((v.realizadas / v.agendadas) * 100) : 0,
+        pctSeparacion: v.realizadas ? Math.round((v.separadas / v.realizadas) * 100) : 0
+      }));
+
+      const caSnap = await getDocs(collection(db, 'clientes_asignados'));
+      let calSi = 0, calNo = 0, calPendiente = 0;
+      caSnap.docs.forEach(docu => {
+        const c = docu.data();
+        const fecha = c.fechaAsignacion?.toDate ? c.fechaAsignacion.toDate() : null;
+        if (!fecha) return;
+        const key = fecha.toISOString().slice(0, 10);
+        if (key < fechaDesde || key > fechaHasta) return;
+        if (c.calificado === true) calSi++;
+        else if (c.calificado === false) calNo++;
+        else calPendiente++;
+      });
+
+      const lwSnap = await getDocs(collection(db, 'leads_web'));
+      const porLanding = {};
+      let totalLanding = 0;
+      lwSnap.docs.forEach(docu => {
+        const l = docu.data();
+        const fecha = l.fecha_creacion?.toDate ? l.fecha_creacion.toDate() : null;
+        if (!fecha) return;
+        const key = fecha.toISOString().slice(0, 10);
+        if (key < fechaDesde || key > fechaHasta) return;
+        totalLanding++;
+        const fuente = l.fuente || 'Sin especificar';
+        porLanding[fuente] = (porLanding[fuente] || 0) + 1;
+      });
+
+      const totalVentas = porAsesor.reduce((s, a) => s + a.ventas, 0);
+      const conversionGlobal = totalLeads ? ((totalVentas / totalLeads) * 100).toFixed(1) : '0.0';
+
+      return {
+        fechaDesde, fechaHasta, totalLeads, totalVentas, conversionGlobal, porAsesor, funnelGlobal, porCanal,
+        calSi, calNo, calPendiente, totalLanding, porLanding,
+        embudo, embudoPorAsesor, gestionPorAsesor, tasasReunion,
+        resultado: { cerrados: resultadoCerrados, perdidos: resultadoPerdidos, enSeguimiento: resultadoEnSeguimiento }
+      };
+    }
+
+    let graficosReporteActuales = [];
+
+    function renderReporteResumen(d){
+      document.getElementById('reporteResumenCard').style.display = 'block';
+      const c = document.getElementById('reporteResumenContenido');
+      c.innerHTML =
+        '<h3 style="margin-top:0;">' + nombreRangoReporte(d.fechaDesde, d.fechaHasta) + '</h3>' +
+        '<div class="kpis" style="margin-bottom:16px;">' +
+          '<div class="kpi"><div class="kpi-label">Leads gestionados</div><div class="kpi-value">' + d.totalLeads + '</div></div>' +
+          '<div class="kpi"><div class="kpi-label">Ventas cerradas</div><div class="kpi-value">' + d.totalVentas + '</div></div>' +
+          '<div class="kpi"><div class="kpi-label">Conversión</div><div class="kpi-value">' + d.conversionGlobal + '%</div></div>' +
+          '<div class="kpi"><div class="kpi-label">Leads de landing</div><div class="kpi-value">' + d.totalLanding + '</div></div>' +
+        '</div>' +
+        '<table style="margin-bottom:24px;"><thead><tr><th>Asesor</th><th>Tipo</th><th class="num">Leads</th><th class="num">Ventas</th><th class="num">Conversión</th></tr></thead><tbody>' +
+          d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td class="num">' + a.leadsGestionados + '</td><td class="num">' + a.ventas + '</td><td class="num">' + a.conversion + '%</td></tr>').join('') +
+        '</tbody></table>' +
+        '<div data-seccion="embudoGestion"><h3>1 · Embudo de Gestión</h3>' +
+        '<div style="position:relative;height:220px;margin-bottom:24px;"><canvas id="graf1"></canvas></div></div>' +
+        '<div data-seccion="embudoAsesor"><h3>2 · Embudo por Asesor</h3>' +
+        '<div style="position:relative;height:200px;margin-bottom:6px;"><canvas id="graf2"></canvas></div>' +
+        '<div id="graf2Legend" style="display:flex;gap:14px;font-size:11px;color:var(--text-soft);margin-bottom:24px;"></div></div>' +
+        '<div data-seccion="gestionTocar"><h3>3 · % Gestionado vs. Sin Tocar (por asesor)</h3>' +
+        '<div style="position:relative;height:160px;margin-bottom:24px;"><canvas id="graf3"></canvas></div></div>' +
+        '<div data-seccion="resultadoFinal"><h3>4 · Resultado final</h3>' +
+        '<div style="max-width:320px;margin-bottom:24px;"><div style="position:relative;height:150px;"><canvas id="graf4"></canvas></div></div></div>' +
+        '<div data-seccion="canal"><h3>5 · Leads por Canal</h3>' +
+        '<div style="position:relative;height:180px;margin-bottom:24px;"><canvas id="graf6"></canvas></div></div>' +
+        '<div data-seccion="ventasAsesor"><h3>6 · Ventas por Asesor</h3>' +
+        '<div style="position:relative;height:160px;margin-bottom:24px;"><canvas id="graf7"></canvas></div></div>' +
+        '<div data-seccion="tasaExito"><h3>7 · Tasa de Éxito por Tipo de Reunión</h3>' +
+        '<div style="position:relative;height:160px;margin-bottom:6px;"><canvas id="graf8"></canvas></div>' +
+        '<div id="graf8Legend" style="display:flex;gap:14px;font-size:11px;color:var(--text-soft);margin-bottom:10px;"></div>' +
+        '<table><thead><tr><th>Tipo</th><th class="num">Agendadas</th><th class="num">Realizadas</th><th class="num">Separadas</th></tr></thead><tbody>' +
+          d.tasasReunion.map(t => '<tr><td>' + t.tipo + '</td><td class="num">' + t.agendadas + '</td><td class="num">' + t.realizadas + '</td><td class="num">' + t.separadas + '</td></tr>').join('') +
+        '</tbody></table></div>';
+
+      crearGraficosReporte(d, 'oscuro');
+      aplicarVisibilidadSecciones(c);
+    }
+
+    function aplicarVisibilidadSecciones(contenedor){
+      Object.keys(reporteSecciones).forEach(seccion => {
+        contenedor.querySelectorAll('[data-seccion="' + seccion + '"]').forEach(el => {
+          el.style.display = reporteSecciones[seccion] ? '' : 'none';
+        });
+      });
+    }
+
+    function crearGraficosReporte(d, modo){
+      graficosReporteActuales.forEach(ch => ch.destroy());
+      graficosReporteActuales = [];
+
+      const esOscuro = modo === 'oscuro';
+      const sage = '#3F8F5F', gold = '#C9A227', blue = '#2E6DA4', red = '#C0392B', gray = esOscuro ? '#8FA096' : '#999';
+      const ink = esOscuro ? '#8FA096' : '#444';
+      const grid = esOscuro ? 'rgba(255,255,255,0.06)' : '#eee';
+      const legendRow = (items) => items.map(i => '<span><span style="color:' + i.color + ';">■</span> ' + i.label + '</span>').join(' ');
+      const common = { plugins:{legend:{display:false}}, responsive:true, maintainAspectRatio:false,
+        scales:{ x:{ grid:{color:grid}, ticks:{color:ink,font:{size:11}} }, y:{ grid:{color:'transparent'}, ticks:{color:ink,font:{size:11}} } } };
+
+      graficosReporteActuales.push(new Chart(document.getElementById('graf1'), {
+        type:'bar',
+        data:{ labels:['Generados','Contacto Efectivo','Agendados','Visitados','Negociando','Cerrados'],
+          datasets:[{ data:[d.embudo.generados,d.embudo.efectivos,d.embudo.agendados,d.embudo.visitados,d.embudo.negociando,d.embudo.cerrados], backgroundColor:sage, borderRadius:3, barThickness:14 }] },
+        options:{ ...common, indexAxis:'y' }
+      }));
+
+      graficosReporteActuales.push(new Chart(document.getElementById('graf2'), {
+        type:'bar',
+        data:{ labels:d.embudoPorAsesor.map(a=>a.nombre),
+          datasets:[
+            { label:'Contactado', data:d.embudoPorAsesor.map(a=>a.contactado), backgroundColor:blue, borderRadius:3 },
+            { label:'Agendado', data:d.embudoPorAsesor.map(a=>a.agendado), backgroundColor:gold, borderRadius:3 },
+            { label:'Cerrado', data:d.embudoPorAsesor.map(a=>a.cerrado), backgroundColor:sage, borderRadius:3 }
+          ]},
+        options:common
+      }));
+      document.getElementById('graf2Legend').innerHTML = legendRow([{color:blue,label:'Contactado'},{color:gold,label:'Agendado'},{color:sage,label:'Cerrado'}]);
+
+      graficosReporteActuales.push(new Chart(document.getElementById('graf3'), {
+        type:'bar',
+        data:{ labels:d.gestionPorAsesor.map(a=>a.nombre),
+          datasets:[
+            { label:'Gestionado', data:d.gestionPorAsesor.map(a=>a.pctGestionado), backgroundColor:sage, stack:'s' },
+            { label:'Sin tocar', data:d.gestionPorAsesor.map(a=>a.pctSinTocar), backgroundColor:red, stack:'s' }
+          ]},
+        options:{ ...common, indexAxis:'y', scales:{ x:{ stacked:true, max:100, grid:{color:grid}, ticks:{color:ink,font:{size:11},callback:(v)=>v+'%'} }, y:{ stacked:true, grid:{display:false}, ticks:{color:ink,font:{size:11}} } } }
+      }));
+
+      graficosReporteActuales.push(new Chart(document.getElementById('graf4'), {
+        type:'bar',
+        data:{ labels:['Cerrados','Perdidos','En seguimiento'],
+          datasets:[{ data:[d.resultado.cerrados,d.resultado.perdidos,d.resultado.enSeguimiento], backgroundColor:[sage,red,gold], borderRadius:3, barThickness:14 }] },
+        options:{ ...common, indexAxis:'y' }
+      }));
+
+      const canalLabels = Object.keys(d.porCanal);
+      graficosReporteActuales.push(new Chart(document.getElementById('graf6'), {
+        type:'bar',
+        data:{ labels:canalLabels, datasets:[{ data:canalLabels.map(k=>d.porCanal[k]), backgroundColor:blue, borderRadius:3, barThickness:14 }] },
+        options:{ ...common, indexAxis:'y' }
+      }));
+
+      graficosReporteActuales.push(new Chart(document.getElementById('graf7'), {
+        type:'bar',
+        data:{ labels:d.porAsesor.map(a=>a.nombre), datasets:[{ data:d.porAsesor.map(a=>a.ventas), backgroundColor:gold, borderRadius:3, barThickness:18 }] },
+        options:common
+      }));
+
+      graficosReporteActuales.push(new Chart(document.getElementById('graf8'), {
+        type:'bar',
+        data:{ labels:d.tasasReunion.map(t=>t.tipo),
+          datasets:[
+            { label:'% Realización', data:d.tasasReunion.map(t=>t.pctRealizacion), backgroundColor:blue, borderRadius:3 },
+            { label:'% Separación', data:d.tasasReunion.map(t=>t.pctSeparacion), backgroundColor:gold, borderRadius:3 }
+          ]},
+        options:{ ...common, scales:{ ...common.scales, y:{ ...common.scales.y, max:100, ticks:{...common.scales.y.ticks, callback:(v)=>v+'%'} } } }
+      }));
+      document.getElementById('graf8Legend').innerHTML = legendRow([{color:blue,label:'% Realización'},{color:gold,label:'% Separación'}]);
+    }
+
+    document.getElementById('generarReporteBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('generarReporteBtn');
+      const fechaDesde = document.getElementById('reporteFechaDesde').value;
+      const fechaHasta = document.getElementById('reporteFechaHasta').value;
+      if (!fechaDesde || !fechaHasta) { alert('Elige la fecha de inicio y la de fin.'); return; }
+      if (fechaHasta < fechaDesde) { alert('La fecha "Hasta" no puede ser anterior a la fecha "Desde".'); return; }
+      btn.disabled = true;
+      btn.textContent = 'Generando...';
+      try {
+        reporteDatosActuales = await generarDatosReporte(fechaDesde, fechaHasta);
+        renderReporteResumen(reporteDatosActuales);
+      } catch (err) {
+        alert('Error generando el reporte: ' + err.message);
+      }
+      btn.disabled = false;
+      btn.textContent = 'Generar reporte';
+    });
+
+    document.getElementById('descargarExcelBtn').addEventListener('click', () => {
+      if (!reporteDatosActuales) return;
+      const d = reporteDatosActuales;
+      const filas = [];
+      filas.push(['REPORTE MENSUAL — ' + nombreRangoReporte(d.fechaDesde, d.fechaHasta)]);
+      filas.push([]);
+      filas.push(['RESUMEN GENERAL']);
+      filas.push(['Leads gestionados', d.totalLeads]);
+      filas.push(['Ventas cerradas', d.totalVentas]);
+      filas.push(['Conversión global', d.conversionGlobal + '%']);
+      filas.push(['Leads de landing', d.totalLanding]);
+      filas.push([]);
+      filas.push(['DESEMPEÑO POR ASESOR']);
+      filas.push(['Nombre', 'Tipo', 'Leads gestionados', 'Ventas', 'Conversión']);
+      d.porAsesor.forEach(a => filas.push([a.nombre, a.tipo === 'externo' ? 'Externo' : 'Interno', a.leadsGestionados, a.ventas, a.conversion + '%']));
+      filas.push([]);
+      filas.push(['FUNNEL GENERAL']);
+      Object.entries(d.funnelGlobal).forEach(([etapa, cant]) => filas.push([etapa, cant]));
+      filas.push([]);
+      filas.push(['LEADS POR CANAL']);
+      Object.entries(d.porCanal).forEach(([canal, cant]) => filas.push([canal, cant]));
+      filas.push([]);
+      filas.push(['CALIDAD DE CLIENTES ASIGNADOS']);
+      filas.push(['Calificados: Sí', d.calSi]);
+      filas.push(['Calificados: No', d.calNo]);
+      filas.push(['Pendientes de calificar', d.calPendiente]);
+      if (Object.keys(d.porLanding).length) {
+        filas.push([]);
+        filas.push(['LEADS DE LANDING POR ORIGEN']);
+        Object.entries(d.porLanding).forEach(([fuente, cant]) => filas.push([fuente, cant]));
+      }
+
+      const csv = filas.map(fila => fila.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Reporte Mensual - ' + nombreRangoReporte(d.fechaDesde, d.fechaHasta) + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('descargarPdfBtn').addEventListener('click', () => {
+      if (!reporteDatosActuales) return;
+      const d = reporteDatosActuales;
+      const ventana = window.open('', '_blank');
+      const rd = JSON.stringify({
+        embudo: d.embudo, embudoPorAsesor: d.embudoPorAsesor, gestionPorAsesor: d.gestionPorAsesor,
+        resultado: d.resultado, calSi: d.calSi, calNo: d.calNo, calPendiente: d.calPendiente,
+        porCanal: d.porCanal, porAsesor: d.porAsesor.map(a => ({ nombre: a.nombre, ventas: a.ventas })),
+        tasasReunion: d.tasasReunion, reporteSecciones: reporteSecciones
+      });
+      const html = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Reporte Mensual - ' + nombreRangoReporte(d.fechaDesde, d.fechaHasta) + '</title>' +
+        '<style>' +
+          'body{font-family:Arial,sans-serif;color:#1B221C;padding:40px;max-width:800px;margin:0 auto;}' +
+          'h1{color:#0D1F37;font-size:24px;margin-bottom:4px;}' +
+          '.sub{color:#5B6660;font-size:13px;margin-bottom:30px;}' +
+          'h2{color:#0D1F37;font-size:16px;border-bottom:2px solid #0D1F37;padding-bottom:6px;margin-top:30px;}' +
+          'table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;}' +
+          'th{background:#0D1F37;color:#fff;text-align:left;padding:8px 10px;}' +
+          'td{padding:8px 10px;border-bottom:1px solid #ddd;}' +
+          '.kpis{display:flex;gap:16px;margin-top:14px;flex-wrap:wrap;}' +
+          '.kpi{background:#F6F2E9;border-radius:8px;padding:12px 18px;min-width:120px;}' +
+          '.kpi-label{font-size:11px;color:#5B6660;text-transform:uppercase;}' +
+          '.kpi-value{font-size:22px;font-weight:700;color:#0D1F37;}' +
+          '.legend{display:flex;gap:14px;font-size:11px;color:#444;margin-top:6px;}' +
+        '</style></head><body>' +
+        '<h1>Reporte Mensual — Briad Group</h1>' +
+        '<div class="sub">' + nombreRangoReporte(d.fechaDesde, d.fechaHasta) + ' · Costa Dorada / Inmobiliaria Hugo Gómez</div>' +
+        '<div class="kpis">' +
+          '<div class="kpi"><div class="kpi-label">Leads gestionados</div><div class="kpi-value">' + d.totalLeads + '</div></div>' +
+          '<div class="kpi"><div class="kpi-label">Ventas cerradas</div><div class="kpi-value">' + d.totalVentas + '</div></div>' +
+          '<div class="kpi"><div class="kpi-label">Conversión</div><div class="kpi-value">' + d.conversionGlobal + '%</div></div>' +
+          '<div class="kpi"><div class="kpi-label">Leads de landing</div><div class="kpi-value">' + d.totalLanding + '</div></div>' +
+        '</div>' +
+        '<div data-seccion="embudoGestion"><h2>1 · Embudo de Gestión</h2>' +
+        '<div style="position:relative;height:190px;"><canvas id="pg1"></canvas></div></div>' +
+        '<div data-seccion="embudoAsesor"><h2>2 · Embudo por Asesor</h2>' +
+        '<div style="position:relative;height:180px;"><canvas id="pg2"></canvas></div>' +
+        '<div class="legend" id="pg2Legend"></div></div>' +
+        '<div data-seccion="gestionTocar"><h2>3 · % Gestionado vs. Sin Tocar</h2>' +
+        '<div style="position:relative;height:150px;"><canvas id="pg3"></canvas></div>' +
+        '<div class="legend" id="pg3Legend"></div></div>' +
+        '<div data-seccion="resultadoFinal"><h2>4 · Resultado final</h2>' +
+        '<div style="max-width:320px;"><div style="position:relative;height:130px;"><canvas id="pg4"></canvas></div></div></div>' +
+        '<h2>Desempeño por Asesor</h2>' +
+        '<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Leads</th><th>Ventas</th><th>Conversión</th></tr></thead><tbody>' +
+          d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td>' + a.leadsGestionados + '</td><td>' + a.ventas + '</td><td>' + a.conversion + '%</td></tr>').join('') +
+        '</tbody></table>' +
+        '<div data-seccion="canal"><h2>5 · Leads por Canal</h2>' +
+        '<div style="position:relative;height:170px;"><canvas id="pg6"></canvas></div></div>' +
+        '<div data-seccion="ventasAsesor"><h2>6 · Ventas por Asesor</h2>' +
+        '<div style="position:relative;height:150px;"><canvas id="pg7"></canvas></div></div>' +
+        '<div data-seccion="tasaExito"><h2>7 · Tasa de Éxito por Tipo de Reunión</h2>' +
+        '<div style="position:relative;height:150px;"><canvas id="pg8"></canvas></div>' +
+        '<div class="legend" id="pg8Legend"></div>' +
+        '<table><thead><tr><th>Tipo</th><th>Agendadas</th><th>Realizadas</th><th>Separadas</th></tr></thead><tbody>' +
+          d.tasasReunion.map(t => '<tr><td>' + t.tipo + '</td><td>' + t.agendadas + '</td><td>' + t.realizadas + '</td><td>' + t.separadas + '</td></tr>').join('') +
+        '</tbody></table></div>' +
+        (Object.keys(d.porLanding).length ? (
+          '<h2>Leads de Landing por Origen</h2>' +
+          '<table><thead><tr><th>Landing</th><th>Cantidad</th></tr></thead><tbody>' +
+            Object.entries(d.porLanding).map(([f, n]) => '<tr><td>' + f + '</td><td>' + n + '</td></tr>').join('') +
+          '</tbody></table>'
+        ) : '') +
+        '<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"><\/script>' +
+        '<script>' +
+          'const rd = ' + rd + ';' +
+          'const sage="#3F8F5F", gold="#C9A227", blue="#2E6DA4", red="#C0392B", gray="#999";' +
+          'const common = { plugins:{legend:{display:false}}, responsive:true, maintainAspectRatio:false, scales:{ x:{ grid:{color:"#eee"}, ticks:{color:"#444",font:{size:11}} }, y:{ grid:{color:"transparent"}, ticks:{color:"#444",font:{size:11}} } } };' +
+          'new Chart(document.getElementById("pg1"), { type:"bar", data:{ labels:["Generados","Contacto Efectivo","Agendados","Visitados","Negociando","Cerrados"], datasets:[{ data:[rd.embudo.generados,rd.embudo.efectivos,rd.embudo.agendados,rd.embudo.visitados,rd.embudo.negociando,rd.embudo.cerrados], backgroundColor:sage, borderRadius:3, barThickness:14 }] }, options:{...common, indexAxis:"y"} });' +
+          'new Chart(document.getElementById("pg2"), { type:"bar", data:{ labels:rd.embudoPorAsesor.map(a=>a.nombre), datasets:[ {label:"Contactado",data:rd.embudoPorAsesor.map(a=>a.contactado),backgroundColor:blue,borderRadius:3}, {label:"Agendado",data:rd.embudoPorAsesor.map(a=>a.agendado),backgroundColor:gold,borderRadius:3}, {label:"Cerrado",data:rd.embudoPorAsesor.map(a=>a.cerrado),backgroundColor:sage,borderRadius:3} ] }, options:common });' +
+          'document.getElementById("pg2Legend").innerHTML = "<span style=color:"+blue+">■<\/span> Contactado <span style=color:"+gold+">■<\/span> Agendado <span style=color:"+sage+">■<\/span> Cerrado";' +
+          'new Chart(document.getElementById("pg3"), { type:"bar", data:{ labels:rd.gestionPorAsesor.map(a=>a.nombre), datasets:[ {label:"Gestionado",data:rd.gestionPorAsesor.map(a=>a.pctGestionado),backgroundColor:sage,stack:"s"}, {label:"Sin tocar",data:rd.gestionPorAsesor.map(a=>a.pctSinTocar),backgroundColor:red,stack:"s"} ] }, options:{...common, indexAxis:"y", scales:{x:{stacked:true,max:100,grid:{color:"#eee"},ticks:{color:"#444",font:{size:11},callback:(v)=>v+"%"}}, y:{stacked:true,grid:{display:false},ticks:{color:"#444",font:{size:11}}}} } });' +
+          'document.getElementById("pg3Legend").innerHTML = "<span style=color:"+sage+">■<\/span> Gestionado <span style=color:"+red+">■<\/span> Sin tocar";' +
+          'new Chart(document.getElementById("pg4"), { type:"bar", data:{ labels:["Cerrados","Perdidos","En seguimiento"], datasets:[{ data:[rd.resultado.cerrados,rd.resultado.perdidos,rd.resultado.enSeguimiento], backgroundColor:[sage,red,gold], borderRadius:3, barThickness:14 }] }, options:{...common, indexAxis:"y"} });' +
+          'const canalLabels = Object.keys(rd.porCanal);' +
+          'new Chart(document.getElementById("pg6"), { type:"bar", data:{ labels:canalLabels, datasets:[{ data:canalLabels.map(k=>rd.porCanal[k]), backgroundColor:blue, borderRadius:3, barThickness:14 }] }, options:{...common, indexAxis:"y"} });' +
+          'new Chart(document.getElementById("pg7"), { type:"bar", data:{ labels:rd.porAsesor.map(a=>a.nombre), datasets:[{ data:rd.porAsesor.map(a=>a.ventas), backgroundColor:gold, borderRadius:3, barThickness:18 }] }, options:common });' +
+          'new Chart(document.getElementById("pg8"), { type:"bar", data:{ labels:rd.tasasReunion.map(t=>t.tipo), datasets:[ {label:"% Realización",data:rd.tasasReunion.map(t=>t.pctRealizacion),backgroundColor:blue,borderRadius:3}, {label:"% Separación",data:rd.tasasReunion.map(t=>t.pctSeparacion),backgroundColor:gold,borderRadius:3} ] }, options:{...common, scales:{...common.scales, y:{...common.scales.y, max:100, ticks:{...common.scales.y.ticks, callback:(v)=>v+"%"}}}} });' +
+          'document.getElementById("pg8Legend").innerHTML = "<span style=color:"+blue+">■<\/span> % Realización <span style=color:"+gold+">■<\/span> % Separación";' +
+          'Object.keys(rd.reporteSecciones).forEach(function(s){ if(!rd.reporteSecciones[s]){ document.querySelectorAll("[data-seccion=" + s + "]").forEach(function(el){ el.style.display = "none"; }); } });' +
+          'window.onload = function(){ setTimeout(()=>window.print(), 500); };' +
+        '<\/script>' +
+        '</body></html>';
+      ventana.document.write(html);
+      ventana.document.close();
+
+    });
+
+  </script>
+
+  <div class="modal-overlay" id="modalAgendar">
+    <div class="modal-box">
+      <h3 style="margin-top:0;">Registrar Resultado</h3>
+      <div id="modalAgendarClienteInfo" style="font-size:13px;color:var(--text-soft);margin-bottom:6px;"></div>
+
+      <div class="field">
+        <label>¿Qué pasó?</label>
+        <select id="agendarTipoContacto">
+          <option value="Llamada realizada">Llamada realizada — sí contestó</option>
+          <option value="Llamada sin respuesta">Llamada sin respuesta</option>
+          <option value="WhatsApp enviado">WhatsApp enviado</option>
+          <option value="Visita agendada">Visita agendada</option>
+          <option value="Visita realizada">Visita realizada</option>
+          <option value="Negociación">Negociación</option>
+          <option value="Seguimiento">Seguimiento</option>
+          <option value="Nota interna">Nota interna</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Nueva fase (opcional)</label>
+        <select id="agendarNuevaEtapa">
+          <option value="">— sin cambio —</option>
+          <option value="Agendado">Agendado</option>
+          <option value="Visitado">Visitado</option>
+          <option value="Negociando">Negociando</option>
+          <option value="Cerrado">Cerrado</option>
+          <option value="Perdido">Perdido</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Resultado / Nota <span style="color:var(--red);font-weight:800;">*obligatorio</span></label>
+        <textarea id="agendarNota" placeholder="¿Qué pasó? ¿Qué dijo el cliente?"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Próxima acción (opcional)</label>
+        <input type="text" id="agendarProxTexto" placeholder="Ej: Llamar el viernes">
+      </div>
+
+      <div class="field">
+        <label>Fecha próxima acción (opcional)</label>
+        <div class="fecha-hora-row">
+          <input type="date" id="agendarFecha">
+          <input type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" class="hora-min-input" id="agendarHoraMin" oninput="formatearHoraMin(this)" onblur="clampHoraMin(this)">
+          <div class="ampm-toggle" id="agendarAmpmToggle">
+            <button type="button" class="ampm-btn active" data-value="AM" onclick="toggleAMPM('agendarAmpmToggle','agendarAmpm','AM')">AM</button>
+            <button type="button" class="ampm-btn" data-value="PM" onclick="toggleAMPM('agendarAmpmToggle','agendarAmpm','PM')">PM</button>
+          </div>
+          <input type="hidden" id="agendarAmpm" value="AM">
+        </div>
+        <div class="note" style="margin-top:6px;">Si eliges "Visita agendada" arriba, esta fecha queda como la visita. Si no, queda como la próxima llamada.</div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button class="btn" id="guardarAgendarBtn" style="flex:1;">Guardar</button>
+        <button class="btn-secondary" onclick="cerrarModalAgendar()">Cancelar</button>
+      </div>
+      <div class="form-msg" id="agendarMsg"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalAgregarCliente">
+    <div class="modal-box">
+      <h3 style="margin-top:0;">Agregar Cliente</h3>
+      <div id="modalAgregarClienteInfo" style="font-size:13px;color:var(--text-soft);margin-bottom:10px;"></div>
+
+      <div style="display:flex;background:var(--panel-2);border-radius:8px;padding:3px;margin-bottom:14px;">
+        <button type="button" class="ac-modo-btn active" data-acmodo="uno" style="flex:1;border:none;font-size:12px;font-weight:700;padding:8px;border-radius:6px;cursor:pointer;">Uno a uno</button>
+        <button type="button" class="ac-modo-btn" data-acmodo="masivo" style="flex:1;border:none;font-size:12px;font-weight:700;padding:8px;border-radius:6px;cursor:pointer;">Carga masiva</button>
+      </div>
+
+      <div id="acModoUno">
+        <div class="field">
+          <label>Nombre (opcional)</label>
+          <input type="text" id="acNombre" placeholder="Nombre del cliente" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13.5px;">
+        </div>
+
+        <div class="field">
+          <label>Número de celular</label>
+          <input type="tel" id="acNumero" placeholder="Ej: 952956002" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13.5px;">
+        </div>
+
+        <div class="field">
+          <label>Nota inicial (opcional)</label>
+          <textarea id="acNota" placeholder="Ej: Cliente lo pasó Juan desde el grupo de Facebook"></textarea>
+        </div>
+      </div>
+
+      <div id="acModoMasivo" style="display:none;">
+        <div class="field">
+          <label>Nombre del lote</label>
+          <input type="text" id="acLoteNombre" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13.5px;">
+        </div>
+        <div class="field">
+          <label>Pega la lista — nombre y número separados por coma, uno por línea</label>
+          <textarea id="acListaMasiva" placeholder="Rosa Mamani, 952111222&#10;Juan Ttito, 952333444" style="min-height:120px;"></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button class="btn" id="guardarAgregarClienteBtn" style="flex:1;">Agregar a su cartera</button>
+        <button class="btn-secondary" onclick="cerrarModalAgregarCliente()">Cancelar</button>
+      </div>
+      <div class="form-msg" id="agregarClienteMsg"></div>
+    </div>
+  </div>
+
+</body>
+</html>
