@@ -9,7 +9,7 @@
 <style>
   :root{
     --bg:#0B1420; --panel:#121F30; --panel-2:#0F1A28; --line: rgba(255,255,255,0.08);
-    --green:#1A3A29; --sage:#79BE8A; --gold:#C9A84C; --red:#E0715A; --blue:#5B8DBE;
+    --green:#1A3A29; --sage:#79BE8A; --sage-ink:#79BE8A; --gold:#C9A84C; --red:#E0715A; --red-ink:#E0715A; --blue:#5B8DBE;
     --text:#EDF2EE; --text-soft:#8FA096;
   }
   *{box-sizing:border-box;}
@@ -49,11 +49,14 @@
   .logout-btn:hover{background:rgba(255,255,255,0.05);color:var(--text);}
   .sidebar-copy{margin-top:10px;font-size:10.5px;color:var(--text-soft);opacity:.6;}
 
-  .main{flex:1;min-width:0;}
+  .main{flex:1;min-width:0;background:#FFFDF8;color:#1B221C;
+    --bg:#FFFDF8; --panel:#FFFFFF; --panel-2:#FDFAF3; --line:#E8E2D3;
+    --text:#1B221C; --text-soft:#6b6b63; --sage-ink:#3B6D11; --red-ink:#A3372A;
+  }
   .view{display:none;padding:36px 40px 80px;max-width:1040px;}
   .view.active{display:block;}
   .view-head{margin-bottom:28px;}
-  .view-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11.5px;color:var(--sage);font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px;}
+  .view-eyebrow{font-family:'Space Grotesk',sans-serif;font-size:11.5px;color:var(--sage-ink);font-weight:600;letter-spacing:.08em;text-transform:uppercase;display:block;margin-bottom:8px;}
   h2{font-family:'Space Grotesk',sans-serif;font-size:22px;margin:0 0 6px;font-weight:700;}
   .view-head p{color:var(--text-soft);font-size:13.5px;margin:0;max-width:560px;}
   .section{margin-top:36px;}
@@ -64,7 +67,7 @@
   .kpis-compact .kpi{padding:11px 14px;}
   .report-tabs{display:flex;gap:6px;border-bottom:1px solid var(--line);margin-bottom:16px;}
   .report-tab{background:none;border:none;color:var(--text-soft);font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;}
-  .report-tab.active{color:var(--sage);border-bottom-color:var(--sage);}
+  .report-tab.active{color:var(--sage-ink);border-bottom-color:var(--sage-ink);}
   .report-panel{display:none;}
   .report-panel.active{display:block;}
   .reporte-tipo-btn{background:none;border:none;color:var(--text-soft);font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:6px;cursor:pointer;}
@@ -77,11 +80,11 @@
   .agenda-tipo-card .agenda-tipo-titulo{font-size:13px;font-weight:700;margin-bottom:10px;}
   .agenda-tipo-card .agenda-tipo-fila{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line);}
   .agenda-tipo-card .agenda-tipo-fila:first-of-type{border-top:none;}
-  .agenda-tipo-card .agenda-tipo-fila .num{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--sage);}
+  .agenda-tipo-card .agenda-tipo-fila .num{font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--sage-ink);}
   .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;}
   .kpi-label{font-size:10.5px;color:var(--text-soft);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px;line-height:1.3;}
-  .kpi-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--sage);}
-  .kpi-value.warn{color:var(--red);}
+  .kpi-value{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;color:var(--sage-ink);}
+  .kpi-value.warn{color:var(--red-ink);}
 
   .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;}
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
@@ -90,12 +93,12 @@
   .field input:focus, .field select:focus{outline:none;border-color:var(--sage);}
   .btn{padding:11px 18px;border:none;border-radius:8px;background:var(--sage);color:var(--green);font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;cursor:pointer;}
   .btn-secondary{padding:9px 16px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);color:var(--text);font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;cursor:pointer;}
-  .btn-del{padding:6px 12px;border:1px solid var(--red);border-radius:7px;background:none;color:var(--red);font-size:12px;cursor:pointer;}
+  .btn-del{padding:6px 12px;border:1px solid var(--red-ink);border-radius:7px;background:none;color:var(--red-ink);font-size:12px;cursor:pointer;}
   .btn-del:hover{background:rgba(224,113,90,0.12);}
   .btn:disabled{opacity:0.5;cursor:not-allowed;}
   .form-msg{margin-top:12px;font-size:12.5px;min-height:16px;}
-  .form-msg.ok{color:var(--sage);}
-  .form-msg.err{color:var(--red);}
+  .form-msg.ok{color:var(--sage-ink);}
+  .form-msg.err{color:var(--red-ink);}
 
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;align-items:center;justify-content:center;padding:20px;}
   .modal-overlay.show{display:flex;}
@@ -137,7 +140,7 @@
   .rank-name{flex:1;font-size:13.5px;font-weight:600;}
   .rank-bar-track{margin-top:6px;height:6px;background:var(--panel-2);border-radius:4px;overflow:hidden;}
   .rank-bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--sage));}
-  .rank-value{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--sage);white-space:nowrap;}
+  .rank-value{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--sage-ink);white-space:nowrap;}
 
   .mobile-topbar{display:none;background:var(--panel);padding:14px 18px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);}
   .mobile-menu-btn{background:none;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:7px 11px;font-size:14px;cursor:pointer;}
@@ -418,7 +421,7 @@
 
         <div class="section" style="margin-top:0;">
           <div class="card" id="filtroAsesorBanner" style="display:none;background:var(--panel-2);border:1px solid var(--sage);align-items:center;justify-content:space-between;gap:10px;">
-            <span style="font-size:13px;">Mostrando: <b id="filtroAsesorNombre" style="color:var(--sage);">—</b></span>
+            <span style="font-size:13px;">Mostrando: <b id="filtroAsesorNombre" style="color:var(--sage-ink);">—</b></span>
             <button class="btn-secondary" id="quitarFiltroAsesorBtn">Ver equipo completo ✕</button>
           </div>
 
@@ -668,10 +671,10 @@
               '<option value="interno"' + (tipo === 'interno' ? ' selected' : '') + '>Interno</option>' +
               '<option value="externo"' + (tipo === 'externo' ? ' selected' : '') + '>Externo</option>' +
             '</select></td>' +
-            '<td><button class="btn-secondary" style="color:var(--red);" onclick="quitarDeMiEquipo(&quot;' + d.id + '&quot;, ' + JSON.stringify(a.name).replace(/"/g,'&quot;') + ')">Quitar de mi equipo</button></td></tr>';
+            '<td><button class="btn-secondary" style="color:var(--red-ink);" onclick="quitarDeMiEquipo(&quot;' + d.id + '&quot;, ' + JSON.stringify(a.name).replace(/"/g,'&quot;') + ')">Quitar de mi equipo</button></td></tr>';
         }).join('');
       } catch (err) {
-        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--red);">Error: ' + err.message + '</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--red-ink);">Error: ' + err.message + '</td></tr>';
       }
     }
 
@@ -1321,10 +1324,10 @@
       });
 
       const series = [
-        { nombre: 'Captados',    color: 'var(--blue)', data: cumulativeByDay(captadosPorDia, diasEnMes) },
-        { nombre: 'Contactados', color: 'var(--gold)', data: cumulativeByDay(contactadosPorDia, diasEnMes) },
-        { nombre: 'Calificados', color: '#B388EB',      data: cumulativeByDay(calificadosPorDia, diasEnMes) },
-        { nombre: 'Cerrados (ventas)', color: 'var(--sage)', data: cumulativeByDay(cerradosPorDia, diasEnMes) }
+        { nombre: 'Captados',    color: '#2C5F8A', data: cumulativeByDay(captadosPorDia, diasEnMes) },
+        { nombre: 'Contactados', color: '#8A6D1F', data: cumulativeByDay(contactadosPorDia, diasEnMes) },
+        { nombre: 'Calificados', color: '#6B46A8', data: cumulativeByDay(calificadosPorDia, diasEnMes) },
+        { nombre: 'Cerrados (ventas)', color: 'var(--sage-ink)', data: cumulativeByDay(cerradosPorDia, diasEnMes) }
       ];
 
       const w = 600, h = 200, padL = 30, padR = 12, padT = 14, padB = 24;
@@ -1584,6 +1587,7 @@
       // Es una aproximación basada en la etapa actual, no un historial exacto toque por toque.
       const nivelesFunnel = ['Agendado', 'Visitado', 'Negociando', 'Cerrado'];
       let embudo = { generados: 0, carteraAntigua: 0, contactados: 0, llamados: 0, efectivos: 0, agendados: 0, visitados: 0, negociando: 0, cerrados: 0 };
+      const embudoDetalle = { generados: [], carteraAntigua: [], efectivos: [], agendados: [], visitados: [], negociando: [], cerrados: [] };
       // Tasa de éxito por tipo de reunión (Visita / Oficina / Meet):
       // "agendadas" = se les puso fecha; "realizadas" = el asesor la marcó como hecha; "cerradas" = terminó en venta.
       const porTipoReunion = {
@@ -1642,13 +1646,14 @@
           const llegoCerrado = etapa === 'Cerrado';
 
           embudo.generados++;
+          embudoDetalle.generados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad });
           if (fueTocado) embudo.contactados++;
           if (tuvoLlamada) embudo.llamados++;
-          if (tuvoContactoEfectivo) embudo.efectivos++;
-          if (llegoAgendado) embudo.agendados++;
-          if (llegoVisitado) embudo.visitados++;
-          if (llegoNegociando) embudo.negociando++;
-          if (llegoCerrado) embudo.cerrados++;
+          if (tuvoContactoEfectivo) { embudo.efectivos++; embudoDetalle.efectivos.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoAgendado) { embudo.agendados++; embudoDetalle.agendados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoVisitado) { embudo.visitados++; embudoDetalle.visitados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoNegociando) { embudo.negociando++; embudoDetalle.negociando.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoCerrado) { embudo.cerrados++; embudoDetalle.cerrados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
 
           if (fueTocado) asesorContactado++;
           if (llegoAgendado) asesorAgendado++;
@@ -1687,12 +1692,13 @@
           const llegoCerrado = etapa === 'Cerrado';
 
           embudo.contactados++;
+          embudoDetalle.carteraAntigua.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad });
           if (tuvoLlamada) embudo.llamados++;
-          if (tuvoContactoEfectivo) embudo.efectivos++;
-          if (llegoAgendado) embudo.agendados++;
-          if (llegoVisitado) embudo.visitados++;
-          if (llegoNegociando) embudo.negociando++;
-          if (llegoCerrado) embudo.cerrados++;
+          if (tuvoContactoEfectivo) { embudo.efectivos++; embudoDetalle.efectivos.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoAgendado) { embudo.agendados++; embudoDetalle.agendados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoVisitado) { embudo.visitados++; embudoDetalle.visitados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoNegociando) { embudo.negociando++; embudoDetalle.negociando.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
+          if (llegoCerrado) { embudo.cerrados++; embudoDetalle.cerrados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
         });
 
         if (leadsDelMes.length) {
@@ -1757,7 +1763,7 @@
       return {
         fechaDesde, fechaHasta, totalLeads, totalGestionados, totalVentas, conversionGlobal, porAsesor, funnelGlobal, porCanal,
         calSi, calNo, calPendiente, totalLanding, porLanding,
-        embudo, embudoPorAsesor, gestionPorAsesor, tasasReunion,
+        embudo, embudoDetalle, embudoPorAsesor, gestionPorAsesor, tasasReunion,
         resultado: { cerrados: resultadoCerrados, perdidos: resultadoPerdidos, enSeguimiento: resultadoEnSeguimiento }
       };
     }
@@ -1780,8 +1786,10 @@
           d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td class="num">' + a.leadsGestionados + '</td><td class="num">' + a.ventas + '</td><td class="num">' + a.conversion + '%</td></tr>').join('') +
         '</tbody></table>' +
         '<div data-seccion="embudoGestion"><h3>1 · Embudo de Gestión</h3>' +
-        '<div style="font-size:11.5px;color:var(--text-soft);margin-bottom:8px;">Generados = solo clientes nuevos ese período. Cartera (Antigua gestionada) = clientes de antes a los que se les hizo algo ese día. Agendados = suma de Visita, Llamada agendada, Oficina y Meet.</div>' +
-        '<div style="position:relative;height:220px;margin-bottom:24px;"><canvas id="graf1"></canvas></div></div>' +
+        '<div style="font-size:11.5px;color:var(--text-soft);margin-bottom:8px;">Generados = solo clientes nuevos ese período. Cartera (Antigua gestionada) = clientes de antes a los que se les hizo algo ese día. Agendados = suma de Visita, Llamada agendada, Oficina y Meet. Dale clic a una barra para ver el detalle.</div>' +
+        '<div style="position:relative;height:220px;margin-bottom:10px;"><canvas id="graf1"></canvas></div>' +
+        '<div id="embudoDrilldown" style="display:none;background:var(--panel-2);border-radius:8px;padding:14px;margin-bottom:24px;"></div>' +
+        '</div>' +
         '<div data-seccion="embudoAsesor"><h3>2 · Embudo por Asesor</h3>' +
         '<div style="position:relative;height:200px;margin-bottom:6px;"><canvas id="graf2"></canvas></div>' +
         '<div id="graf2Legend" style="display:flex;gap:14px;font-size:11px;color:var(--text-soft);margin-bottom:24px;"></div></div>' +
@@ -1800,7 +1808,7 @@
           d.tasasReunion.map(t => '<tr><td>' + t.tipo + '</td><td class="num">' + t.agendadas + '</td><td class="num">' + t.realizadas + '</td><td class="num">' + t.separadas + '</td></tr>').join('') +
         '</tbody></table></div>';
 
-      crearGraficosReporte(d, 'oscuro');
+      crearGraficosReporte(d, 'claro');
       aplicarVisibilidadSecciones(c);
     }
 
@@ -1810,6 +1818,23 @@
           el.style.display = reporteSecciones[seccion] ? '' : 'none';
         });
       });
+    }
+
+    function renderEmbudoDrilldown(clave, nombreCategoria, embudoDetalle){
+      const cont = document.getElementById('embudoDrilldown');
+      const lista = (embudoDetalle && embudoDetalle[clave]) || [];
+      cont.style.display = 'block';
+      if (!lista.length) {
+        cont.innerHTML = '<div style="font-size:12.5px;color:var(--text-soft);">No hay clientes en "' + nombreCategoria + '" para este rango.</div>';
+        return;
+      }
+      cont.innerHTML = '<div style="font-size:13px;font-weight:700;margin-bottom:10px;">' + nombreCategoria + ' (' + lista.length + ')</div>' +
+        '<table><thead><tr><th>Cliente</th><th>Asesor</th><th>Última actividad</th></tr></thead><tbody>' +
+        lista.map(l => {
+          const fecha = l.ultimaActividad ? new Date(l.ultimaActividad).toLocaleDateString('es-PE') : '—';
+          return '<tr><td>' + l.nombre + '</td><td>' + l.asesor + '</td><td>' + fecha + '</td></tr>';
+        }).join('') +
+        '</tbody></table>';
     }
 
     function crearGraficosReporte(d, modo){
@@ -1828,7 +1853,13 @@
         type:'bar',
         data:{ labels:['Generados (Nuevos)','Cartera (Antigua gestionada)','Contacto Efectivo','Agendados (Todos)','Visitados','Negociando','Cerrados'],
           datasets:[{ data:[d.embudo.generados,d.embudo.carteraAntigua,d.embudo.efectivos,d.embudo.agendados,d.embudo.visitados,d.embudo.negociando,d.embudo.cerrados], backgroundColor:sage, borderRadius:3, barThickness:14 }] },
-        options:{ ...common, indexAxis:'y' }
+        options:{ ...common, indexAxis:'y', onClick: (evt, elements) => {
+          if (!elements.length) return;
+          const idx = elements[0].index;
+          const claves = ['generados','carteraAntigua','efectivos','agendados','visitados','negociando','cerrados'];
+          const nombres = ['Generados (Nuevos)','Cartera (Antigua gestionada)','Contacto Efectivo','Agendados (Todos)','Visitados','Negociando','Cerrados'];
+          renderEmbudoDrilldown(claves[idx], nombres[idx], d.embudoDetalle);
+        } }
       }));
 
       graficosReporteActuales.push(new Chart(document.getElementById('graf2'), {
@@ -2160,7 +2191,7 @@
       </div>
 
       <div class="field">
-        <label>Resultado / Nota <span style="color:var(--red);font-weight:800;">*obligatorio</span></label>
+        <label>Resultado / Nota <span style="color:var(--red-ink);font-weight:800;">*obligatorio</span></label>
         <textarea id="agendarNota" placeholder="¿Qué pasó? ¿Qué dijo el cliente?"></textarea>
       </div>
 
