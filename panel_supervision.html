@@ -1713,7 +1713,8 @@
         porAsesor.push({
           nombre: a.name || 'Asesor',
           tipo: a.tipo || 'interno',
-          leadsGestionados: leadsDelMes.length,
+          leadsNuevos: leadsDelMes.length,
+          leadsGestionadosTotal: leadsGestionadosEnRango.length,
           ventas: ventasDelRango.length,
           conversion: leadsDelMes.length ? ((ventasDelRango.length / leadsDelMes.length) * 100).toFixed(1) : '0.0'
         });
@@ -1782,8 +1783,8 @@
           '<div class="kpi"><div class="kpi-label">Conversión</div><div class="kpi-value">' + d.conversionGlobal + '%</div></div>' +
           '<div class="kpi"><div class="kpi-label">Leads de landing</div><div class="kpi-value">' + d.totalLanding + '</div></div>' +
         '</div>' +
-        '<table style="margin-bottom:24px;"><thead><tr><th>Asesor</th><th>Tipo</th><th class="num">Leads</th><th class="num">Ventas</th><th class="num">Conversión</th></tr></thead><tbody>' +
-          d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td class="num">' + a.leadsGestionados + '</td><td class="num">' + a.ventas + '</td><td class="num">' + a.conversion + '%</td></tr>').join('') +
+        '<table style="margin-bottom:24px;"><thead><tr><th>Asesor</th><th>Tipo</th><th class="num">Leads (Solo nuevos)</th><th class="num">Leads Gestionados (Toda la cartera)</th><th class="num">Ventas</th><th class="num">Conversión</th></tr></thead><tbody>' +
+          d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td class="num">' + a.leadsNuevos + '</td><td class="num">' + a.leadsGestionadosTotal + '</td><td class="num">' + a.ventas + '</td><td class="num">' + a.conversion + '%</td></tr>').join('') +
         '</tbody></table>' +
         '<div data-seccion="embudoGestion"><h3>1 · Embudo de Gestión</h3>' +
         '<div style="font-size:11.5px;color:var(--text-soft);margin-bottom:8px;">Generados = solo clientes nuevos ese período. Cartera (Antigua gestionada) = clientes de antes a los que se les hizo algo ese día. Agendados = suma de Visita, Llamada agendada, Oficina y Meet. Dale clic a una barra para ver el detalle.</div>' +
@@ -1948,8 +1949,8 @@
       filas.push(['Leads de landing', d.totalLanding]);
       filas.push([]);
       filas.push(['DESEMPEÑO POR ASESOR']);
-      filas.push(['Nombre', 'Tipo', 'Leads gestionados', 'Ventas', 'Conversión']);
-      d.porAsesor.forEach(a => filas.push([a.nombre, a.tipo === 'externo' ? 'Externo' : 'Interno', a.leadsGestionados, a.ventas, a.conversion + '%']));
+      filas.push(['Nombre', 'Tipo', 'Leads (solo nuevos)', 'Leads gestionados (toda la cartera)', 'Ventas', 'Conversión']);
+      d.porAsesor.forEach(a => filas.push([a.nombre, a.tipo === 'externo' ? 'Externo' : 'Interno', a.leadsNuevos, a.leadsGestionadosTotal, a.ventas, a.conversion + '%']));
       filas.push([]);
       filas.push(['FUNNEL GENERAL']);
       Object.entries(d.funnelGlobal).forEach(([etapa, cant]) => filas.push([etapa, cant]));
@@ -2025,8 +2026,8 @@
         '<div data-seccion="resultadoFinal"><h2>4 · Resultado final</h2>' +
         '<div style="max-width:320px;"><div style="position:relative;height:130px;"><canvas id="pg4"></canvas></div></div></div>' +
         '<h2>Desempeño por Asesor</h2>' +
-        '<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Leads</th><th>Ventas</th><th>Conversión</th></tr></thead><tbody>' +
-          d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td>' + a.leadsGestionados + '</td><td>' + a.ventas + '</td><td>' + a.conversion + '%</td></tr>').join('') +
+        '<table><thead><tr><th>Nombre</th><th>Tipo</th><th>Leads (Solo nuevos)</th><th>Leads Gestionados (Toda la cartera)</th><th>Ventas</th><th>Conversión</th></tr></thead><tbody>' +
+          d.porAsesor.map(a => '<tr><td>' + a.nombre + '</td><td>' + (a.tipo === 'externo' ? 'Externo' : 'Interno') + '</td><td>' + a.leadsNuevos + '</td><td>' + a.leadsGestionadosTotal + '</td><td>' + a.ventas + '</td><td>' + a.conversion + '%</td></tr>').join('') +
         '</tbody></table>' +
         '<div data-seccion="canal"><h2>5 · Leads por Canal</h2>' +
         '<div style="position:relative;height:170px;"><canvas id="pg6"></canvas></div></div>' +
