@@ -1687,8 +1687,8 @@
       // ej. si está en Negociando, ya pasó por Agendado y Visitado en el camino.
       // Es una aproximación basada en la etapa actual, no un historial exacto toque por toque.
       const nivelesFunnel = ['Agendado', 'Visitado', 'Negociando', 'Cerrado'];
-      let embudo = { generados: 0, carteraAntigua: 0, contactados: 0, llamados: 0, efectivos: 0, agendados: 0, visitados: 0, negociando: 0, cerrados: 0 };
-      const embudoDetalle = { generados: [], carteraAntigua: [], efectivos: [], agendados: [], visitados: [], negociando: [], cerrados: [] };
+      let embudo = { generados: 0, carteraAntigua: 0, sinEtiquetar: 0, contactados: 0, llamados: 0, efectivos: 0, agendados: 0, visitados: 0, negociando: 0, cerrados: 0 };
+      const embudoDetalle = { generados: [], carteraAntigua: [], sinEtiquetar: [], efectivos: [], agendados: [], visitados: [], negociando: [], cerrados: [] };
       // Tasa de éxito por tipo de reunión (Visita / Oficina / Meet):
       // "agendadas" = se les puso fecha; "realizadas" = el asesor la marcó como hecha; "cerradas" = terminó en venta.
       const porTipoReunion = {
@@ -1720,6 +1720,13 @@
 
         const leadsCarteraAntigua = leadsConTrabajoReal.filter(l => l.origenLead === 'antiguo');
         embudo.carteraAntigua += leadsCarteraAntigua.length;
+
+        // Clientes que sí se gestionaron de verdad, pero nunca se etiquetaron como Nuevo o Antiguo
+        // (típicamente cartera de antes de esta función) — no se fuerzan a ninguna categoría,
+        // solo se avisan aparte para que se puedan corregir uno por uno desde "Resultado".
+        const leadsSinEtiquetar = leadsConTrabajoReal.filter(l => !l.origenLead);
+        embudo.sinEtiquetar += leadsSinEtiquetar.length;
+        leadsSinEtiquetar.forEach(l => embudoDetalle.sinEtiquetar.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }));
 
         const salesQuery = query(collection(db, 'sales'), where('advisorUid', '==', advisorDoc.id), where('monthKey', '>=', mesKeyDesde), where('monthKey', '<=', mesKeyHasta));
         const salesSnapMes = await getDocs(salesQuery);
@@ -1876,6 +1883,7 @@
 
     function renderReporteResumen(d){
       document.getElementById('reporteResumenCard').style.display = 'block';
+      window.ultimoEmbudoDetalle = d.embudoDetalle;
       const c = document.getElementById('reporteResumenContenido');
       c.innerHTML =
         '<h3 style="margin-top:0;">' + nombreRangoReporte(d.fechaDesde, d.fechaHasta) + '</h3>' +
@@ -1892,6 +1900,9 @@
         '<div data-seccion="embudoGestion"><h3>1 · Embudo de Gestión</h3>' +
         '<div style="font-size:11.5px;color:var(--text-soft);margin-bottom:8px;">Generados = solo clientes nuevos ese período. Cartera (Antigua gestionada) = clientes de antes a los que se les hizo algo ese día. Agendados = suma de Visita, Llamada agendada, Oficina y Meet. Dale clic a una barra para ver el detalle.</div>' +
         '<div style="position:relative;height:220px;margin-bottom:10px;"><canvas id="graf1"></canvas></div>' +
+        (d.embudo.sinEtiquetar > 0
+          ? '<div class="card" style="background:rgba(163,55,42,0.08);border-color:var(--red-ink);margin-bottom:10px;cursor:pointer;" onclick="renderEmbudoDrilldown(&quot;sinEtiquetar&quot;, &quot;Sin etiquetar (Nuevo/Antiguo)&quot;, window.ultimoEmbudoDetalle)">⚠️ <b>' + d.embudo.sinEtiquetar + ' cliente(s)</b> se gestionaron este período pero nunca se etiquetaron como Nuevo o Antiguo — no cuentan en ninguna barra de abajo. Dale clic aquí para ver la lista y corregirlos desde "Resultado".</div>'
+          : '') +
         '<div id="embudoDrilldown" style="display:none;background:var(--panel-2);border-radius:8px;padding:14px;margin-bottom:24px;"></div>' +
         '</div>' +
         '<div data-seccion="embudoAsesor"><h3>2 · Embudo por Asesor</h3>' +
