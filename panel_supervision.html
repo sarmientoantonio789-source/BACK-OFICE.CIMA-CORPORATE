@@ -356,7 +356,12 @@
         </div>
 
         <div class="section" style="margin-top:0;">
-          <div class="card" id="seguimientoAsesoresList" style="padding:10px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-soft);text-transform:uppercase;margin-bottom:6px;">🟢 Internos</div>
+          <div class="card" id="seguimientoInternosList" style="padding:10px;margin-bottom:16px;">
+            <div style="color:var(--text-soft);font-size:13px;padding:14px;">Cargando...</div>
+          </div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-soft);text-transform:uppercase;margin-bottom:6px;">🔵 Externos</div>
+          <div class="card" id="seguimientoExternosList" style="padding:10px;">
             <div style="color:var(--text-soft);font-size:13px;padding:14px;">Cargando...</div>
           </div>
         </div>
@@ -754,17 +759,20 @@
       const advisorsSnapTodos = await getDocs(collection(db, 'advisors'));
       const advisorsSnap = { docs: advisorsSnapTodos.docs.filter(d => d.data().supervisorUid === miSupervisorUid) };
       const rankingCard = document.getElementById('rankingCard');
-      const seguimientoList = document.getElementById('seguimientoAsesoresList');
+      const seguimientoInternos = document.getElementById('seguimientoInternosList');
+      const seguimientoExternos = document.getElementById('seguimientoExternosList');
 
       if(!advisorsSnap.docs.length){
         rankingCard.innerHTML = '<div style="color:var(--text-soft);font-size:13px;">Todavía no tienes asesores asignados a tu equipo. Pídele a gerencia que te los asigne desde "Crear Cuenta".</div>';
-        seguimientoList.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:14px;">Todavía no tienes asesores asignados a tu equipo.</div>';
+        seguimientoInternos.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:14px;">Ninguno todavía.</div>';
+        seguimientoExternos.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:14px;">Ninguno todavía.</div>';
         document.getElementById('kpiAdvisors').textContent = '0';
         return;
       }
 
       document.getElementById('kpiAdvisors').textContent = advisorsSnap.docs.length;
-      let seguimientoHtml = '';
+      let seguimientoInternosHtml = '';
+      let seguimientoExternosHtml = '';
       const rankData = [];
 
       for(const advisorDoc of advisorsSnap.docs){
@@ -776,13 +784,15 @@
           where('monthKey', '==', currentMonthKey())
         );
         const salesSnap = await getDocs(salesQuery);
-        seguimientoHtml += '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 12px;border-bottom:1px solid var(--line);">' +
-          '<div style="font-weight:700;font-size:14.5px;">' + a.name + ' <span style="font-size:10.5px;font-weight:600;color:var(--text-soft);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-left:4px;">' + (tipo === 'externo' ? 'Externo' : 'Interno') + '</span></div>' +
+        const filaHtml = '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 12px;border-bottom:1px solid var(--line);">' +
+          '<div style="font-weight:700;font-size:14.5px;">' + a.name + '</div>' +
           '<button class="btn" onclick="abrirDetalleAsesor(&quot;' + advisorDoc.id + '&quot;, ' + JSON.stringify(a.name).replace(/"/g,'&quot;') + ', ' + JSON.stringify(a.email).replace(/"/g,'&quot;') + ')">Realizar seguimiento →</button>' +
         '</div>';
+        if (tipo === 'externo') seguimientoExternosHtml += filaHtml; else seguimientoInternosHtml += filaHtml;
         rankData.push({ name: a.name, count: salesSnap.size, tipo });
       }
-      seguimientoList.innerHTML = seguimientoHtml;
+      seguimientoInternos.innerHTML = seguimientoInternosHtml || '<div style="color:var(--text-soft);font-size:13px;padding:14px;">Ninguno todavía.</div>';
+      seguimientoExternos.innerHTML = seguimientoExternosHtml || '<div style="color:var(--text-soft);font-size:13px;padding:14px;">Ninguno todavía.</div>';
 
       function bloqueRanking(lista, titulo){
         if (!lista.length) return '<div style="font-size:11.5px;color:var(--text-soft);font-weight:700;text-transform:uppercase;margin:14px 0 6px;">' + titulo + '</div><div style="font-size:12.5px;color:var(--text-soft);">Ninguno en este grupo.</div>';
@@ -893,7 +903,7 @@
       const fecha = document.getElementById('detalleAsignadoFecha').value;
       const tbody = document.getElementById('detalleAsignadoBody');
       if (!fecha) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-soft);">Elige una fecha.</td></tr>'; return; }
-      const asignados = detalleLeadsTodos.filter(l => l.creadoEn && l.creadoEn.slice(0, 10) === fecha);
+      const asignados = detalleLeadsTodos.filter(l => l.creadoEn && fechaLocalDeISO(l.creadoEn) === fecha);
       if (!asignados.length) {
         tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-soft);">No se le asignó nada en esta fecha.</td></tr>';
         return;
@@ -1494,13 +1504,13 @@
       // Agendamientos por tipo de reunión — solo cuenta lo que sigue pendiente (visitaDt aún activo).
       // "Hoy" está incluido dentro de "Esta semana", y "Esta semana" dentro de "Este mes" (son acumulados, no exclusivos).
       const hoyDate = new Date();
-      const hoyKey = hoyDate.toISOString().slice(0, 10);
+      const hoyKey = fechaLocalStr(hoyDate);
       const diaSemana = hoyDate.getDay();
       const offsetLunes = diaSemana === 0 ? 6 : diaSemana - 1;
       const lunes = new Date(hoyDate); lunes.setDate(hoyDate.getDate() - offsetLunes);
       const domingo = new Date(lunes); domingo.setDate(lunes.getDate() + 6);
-      const lunesKey = lunes.toISOString().slice(0, 10);
-      const domingoKey = domingo.toISOString().slice(0, 10);
+      const lunesKey = fechaLocalStr(lunes);
+      const domingoKey = fechaLocalStr(domingo);
       const mesKeyActual = currentMonthKey();
 
       const agendamientos = { Meet: {hoy:0,semana:0,mes:0}, Oficina: {hoy:0,semana:0,mes:0}, Visita: {hoy:0,semana:0,mes:0} };
@@ -1581,6 +1591,14 @@
     });
     function fechaLocalStr(d){
       return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    // Convierte un timestamp guardado (creadoEn, toque.fecha, saleDate — todos en UTC) a su fecha
+    // en hora LOCAL — necesario porque después de las 7pm en Perú, el UTC ya cruzó al día siguiente,
+    // y comparar el ISO crudo contra una fecha elegida en un selector (que sí es local) desincroniza todo.
+    function fechaLocalDeISO(isoString){
+      if (!isoString) return '';
+      return fechaLocalStr(new Date(isoString));
     }
 
     document.getElementById('reporteFechaDesde').value = fechaLocalStr(new Date());
@@ -1673,12 +1691,12 @@
         const a = advisorDoc.data();
         const crmSnap = await getDoc(doc(db, 'crm_data', advisorDoc.id));
         const leads = crmSnap.exists() ? (crmSnap.data().leads || []) : [];
-        const leadsDelMes = leads.filter(l => l.creadoEn && l.creadoEn.slice(0, 10) >= fechaDesde && l.creadoEn.slice(0, 10) <= fechaHasta);
+        const leadsDelMes = leads.filter(l => l.creadoEn && fechaLocalDeISO(l.creadoEn) >= fechaDesde && fechaLocalDeISO(l.creadoEn) <= fechaHasta);
 
         // "Gestionados" es distinto de "Generados": mira TODA la cartera del asesor (sin importar
         // cuándo se creó el cliente) y cuenta a quien recibió al menos un toque dentro del rango elegido.
         const leadsGestionadosEnRango = leads.filter(l =>
-          (l.toques || []).some(t => t.fecha && t.fecha.slice(0, 10) >= fechaDesde && t.fecha.slice(0, 10) <= fechaHasta)
+          (l.toques || []).some(t => t.fecha && fechaLocalDeISO(t.fecha) >= fechaDesde && fechaLocalDeISO(t.fecha) <= fechaHasta)
         );
         totalGestionados += leadsGestionadosEnRango.length;
 
@@ -1692,7 +1710,7 @@
         const salesSnapMes = await getDocs(salesQuery);
         const ventasDelRango = salesSnapMes.docs.filter(d => {
           const sd = d.data().saleDate;
-          return sd && sd.slice(0, 10) >= fechaDesde && sd.slice(0, 10) <= fechaHasta;
+          return sd && fechaLocalDeISO(sd) >= fechaDesde && fechaLocalDeISO(sd) <= fechaHasta;
         });
 
         let asesorContactado = 0, asesorAgendado = 0, asesorCerrado = 0, asesorGestionado = 0;
@@ -1807,7 +1825,7 @@
         const c = docu.data();
         const fecha = c.fechaAsignacion?.toDate ? c.fechaAsignacion.toDate() : null;
         if (!fecha) return;
-        const key = fecha.toISOString().slice(0, 10);
+        const key = fechaLocalStr(fecha);
         if (key < fechaDesde || key > fechaHasta) return;
         if (c.calificado === true) calSi++;
         else if (c.calificado === false) calNo++;
@@ -1821,7 +1839,7 @@
         const l = docu.data();
         const fecha = l.fecha_creacion?.toDate ? l.fecha_creacion.toDate() : null;
         if (!fecha) return;
-        const key = fecha.toISOString().slice(0, 10);
+        const key = fechaLocalStr(fecha);
         if (key < fechaDesde || key > fechaHasta) return;
         totalLanding++;
         const fuente = l.fuente || 'Sin especificar';
