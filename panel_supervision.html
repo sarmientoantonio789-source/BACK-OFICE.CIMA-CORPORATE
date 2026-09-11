@@ -1817,7 +1817,7 @@
           nombre: a.name || 'Asesor',
           tipo: a.tipo || 'interno',
           leadsNuevos: leadsNuevosEnRango.length,
-          leadsGestionadosTotal: leadsGestionadosEnRango.length,
+          leadsGestionadosTotal: leadsConTrabajoReal.length,
           ventas: ventasDelRango.length,
           conversion: leadsNuevosEnRango.length ? ((ventasDelRango.length / leadsNuevosEnRango.length) * 100).toFixed(1) : '0.0'
         });
