@@ -407,7 +407,7 @@
           </div>
           <div class="card">
             <table>
-              <thead><tr><th>Nombre</th><th>Número</th><th>Etapa</th><th>Última actividad</th></tr></thead>
+              <thead><tr><th>Nombre</th><th>Número</th><th>Etapa</th><th>Última actividad</th><th>Resultado</th></tr></thead>
               <tbody id="detalleAsignadoBody">
                 <tr><td colspan="4" style="color:var(--text-soft);">Cargando...</td></tr>
               </tbody>
@@ -892,15 +892,16 @@
     function renderAsignadoDelDia(){
       const fecha = document.getElementById('detalleAsignadoFecha').value;
       const tbody = document.getElementById('detalleAsignadoBody');
-      if (!fecha) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-soft);">Elige una fecha.</td></tr>'; return; }
+      if (!fecha) { tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-soft);">Elige una fecha.</td></tr>'; return; }
       const asignados = detalleLeadsTodos.filter(l => l.creadoEn && l.creadoEn.slice(0, 10) === fecha);
       if (!asignados.length) {
-        tbody.innerHTML = '<tr><td colspan="4" style="color:var(--text-soft);">No se le asignó nada en esta fecha.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" style="color:var(--text-soft);">No se le asignó nada en esta fecha.</td></tr>';
         return;
       }
       tbody.innerHTML = asignados.map(l => {
         const fechaAct = l.ultimaActividad ? new Date(l.ultimaActividad).toLocaleDateString('es-PE') : '—';
-        return '<tr><td>' + (l.nombre || 'Cliente sin nombre') + '</td><td>' + (l.numero || '—') + '</td><td>' + (l.etapa || 'Nuevo') + '</td><td>' + fechaAct + '</td></tr>';
+        return '<tr><td>' + (l.nombre || 'Cliente sin nombre') + '</td><td>' + (l.numero || '—') + '</td><td>' + (l.etapa || 'Nuevo') + '</td><td>' + fechaAct + '</td>' +
+          '<td><button class="btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="abrirModalAgendar(&quot;' + l.id + '&quot;, ' + JSON.stringify(l.nombre || 'Cliente sin nombre').replace(/"/g,'&quot;') + ')">Resultado</button></td></tr>';
       }).join('');
     }
 
