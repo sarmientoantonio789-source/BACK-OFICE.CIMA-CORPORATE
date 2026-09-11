@@ -1052,6 +1052,7 @@
       document.getElementById('modalAgendarClienteInfo').textContent = 'Cliente: ' + nombreCliente + ' — asesor: ' + detalleAsesorActual.name;
       document.getElementById('agendarTipoContacto').value = 'Llamada realizada';
       document.getElementById('agendarNuevaEtapa').value = '';
+      document.getElementById('agendarOrigenLead').value = '';
       document.getElementById('agendarNota').value = '';
       document.getElementById('agendarProxTexto').value = '';
       document.getElementById('agendarFecha').value = '';
@@ -1071,6 +1072,7 @@
       const nuevaEtapa = document.getElementById('agendarNuevaEtapa').value;
       const nota = document.getElementById('agendarNota').value.trim();
       const proxTexto = document.getElementById('agendarProxTexto').value.trim();
+      const nuevoOrigen = document.getElementById('agendarOrigenLead').value;
       const fechaHora = combinarFechaHoraGerencia(); // vacío si no se llenó fecha/hora — es opcional aquí
 
       if (!nota) {
@@ -1096,6 +1098,8 @@
 
         const lead = leads[idx];
         const ahora = new Date().toISOString();
+
+        if (nuevoOrigen) lead.origenLead = nuevoOrigen;
 
         if (nuevaEtapa) {
           lead.etapa = nuevaEtapa;
@@ -1191,11 +1195,12 @@
        ══════════════════════════════════════════════ */
     let landingLeadsActuales = [];
 
-    function crearLeadManual(nombre, numero, notaInicial, loteCarga){
+    function crearLeadManual(nombre, numero, notaInicial, loteCarga, origenLead){
       const now = new Date().toISOString();
+      const origenTexto = origenLead === 'antiguo' ? 'Base Antigua' : 'Lead Nuevo';
       const notaRegistro = loteCarga
-        ? 'Cliente cargado por gerencia — lote: ' + loteCarga + (notaInicial ? '. ' + notaInicial : '')
-        : 'Cliente agregado manualmente por gerencia.' + (notaInicial ? ' ' + notaInicial : '');
+        ? 'Cliente cargado por gerencia — lote: ' + loteCarga + ' — origen: ' + origenTexto + (notaInicial ? '. ' + notaInicial : '')
+        : 'Cliente agregado manualmente por gerencia — origen: ' + origenTexto + '.' + (notaInicial ? ' ' + notaInicial : '');
       return {
         id: Date.now().toString() + Math.random().toString(36).slice(2, 7),
         nombre: nombre && nombre.trim() ? nombre.trim() : 'Cliente sin nombre',
@@ -1205,7 +1210,7 @@
         notas: notaInicial || '', creadoEn: now, ultimaActividad: now,
         toques: [{ tipo: 'Registro inicial', nota: notaRegistro, fecha: now, etapa: 'Nuevo' }],
         postVisita: null, modo: '', oferta: '', motivoPerdida: '',
-        manzana: '', lote: '', loteCarga: loteCarga || '', precioLote: 0, montoSeparacion: 0, fechaSeparacion: null,
+        manzana: '', lote: '', loteCarga: loteCarga || '', origenLead: origenLead || 'nuevo', precioLote: 0, montoSeparacion: 0, fechaSeparacion: null,
         plazoInicialDias: 0, montoInicial: 0, plazoFinanciamiento: 0, montoAFinanciar: 0,
         cuotaMensual: 0, separo: false,
       };
@@ -1217,6 +1222,7 @@
       document.getElementById('acNumero').value = '';
       document.getElementById('acNota').value = '';
       document.getElementById('acListaMasiva').value = '';
+      document.getElementById('acOrigenLead').value = '';
       const hoy = new Date();
       const nombresMesCorto = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
       document.getElementById('acLoteNombre').value = 'Lote ' + hoy.getDate() + ' ' + nombresMesCorto[hoy.getMonth()];
@@ -1246,6 +1252,13 @@
       const msg = document.getElementById('agregarClienteMsg');
       const modoActivo = document.querySelector('.ac-modo-btn.active').dataset.acmodo;
       const uid = detalleAsesorActual.uid;
+      const origenLead = document.getElementById('acOrigenLead').value;
+
+      if (!origenLead) {
+        msg.textContent = 'Elige si es Lead Nuevo o Base Antigua antes de guardar.';
+        msg.className = 'form-msg err';
+        return;
+      }
 
       try {
         const ref = doc(db, 'crm_data', uid);
@@ -1266,7 +1279,7 @@
           msg.textContent = 'Guardando...';
           msg.className = 'form-msg';
 
-          const nuevoLead = crearLeadManual(nombre, numero, nota);
+          const nuevoLead = crearLeadManual(nombre, numero, nota, '', origenLead);
           await setDoc(ref, { leads: [...leadsActuales, nuevoLead] }, { merge: true });
           await setDoc(doc(db, 'clientes_asignados', nuevoLead.id), {
             nombre: nuevoLead.nombre, numero: nuevoLead.numero,
@@ -1292,7 +1305,7 @@
             const numero = (partes[1] || '').trim();
             const nombre = (partes[0] || '').trim();
             if (!numero) { invalidas.push(linea); return; }
-            nuevosLeads.push(crearLeadManual(nombre, numero, '', loteCarga));
+            nuevosLeads.push(crearLeadManual(nombre, numero, '', loteCarga, origenLead));
           });
 
           if (!nuevosLeads.length) {
@@ -1691,19 +1704,21 @@
         const a = advisorDoc.data();
         const crmSnap = await getDoc(doc(db, 'crm_data', advisorDoc.id));
         const leads = crmSnap.exists() ? (crmSnap.data().leads || []) : [];
-        const leadsDelMes = leads.filter(l => l.creadoEn && fechaLocalDeISO(l.creadoEn) >= fechaDesde && fechaLocalDeISO(l.creadoEn) <= fechaHasta);
-
-        // "Gestionados" es distinto de "Generados": mira TODA la cartera del asesor (sin importar
-        // cuándo se creó el cliente) y cuenta a quien recibió al menos un toque dentro del rango elegido.
-        const leadsGestionadosEnRango = leads.filter(l =>
-          (l.toques || []).some(t => t.fecha && fechaLocalDeISO(t.fecha) >= fechaDesde && fechaLocalDeISO(t.fecha) <= fechaHasta)
+        // "Generados" = simplemente llegaron este período (etiquetados como nuevo) — llegar ya cuenta,
+        // sin importar si todavía se trabajaron o no.
+        const leadsNuevosEnRango = leads.filter(l =>
+          l.origenLead !== 'antiguo' && l.creadoEn && fechaLocalDeISO(l.creadoEn) >= fechaDesde && fechaLocalDeISO(l.creadoEn) <= fechaHasta
         );
-        totalGestionados += leadsGestionadosEnRango.length;
 
-        // Cartera Antigua = de esos gestionados, los que NO son nuevos de este período —
-        // clientes de cartera vieja, rotados, o descartados que se estén depurando ese día.
-        const idsDelMes = new Set(leadsDelMes.map(l => l.id));
-        const leadsCarteraAntigua = leadsGestionadosEnRango.filter(l => !idsDelMes.has(l.id));
+        // "Gestionados" (el KPI general) y "Cartera Antigua Gestionada" exigen trabajo REAL —
+        // el toque "Registro inicial" se pone solo al asignar, sin que el asesor haya hecho nada todavía,
+        // así que no cuenta como gestión por sí solo (si no, asignar 10 más ya se vería como "gestionados").
+        const leadsConTrabajoReal = leads.filter(l =>
+          (l.toques || []).some(t => t.tipo !== 'Registro inicial' && t.fecha && fechaLocalDeISO(t.fecha) >= fechaDesde && fechaLocalDeISO(t.fecha) <= fechaHasta)
+        );
+        totalGestionados += leadsConTrabajoReal.length;
+
+        const leadsCarteraAntigua = leadsConTrabajoReal.filter(l => l.origenLead === 'antiguo');
         embudo.carteraAntigua += leadsCarteraAntigua.length;
 
         const salesQuery = query(collection(db, 'sales'), where('advisorUid', '==', advisorDoc.id), where('monthKey', '>=', mesKeyDesde), where('monthKey', '<=', mesKeyHasta));
@@ -1715,7 +1730,7 @@
 
         let asesorContactado = 0, asesorAgendado = 0, asesorCerrado = 0, asesorGestionado = 0;
 
-        leadsDelMes.forEach(l => {
+        leadsNuevosEnRango.forEach(l => {
           totalLeads++;
           const etapa = l.etapa || 'Nuevo';
           if (funnelGlobal[etapa] !== undefined) funnelGlobal[etapa]++;
@@ -1789,22 +1804,22 @@
           if (llegoCerrado) { embudo.cerrados++; embudoDetalle.cerrados.push({ nombre: l.nombre || 'Cliente sin nombre', asesor: a.name || 'Asesor', ultimaActividad: l.ultimaActividad }); }
         });
 
-        if (leadsDelMes.length) {
+        if (leadsNuevosEnRango.length) {
           embudoPorAsesor.push({ nombre: a.name || 'Asesor', contactado: asesorContactado, agendado: asesorAgendado, cerrado: asesorCerrado });
           gestionPorAsesor.push({
             nombre: a.name || 'Asesor',
-            pctGestionado: Math.round((asesorGestionado / leadsDelMes.length) * 100),
-            pctSinTocar: Math.round(((leadsDelMes.length - asesorGestionado) / leadsDelMes.length) * 100)
+            pctGestionado: Math.round((asesorGestionado / leadsNuevosEnRango.length) * 100),
+            pctSinTocar: Math.round(((leadsNuevosEnRango.length - asesorGestionado) / leadsNuevosEnRango.length) * 100)
           });
         }
 
         porAsesor.push({
           nombre: a.name || 'Asesor',
           tipo: a.tipo || 'interno',
-          leadsNuevos: leadsDelMes.length,
+          leadsNuevos: leadsNuevosEnRango.length,
           leadsGestionadosTotal: leadsGestionadosEnRango.length,
           ventas: ventasDelRango.length,
-          conversion: leadsDelMes.length ? ((ventasDelRango.length / leadsDelMes.length) * 100).toFixed(1) : '0.0'
+          conversion: leadsNuevosEnRango.length ? ((ventasDelRango.length / leadsNuevosEnRango.length) * 100).toFixed(1) : '0.0'
         });
       }
 
@@ -2280,6 +2295,15 @@
       </div>
 
       <div class="field">
+        <label>Origen de este cliente (opcional — corrige si está mal etiquetado)</label>
+        <select id="agendarOrigenLead">
+          <option value="">— sin cambio —</option>
+          <option value="nuevo">🆕 Lead Nuevo</option>
+          <option value="antiguo">📁 Base Antigua</option>
+        </select>
+      </div>
+
+      <div class="field">
         <label>Resultado / Nota <span style="color:var(--red-ink);font-weight:800;">*obligatorio</span></label>
         <textarea id="agendarNota" placeholder="¿Qué pasó? ¿Qué dijo el cliente?"></textarea>
       </div>
@@ -2319,6 +2343,16 @@
       <div style="display:flex;background:var(--panel-2);border-radius:8px;padding:3px;margin-bottom:14px;">
         <button type="button" class="ac-modo-btn active" data-acmodo="uno" style="flex:1;border:none;font-size:12px;font-weight:700;padding:8px;border-radius:6px;cursor:pointer;">Uno a uno</button>
         <button type="button" class="ac-modo-btn" data-acmodo="masivo" style="flex:1;border:none;font-size:12px;font-weight:700;padding:8px;border-radius:6px;cursor:pointer;">Carga masiva</button>
+      </div>
+
+      <div class="field">
+        <label>Origen de este registro <span style="color:var(--red-ink);font-weight:800;">*obligatorio</span></label>
+        <select id="acOrigenLead" style="width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:var(--text);font-family:inherit;font-size:13.5px;">
+          <option value="">— elegir —</option>
+          <option value="nuevo">🆕 Lead Nuevo</option>
+          <option value="antiguo">📁 Base Antigua</option>
+        </select>
+        <div class="note" style="margin-top:4px;">En carga masiva, este origen aplica a todos los números de la lista.</div>
       </div>
 
       <div id="acModoUno">
