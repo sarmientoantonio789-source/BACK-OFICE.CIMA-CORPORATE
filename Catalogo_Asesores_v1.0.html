@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catálogo Asesores</title>
+<!-- CATÁLOGO DE PROPIEDADES — ASESORES · v1.0 · Briad Group
+     Lee los datos del script puente (Google Sheet). Para cambiar la fuente, editar CONFIG abajo. -->
+<style>
+:root{
+  --bg:#f4f5f7; --card:#ffffff; --ink:#1b1f24; --muted:#5f6b78; --line:#e3e6ea;
+  --brand:#1f3a5f; --brand-ink:#ffffff; --accent:#2e7d5b; --warn:#c77700; --hot:#c0392b;
+  --chip:#eef1f5; --shadow:0 1px 2px rgba(0,0,0,.06),0 4px 14px rgba(0,0,0,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#121417;--card:#1c1f24;--ink:#e9ecef;--muted:#9aa5b1;--line:#2c3138;--brand:#3d6aa3;--chip:#262b31;--shadow:0 1px 2px rgba(0,0,0,.4)}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);padding:12px 16px}
+.top-row{display:flex;align-items:center;gap:10px;max-width:1200px;margin:0 auto}
+.top h1{font-size:17px;margin:0;font-weight:700;flex:1}
+.top small{opacity:.8;font-size:12px}
+.btn-ghost{background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:8px;padding:7px 11px;cursor:pointer}
+.wrap{max-width:1200px;margin:0 auto;padding:14px 16px 40px}
+.filters{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+.filters input,.filters select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card)}
+.frow{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+@media(min-width:760px){.filters{grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr}.frow{display:contents}}
+.toggles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.tg{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;cursor:pointer;font-size:13px}
+.tg.on{background:var(--hot);border-color:var(--hot);color:#fff}
+.count{color:var(--muted);font-size:13px;margin-left:auto}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:620px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;display:flex;flex-direction:column;transition:transform .12s}
+.card:hover{transform:translateY(-2px)}
+.ph{position:relative;aspect-ratio:4/3;background:var(--chip);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.badges{position:absolute;top:8px;left:8px;display:flex;gap:6px;flex-wrap:wrap}
+.b{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:#fff;color:#1b1f24}
+.b.disp{background:#e3f4ea;color:#1e6b45}.b.res{background:#fff3dd;color:#8a5a00}.b.neg{background:#e6eefb;color:#1f3a5f}
+.b.hot{background:var(--hot);color:#fff}
+.cb{padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px}
+.code{font-size:12px;color:var(--muted)}
+.ttl{font-weight:700}
+.zone{font-size:13px;color:var(--muted)}
+.price{font-size:20px;font-weight:800;margin-top:4px}
+.meta{display:flex;gap:10px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+.com{font-size:12px;font-weight:700;color:var(--accent)}
+.state{text-align:center;padding:50px 10px;color:var(--muted)}
+/* modal */
+.mod{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:20;display:none;align-items:flex-end;justify-content:center}
+.mod.open{display:flex}
+@media(min-width:760px){.mod{align-items:center}}
+.sheet{background:var(--card);width:100%;max-width:880px;max-height:94vh;overflow:auto;border-radius:16px 16px 0 0}
+@media(min-width:760px){.sheet{border-radius:16px}}
+.sh-top{position:sticky;top:0;background:var(--card);display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line);z-index:2}
+.sh-top h2{font-size:16px;margin:0;flex:1}
+.x{border:0;background:var(--chip);border-radius:8px;width:34px;height:34px;cursor:pointer;font-size:18px}
+.gal-main{aspect-ratio:4/3;background:var(--chip);display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.gal-main img{width:100%;height:100%;object-fit:contain;background:#000}
+.thumbs{display:flex;gap:6px;overflow-x:auto;padding:8px 16px}
+.thumbs img{width:64px;height:64px;object-fit:cover;border-radius:8px;cursor:pointer;opacity:.7;border:2px solid transparent;flex:none}
+.thumbs img.on{opacity:1;border-color:var(--brand)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:6px 16px 4px}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn.pri{background:var(--brand);color:#fff}.btn.sec{background:var(--chip);color:var(--ink)}
+.btn:disabled{opacity:.6;cursor:wait}
+.sec-b{padding:12px 16px;border-top:1px solid var(--line)}
+.sec-b h3{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 8px}
+.kv{display:grid;grid-template-columns:1fr;gap:6px}
+@media(min-width:620px){.kv{grid-template-columns:1fr 1fr}}
+.kv div{background:var(--chip);border-radius:10px;padding:8px 10px}
+.kv span{display:block;font-size:11px;color:var(--muted)}
+.rule{background:#e8f4ee;color:#1e6b45;border-radius:10px;padding:10px 12px;font-weight:700;margin-bottom:8px}
+@media (prefers-color-scheme: dark){.rule{background:#1f3a2d;color:#bfe8d1}}
+.alert{background:#fdecea;color:#8c2318;border-radius:10px;padding:8px 12px;font-weight:700;margin-bottom:8px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chips span{background:var(--chip);border-radius:999px;padding:5px 10px;font-size:13px}
+.copy{white-space:pre-wrap;background:var(--chip);border-radius:10px;padding:10px 12px;font-size:14px;max-height:260px;overflow:auto}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#1b1f24;color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;z-index:30;display:none}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-row">
+    <h1>Catálogo de Propiedades · Asesores<br><small id="upd">Cargando…</small></h1>
+    <button class="btn-ghost" id="reload" title="Actualizar">↻ Actualizar</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="filters">
+    <input id="q" type="search" placeholder="Buscar código, zona, urbanización…">
+    <div class="frow">
+      <select id="fSeg"><option value="">Segmento</option></select>
+      <select id="fCat"><option value="">Categoría</option></select>
+    </div>
+    <div class="frow">
+      <select id="fZona"><option value="">Zona</option></select>
+      <select id="fMon"><option value="">Moneda</option></select>
+    </div>
+    <select id="fOrd">
+      <option value="">Ordenar</option>
+      <option value="pa">Precio: menor a mayor</option>
+      <option value="pd">Precio: mayor a menor</option>
+      <option value="aa">Área: menor a mayor</option>
+      <option value="ad">Área: mayor a menor</option>
+    </select>
+  </div>
+  <div class="toggles">
+    <button class="tg" id="tOpp">🔥 Solo oportunidades</button>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="grid" class="grid"></div>
+  <div id="state" class="state">Cargando propiedades…</div>
+</main>
+
+<div class="mod" id="mod" aria-modal="true" role="dialog">
+  <div class="sheet" id="sheet"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= CONFIGURACIÓN ================= */
+var CONFIG = {
+  API: 'https://script.google.com/macros/s/AKfycby-kaer9MPIZ614tr37cTqWxvn0U5waZVi4jhnaSa9XuxY5Kp9EOZ3nOqmo0vyGDPzQDQ/exec',
+  VISTA: 'asesores',
+  CLAVE: ''            // solo si se activa CLAVE_ASESORES en el script
+};
+/* ================================================= */
+
+var DATA = [], FOTOS = {}, FILTRO_OPP = false;
+// Campos que la ficha ya muestra en su sección; todo lo demás cae en "Otros datos" automáticamente.
+var USADOS = ['Código','Segmento','Categoría','Estado','Tipo de oferta','Zona / Distrito','Urbanización / Asociación',
+ 'Dirección exacta','Referencia','Link Maps','Área terreno (m²)','Moneda','Precio comercial','Precio límite (hasta / base)',
+ 'Comisión tipo','% comisión','Regla de negociación','Condiciones del trato','Tipo de trato','Vencimiento contrato',
+ 'Situación legal','Documentación','Copy redes sociales','tieneFotos','caracteristicas'];
+
+function $(id){return document.getElementById(id)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function url(params){var q=Object.keys(params).map(function(k){return k+'='+encodeURIComponent(params[k])}).join('&');return CONFIG.API+'?vista='+CONFIG.VISTA+(CONFIG.CLAVE?'&key='+encodeURIComponent(CONFIG.CLAVE):'')+'&'+q}
+function api(params){return fetch(url(params)).then(function(r){return r.json()}).then(function(j){if(!j.ok)throw new Error(j.error||'Error');return j})}
+function num(v){var n=typeof v==='number'?v:parseFloat(String(v).replace(/[^\d.,-]/g,'').replace(/\.(?=\d{3}(\D|$))/g,'').replace(',','.'));return isNaN(n)?null:n}
+function money(v,m){var n=num(v);if(n==null)return v?esc(v):'—';return (m==='PEN'?'S/ ':'$ ')+n.toLocaleString('en-US',{maximumFractionDigits:0})}
+function area(v){var n=num(v);return n==null?'':n.toLocaleString('en-US',{maximumFractionDigits:2})+' m²'}
+function pct(v){var n=num(v);if(n==null)return v||'';if(n<=1)n=n*100;return (Math.round(n*10)/10)+'%'}
+function zona(p){return p['Zona / Distrito']||p['Urbanización / Asociación']||''}
+function isOpp(p){return /oportunidad/i.test(p['Tipo de oferta']||'')}
+function toast(t){var e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(function(){e.style.display='none'},2600)}
+function badgeEstado(s){var c=s==='Disponible'?'disp':s==='Reservado'?'res':s==='En negociación'?'neg':'';return s?'<span class="b '+c+'">'+esc(s)+'</span>':''}
+
+/* ---------- carga ---------- */
+function cargar(){
+  $('state').style.display='block';$('state').textContent='Cargando propiedades…';$('grid').innerHTML='';
+  api({action:'data'}).then(function(j){
+    DATA=j.propiedades||[];
+    $('upd').textContent=DATA.length+' propiedades · actualizado '+new Date(j.actualizado).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'});
+    llenarFiltros();render();
+  }).catch(function(e){$('state').textContent='No se pudo cargar el catálogo: '+e.message+'. Revisa la conexión y toca ↻ Actualizar.'});
+}
+function opciones(sel,campo,fn){
+  var vals={};DATA.forEach(function(p){var v=fn?fn(p):p[campo];if(v)vals[v]=1});
+  var first=sel.options[0].outerHTML, cur=sel.value;
+  sel.innerHTML=first+Object.keys(vals).sort().map(function(v){return '<option>'+esc(v)+'</option>'}).join('');
+  sel.value=cur;
+}
+function llenarFiltros(){opciones($('fSeg'),'Segmento');opciones($('fCat'),'Categoría');opciones($('fZona'),null,zona);opciones($('fMon'),'Moneda')}
+
+/* ---------- listado ---------- */
+function filtrados(){
+  var q=$('q').value.trim().toLowerCase(),s=$('fSeg').value,c=$('fCat').value,z=$('fZona').value,m=$('fMon').value,o=$('fOrd').value;
+  var r=DATA.filter(function(p){
+    if(s&&p['Segmento']!==s)return false;if(c&&p['Categoría']!==c)return false;
+    if(z&&zona(p)!==z)return false;if(m&&p['Moneda']!==m)return false;if(FILTRO_OPP&&!isOpp(p))return false;
+    if(q){var t=[p['Código'],p['Zona / Distrito'],p['Urbanización / Asociación'],p['Referencia'],p['Categoría'],p['Dirección exacta']].join(' ').toLowerCase();if(t.indexOf(q)<0)return false}
+    return true});
+  var key=o[0]==='p'?'Precio comercial':'Área terreno (m²)',dir=o[1]==='d'?-1:1;
+  if(o)r.sort(function(a,b){return((num(a[key])||0)-(num(b[key])||0))*dir});
+  return r;
+}
+function render(){
+  var r=filtrados();$('count').textContent=r.length+' de '+DATA.length;
+  $('state').style.display=r.length?'none':'block';if(!r.length)$('state').textContent='No hay propiedades con esos filtros.';
+  $('grid').innerHTML=r.map(function(p){
+    var c=esc(p['Código']);
+    return '<article class="card" data-c="'+c+'">'+
+      '<div class="ph" id="ph-'+c+'">'+(p.tieneFotos?'Cargando foto…':'Sin fotos aún')+
+        '<div class="badges">'+badgeEstado(p['Estado'])+(isOpp(p)?'<span class="b hot">🔥 '+esc(p['Tipo de oferta'].replace(/oportunidad\s*[–-]\s*/i,''))+'</span>':'')+'</div></div>'+
+      '<div class="cb"><span class="code">'+c+' · '+esc(p['Categoría']||p['Segmento']||'')+'</span>'+
+      '<span class="ttl">'+esc(p['Urbanización / Asociación']||zona(p)||'Sin ubicación')+'</span>'+
+      '<span class="zone">'+esc(p['Zona / Distrito']||'')+'</span>'+
+      '<span class="price">'+money(p['Precio comercial'],p['Moneda'])+'</span>'+
+      '<div class="meta">'+(area(p['Área terreno (m²)'])?'<span>📐 '+area(p['Área terreno (m²)'])+'</span>':'')+
+      (p['Comisión tipo']?'<span class="com">'+(p['Comisión tipo']==='Porcentaje'?'Comisión '+pct(p['% comisión']):'Comisión: diferencia')+'</span>':'')+'</div></div></article>';
+  }).join('');
+  Array.prototype.forEach.call(document.querySelectorAll('.card'),function(el){el.onclick=function(){abrir(el.dataset.c)}});
+  portadas(r);
+}
+/* portadas: se piden de a poco cuando la tarjeta aparece en pantalla */
+var io=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);pedirPortada(e.target.dataset.c)}})},{rootMargin:'200px'}):null;
+function portadas(r){r.forEach(function(p){if(!p.tieneFotos)return;var el=document.querySelector('.card[data-c="'+CSS.escape(p['Código'])+'"]');if(io)io.observe(el);else pedirPortada(p['Código'])})}
+function fotos(c){if(!FOTOS[c])FOTOS[c]=api({action:'fotos',codigo:c}).then(function(j){return j.fotos||[]}).catch(function(){delete FOTOS[c];return []});return FOTOS[c]}
+function pedirPortada(c){fotos(c).then(function(f){var ph=$('ph-'+c);if(!ph)return;var b=ph.querySelector('.badges');ph.innerHTML=f.length?'<img loading="lazy" alt="" src="'+esc(f[0].miniatura.replace('w1200','w600'))+'">':'Sin fotos';if(b)ph.appendChild(b)})}
+
+/* ---------- ficha ---------- */
+function kv(lbl,val){return val!==undefined&&val!==null&&val!==''?'<div><span>'+esc(lbl)+'</span>'+val+'</div>':''}
+function diasA(f){if(!f)return null;var m=String(f).match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(!m)return null;var d=new Date(+m[3],+m[2]-1,+m[1]);return Math.ceil((d-new Date())/864e5)}
+function abrir(c){
+  var p=DATA.filter(function(x){return x['Código']===c})[0];if(!p)return;
+  var car=p.caracteristicas||{},checks=[],detalles='',resumen=car['Resumen de características (auto)'];
+  Object.keys(car).forEach(function(k){if(k==='Resumen de características (auto)')return;var v=car[k];
+    if(v===true)checks.push(k);else if(v===false||v==='')return;else detalles+=kv(k,esc(v))});
+  var otros='';Object.keys(p).forEach(function(k){if(USADOS.indexOf(k)<0&&p[k]!==''&&p[k]!=null)otros+=kv(k,esc(p[k]))});
+  var dv=diasA(p['Vencimiento contrato']);
+  var html=
+  '<div class="sh-top"><h2>'+esc(c)+' · '+esc(p['Categoría']||'')+'</h2><button class="x" onclick="cerrar()" aria-label="Cerrar">×</button></div>'+
+  '<div class="gal-main" id="gMain">'+(p.tieneFotos?'Cargando fotos…':'Esta propiedad aún no tiene fotos')+'</div>'+
+  '<div class="thumbs" id="gThumbs"></div>'+
+  '<div class="actions">'+(p.tieneFotos?'<button class="btn pri" id="bZip">⬇ Descargar todas las fotos</button>':'')+
+    (p['Link Maps']?'<a class="btn sec" target="_blank" rel="noopener" href="'+esc(p['Link Maps'])+'">📍 Ver en Maps</a>':'')+'</div>'+
+  '<div class="sec-b"><h3>Precio y negociación</h3>'+
+    (p['Regla de negociación']?'<div class="rule">'+esc(p['Regla de negociación'])+'</div>':'')+
+    '<div class="kv">'+kv('Precio comercial','<b>'+money(p['Precio comercial'],p['Moneda'])+'</b>')+
+    kv(p['Comisión tipo']==='Diferencia'?'Precio BASE':'Negociable HASTA',p['Precio límite (hasta / base)']?money(p['Precio límite (hasta / base)'],p['Moneda']):'')+
+    kv('Tipo de comisión',esc(p['Comisión tipo']||''))+kv('% comisión',p['Comisión tipo']==='Porcentaje'?pct(p['% comisión']):'')+
+    kv('Tipo de oferta',esc(p['Tipo de oferta']||''))+kv('Condiciones del trato',esc(p['Condiciones del trato']||''))+'</div></div>'+
+  '<div class="sec-b"><h3>Ubicación</h3><div class="kv">'+kv('Zona / Distrito',esc(p['Zona / Distrito']||''))+kv('Urbanización / Asociación',esc(p['Urbanización / Asociación']||''))+
+    kv('Dirección',esc(p['Dirección exacta']||''))+kv('Referencia',esc(p['Referencia']||''))+kv('Área terreno',area(p['Área terreno (m²)']))+'</div></div>'+
+  '<div class="sec-b"><h3>Características</h3>'+((checks.length||resumen)?'<div class="chips" style="margin-bottom:8px">'+(checks.length?checks:String(resumen||'').split(' · ')).map(function(x){return '<span>✓ '+esc(x)+'</span>'}).join('')+'</div>':'')+
+    (detalles?'<div class="kv">'+detalles+'</div>':(checks.length?'':'<span class="code">Sin características registradas.</span>'))+'</div>'+
+  '<div class="sec-b"><h3>Contrato y legal</h3>'+(dv!==null&&dv<=15?'<div class="alert">'+(dv<0?'⚠ Contrato vencido':'⚠ Contrato vence en '+dv+' días')+'</div>':'')+
+    '<div class="kv">'+kv('Tipo de trato',esc(p['Tipo de trato']||''))+kv('Vencimiento',esc(p['Vencimiento contrato']||''))+
+    kv('Situación legal',esc(p['Situación legal']||''))+kv('Documentación',esc(p['Documentación']||''))+'</div></div>'+
+  '<div class="sec-b"><h3>Copy para redes</h3>'+(p['Copy redes sociales']?
+    '<div class="copy" id="cpy">'+esc(p['Copy redes sociales'])+'</div><div class="actions" style="padding:8px 0 0"><button class="btn pri" id="bCopy">📋 Copiar</button><button class="btn sec" id="bTxt">⬇ Descargar .txt</button></div>'
+    :'<span class="code">Aún no hay copy para esta propiedad.</span>')+'</div>'+
+  (otros?'<div class="sec-b"><h3>Otros datos</h3><div class="kv">'+otros+'</div></div>':'');
+  $('sheet').innerHTML=html;$('mod').classList.add('open');document.body.style.overflow='hidden';$('sheet').scrollTop=0;
+  if($('bCopy'))$('bCopy').onclick=function(){copiar(p['Copy redes sociales'])};
+  if($('bTxt'))$('bTxt').onclick=function(){bajar(new Blob([p['Copy redes sociales']],{type:'text/plain;charset=utf-8'}),c+'_copy.txt')};
+  if($('bZip'))$('bZip').onclick=function(){zip(c,this)};
+  if(p.tieneFotos)fotos(c).then(function(f){galeria(f)});
+}
+function galeria(f){
+  var m=$('gMain'),t=$('gThumbs');if(!m)return;
+  if(!f.length){m.textContent='Sin fotos';return}
+  function ver(i){m.innerHTML='<img alt="" src="'+esc(f[i].miniatura)+'">';Array.prototype.forEach.call(t.children,function(x,j){x.className=j===i?'on':''})}
+  t.innerHTML=f.map(function(x,i){return '<img alt="" loading="lazy" src="'+esc(x.miniatura.replace('w1200','w200'))+'" data-i="'+i+'">'}).join('');
+  Array.prototype.forEach.call(t.children,function(x){x.onclick=function(){ver(+x.dataset.i)}});
+  ver(0);
+}
+function cerrar(){$('mod').classList.remove('open');document.body.style.overflow=''}
+$('mod').onclick=function(e){if(e.target.id==='mod')cerrar()};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')cerrar()});
+
+/* ---------- descargas ---------- */
+function bajar(blob,nombre){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombre;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},1500)}
+function zip(c,btn){
+  btn.disabled=true;var t=btn.textContent;btn.textContent='⏳ Preparando ZIP…';
+  fetch(url({action:'zip',codigo:c})).then(function(r){return r.json()}).then(function(j){
+    if(j.ok){var bin=atob(j.base64),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);bajar(new Blob([u],{type:'application/zip'}),j.nombre);toast('Descarga lista: '+j.nombre)}
+    else if(j.error==='ZIP_DEMASIADO_GRANDE'&&j.fotos){toast('Muchas fotos: se descargarán una por una');j.fotos.forEach(function(f,i){setTimeout(function(){var a=document.createElement('a');a.href=f.descarga;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()},i*900)})}
+    else throw new Error(j.error||'Error');
+  }).catch(function(e){toast('No se pudo descargar: '+e.message)}).then(function(){btn.disabled=false;btn.textContent=t});
+}
+function copiar(txt){
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast('Copy copiado ✓')}).catch(function(){
+    var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('Copy copiado ✓')}catch(e){toast('No se pudo copiar')}ta.remove()});
+}
+
+/* ---------- eventos ---------- */
+['q','fSeg','fCat','fZona','fMon','fOrd'].forEach(function(id){$(id).addEventListener(id==='q'?'input':'change',render)});
+$('tOpp').onclick=function(){FILTRO_OPP=!FILTRO_OPP;this.classList.toggle('on',FILTRO_OPP);render()};
+$('reload').onclick=function(){FOTOS={};cargar()};
+cargar();
+</script>
+</body>
+</html>
