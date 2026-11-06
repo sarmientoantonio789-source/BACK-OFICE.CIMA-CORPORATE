@@ -131,7 +131,7 @@ var CONFIG = {
 var DATA = [], FOTOS = {}, FILTRO_OPP = false, ACTUAL = 0;
 // Campos que la ficha ya muestra en su sección; todo lo demás cae en "Otros datos" automáticamente.
 var USADOS = ['Código','Segmento','Categoría','Estado','Tipo de oferta','Zona / Distrito','Urbanización / Asociación',
- 'Dirección exacta','Referencia','Link Maps','Área terreno (m²)','Moneda','Precio comercial','Precio límite (hasta / base)',
+ 'Dirección exacta','Referencia','Link Maps','Área terreno (m²)','Frente (m)','Fondo (m)','Moneda','Precio comercial','Precio límite (hasta / base)',
  'Comisión tipo','% comisión','Regla de negociación','Condiciones del trato','Tipo de trato','Vencimiento contrato',
  'Situación legal','Documentación','Copy redes sociales','tieneFotos','caracteristicas'];
 
@@ -146,6 +146,7 @@ function num(v){var n=typeof v==='number'?v:parseFloat(String(v).replace(/[^\d.,
 function money(v,m){var n=num(v);if(n==null)return v?esc(v):'—';return (m==='PEN'?'S/ ':'$ ')+n.toLocaleString('en-US',{maximumFractionDigits:0})}
 function area(v){var n=num(v);return n==null?'':n.toLocaleString('en-US',{maximumFractionDigits:2})+' m²'}
 function pct(v){var n=num(v);if(n==null)return v||'';if(n<=1)n=n*100;return (Math.round(n*10)/10)+'%'}
+function med(p){var f=num(p['Frente (m)']),d=num(p['Fondo (m)']);if(f==null&&d==null)return '';var x=function(n){return n==null?'?':(Math.round(n*100)/100).toLocaleString('en-US')};return x(f)+' × '+x(d)+' m'}
 function zona(p){return p['Zona / Distrito']||p['Urbanización / Asociación']||''}
 function isOpp(p){return /oportunidad/i.test(p['Tipo de oferta']||'')}
 function toast(t){var e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(function(){e.style.display='none'},2600)}
@@ -192,7 +193,7 @@ function render(){
       '<span class="ttl">'+esc(p['Urbanización / Asociación']||zona(p)||'Sin ubicación')+'</span>'+
       '<span class="zone">'+esc(p['Zona / Distrito']||'')+'</span>'+
       '<span class="price">'+money(p['Precio comercial'],p['Moneda'])+'</span>'+
-      '<div class="meta">'+(area(p['Área terreno (m²)'])?'<span>📐 '+area(p['Área terreno (m²)'])+'</span>':'')+
+      '<div class="meta">'+((med(p)||area(p['Área terreno (m²)']))?'<span>📐 '+[med(p),area(p['Área terreno (m²)'])].filter(Boolean).join(' · ')+'</span>':'')+
       (p['Comisión tipo']?'<span class="com">'+(p['Comisión tipo']==='Porcentaje'?'Comisión '+pct(p['% comisión']):'Comisión: diferencia')+'</span>':'')+'</div></div></article>';
   }).join('');
   Array.prototype.forEach.call(document.querySelectorAll('.card'),function(el){el.onclick=function(){abrir(el.dataset.c)}});
@@ -227,7 +228,7 @@ function abrir(c){
     kv('Tipo de comisión',esc(p['Comisión tipo']||''))+kv('% comisión',p['Comisión tipo']==='Porcentaje'?pct(p['% comisión']):'')+
     kv('Tipo de oferta',esc(p['Tipo de oferta']||''))+kv('Condiciones del trato',esc(p['Condiciones del trato']||''))+'</div></div>'+
   '<div class="sec-b"><h3>Ubicación</h3><div class="kv">'+kv('Zona / Distrito',esc(p['Zona / Distrito']||''))+kv('Urbanización / Asociación',esc(p['Urbanización / Asociación']||''))+
-    kv('Dirección',esc(p['Dirección exacta']||''))+kv('Referencia',esc(p['Referencia']||''))+kv('Área terreno',area(p['Área terreno (m²)']))+'</div></div>'+
+    kv('Dirección',esc(p['Dirección exacta']||''))+kv('Referencia',esc(p['Referencia']||''))+kv('Medidas (frente × fondo)',med(p))+kv('Área terreno',area(p['Área terreno (m²)']))+'</div></div>'+
   '<div class="sec-b"><h3>Características</h3>'+((checks.length||resumen)?'<div class="chips" style="margin-bottom:8px">'+(checks.length?checks:String(resumen||'').split(' · ')).map(function(x){return '<span>✓ '+esc(x)+'</span>'}).join('')+'</div>':'')+
     (detalles?'<div class="kv">'+detalles+'</div>':(checks.length?'':'<span class="code">Sin características registradas.</span>'))+'</div>'+
   '<div class="sec-b"><h3>Contrato y legal</h3>'+(dv!==null&&dv<=15?'<div class="alert">'+(dv<0?'⚠ Contrato vencido':'⚠ Contrato vence en '+dv+' días')+'</div>':'')+
